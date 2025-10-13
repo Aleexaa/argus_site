@@ -3,10 +3,21 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Безопасность: используйте переменные окружения
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-94*2sp%f6f(z_b)a+-ru43ueqpx@da%%*(nq&6@d4iv9e7_v5d')
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+# Безопасность: используем ТОЛЬКО переменные окружения
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY must be set in environment variables")
+
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+
+# Динамические ALLOWED_HOSTS
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
+
+# Автоматическое добавление Render hostname
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -50,7 +61,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'argus_site.wsgi.application'
 
-# Упрощенная база данных
+# База данных - используем SQLite
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -103,6 +114,23 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'DEBUG',
+        'level': 'INFO',
     },
 }
+
+# Security settings for production
+if not DEBUG:
+    # HTTPS settings
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    
+    # HSTS settings
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    
+    # Additional security
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
