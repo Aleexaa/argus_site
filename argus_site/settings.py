@@ -3,13 +3,11 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Самый простой вариант - временный ключ
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-temporary-key-for-deploy-12345')
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+# Безопасность: используйте переменные окружения
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-94*2sp%f6f(z_b)a+-ru43ueqpx@da%%*(nq&6@d4iv9e7_v5d')
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
 
-ALLOWED_HOSTS = ['*']  # временно разрешаем все хосты
-
-# Остальные настройки остаются как были...
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -52,6 +50,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'argus_site.wsgi.application'
 
+# Упрощенная база данных
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -79,13 +78,13 @@ TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 USE_TZ = True
 
+# Статические файлы
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Временно уберем whitenoise для упрощения
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
+# Медиа файлы
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
