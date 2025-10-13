@@ -1,4 +1,3 @@
-# main/forms.py
 from django import forms
 from .models import Request, Client, Service
 
@@ -8,11 +7,10 @@ class RequestForm(forms.ModelForm):
     phone = forms.CharField(max_length=20, label="Телефон")
     email = forms.EmailField(label="Email")
     
-    services = forms.ModelMultipleChoiceField(
-        queryset=Service.objects.filter(has_kp=True),
-        widget=forms.CheckboxSelectMultiple,
-        label="Выберите услуги"
-    )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Запрос к базе делаем в конструкторе, а не в объявлении поля
+        self.fields['services'].queryset = Service.objects.filter(has_kp=True)
     
     class Meta:
         model = Request
@@ -20,4 +18,5 @@ class RequestForm(forms.ModelForm):
                  'object_type', 'object_description', 'services', 'attached_file']
         widgets = {
             'object_description': forms.Textarea(attrs={'rows': 4}),
+            'services': forms.CheckboxSelectMultiple(),
         }

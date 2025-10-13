@@ -198,23 +198,8 @@ def order_kp(request):
     if request.method == 'POST':
         form = RequestForm(request.POST, request.FILES)
         if form.is_valid():
-            # Сохраняем клиента
-            from .models import Client
-            client, created = Client.objects.get_or_create(
-                email=form.cleaned_data['email'],
-                defaults={
-                    'company_name': form.cleaned_data['company_name'],
-                    'contact_person': form.cleaned_data['contact_person'],
-                    'phone': form.cleaned_data['phone'],
-                }
-            )
-            
-            # Создаем заявку
-            request_obj = form.save(commit=False)
-            request_obj.client = client
-            request_obj.save()
-            form.save_m2m()  # Сохраняем ManyToMany поля
-            
+            # Упрощенное сохранение без создания клиента
+            request_obj = form.save()
             messages.success(request, 'Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.')
             return redirect('order_success')
     else:
