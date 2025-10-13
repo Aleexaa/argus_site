@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Компания Аргус - Противопожарные системы{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dark-blue': '#0A1E3A',
+                        'gold': '#C9A96A',
+                        'light-gray': '#f8fafc',
+                        'border': 'rgba(0, 0, 0, 0.08)',
+                        'black': '#000000',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 1.2s ease-out',
+                        'slide-up': 'slideUp 1s ease-out',
+                        'scale-in': 'scaleIn 0.8s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.99)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        }
+                    },
+                    transitionDuration: {
+                        '600': '600ms',
+                        '800': '800ms',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <style>
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Custom animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-2px); }
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        /* Premium hover effects */
+        .premium-hover {
+            transition: all 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+        
+        .premium-hover:hover {
+            transform: translateY(-1px);
+        }
+        
+        .gold-hover {
+            transition: all 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+        
+        .gold-hover:hover {
+            color: #C9A96A;
+            transform: translateX(2px);
+        }
+        
+        /* Button animations */
+        .btn-premium {
+            background: #C9A96A;
+            transition: all 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-premium:hover {
+            background: #B89960;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(201, 169, 106, 0.2);
+        }
+        
+        .btn-premium:active {
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+        
+        /* Glass morphism for premium feel */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0A1E3A;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #C9A96A;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #B89960;
+        }
+        
+        /* Text selection */
+        ::selection {
+            background: rgba(201, 169, 106, 0.15);
+        }
+        
+        /* Smooth transitions for all elements */
+        * {
+            transition-property: color, background-color, border-color, transform, opacity, box-shadow;
+            transition-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+            transition-duration: 500ms;
+        }
+        
+        /* Subtle background transition */
+        body {
+            transition: background-color 1s ease;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased bg-white">
+    <!-- Header -->
+    <header class="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 transition-all duration-800">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <a href="{% url 'home' %}" class="flex items-center gap-3 group premium-hover">
+                    <img src="{% static 'images/logo.jpeg' %}" alt="Компания Аргус" class="h-10 w-auto transition-transform duration-800 group-hover:scale-105">
+                    <div class="flex flex-col">
+                        <span class="text-black font-bold text-xl leading-tight tracking-tight transition-all duration-800">АРГУС</span>
+                        <span class="text-gold text-xs font-medium leading-tight tracking-wider transition-all duration-800">КОМПАНИЯ</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden lg:flex items-center gap-1">
+                    {% with url_name=request.resolver_match.url_name %}
+                    <a href="{% url 'home' %}" class="px-5 py-2 rounded-lg transition-all duration-800 {% if url_name == 'home' %}bg-gold/10 text-gold font-semibold{% else %}text-dark-blue/90 hover:text-gold hover:bg-gold/5{% endif %} premium-hover">
+                        Главная
+                    </a>
+                    <a href="{% url 'about' %}" class="px-5 py-2 rounded-lg transition-all duration-800 {% if url_name == 'about' %}bg-gold/10 text-gold font-semibold{% else %}text-dark-blue/90 hover:text-gold hover:bg-gold/5{% endif %} premium-hover">
+                        О компании
+                    </a>
+                    <a href="{% url 'services' %}" class="px-5 py-2 rounded-lg transition-all duration-800 {% if url_name == 'services' %}bg-gold/10 text-gold font-semibold{% else %}text-dark-blue/90 hover:text-gold hover:bg-gold/5{% endif %} premium-hover">
+                        Услуги
+                    </a>
+                    <a href="{% url 'projects' %}" class="px-5 py-2 rounded-lg transition-all duration-800 {% if url_name == 'projects' %}bg-gold/10 text-gold font-semibold{% else %}text-dark-blue/90 hover:text-gold hover:bg-gold/5{% endif %} premium-hover">
+                        Проекты
+                    </a>
+                    <a href="{% url 'partners' %}" class="px-5 py-2 rounded-lg transition-all duration-800 {% if url_name == 'partners' %}bg-gold/10 text-gold font-semibold{% else %}text-dark-blue/90 hover:text-gold hover:bg-gold/5{% endif %} premium-hover">
+                        Партнеры
+                    </a>
+                    <a href="{% url 'contacts' %}" class="px-5 py-2 rounded-lg transition-all duration-800 {% if url_name == 'contacts' %}bg-gold/10 text-gold font-semibold{% else %}text-dark-blue/90 hover:text-gold hover:bg-gold/5{% endif %} premium-hover">
+                        Контакты
+                    </a>
+                    {% endwith %}
+                </nav>
+
+                <!-- Contact & CTA -->
+                <div class="hidden lg:flex items-center gap-4">
+                    <a href="tel:+73452593020" class="flex items-center gap-2 text-dark-blue/90 hover:text-gold transition-all duration-800 group premium-hover">
+                        <div class="p-2 bg-gold/10 rounded-lg group-hover:bg-gold/20 transition-colors duration-800">
+                            <i data-lucide="phone" class="w-4 h-4"></i>
+                        </div>
+                        <span class="text-sm font-medium transition-all duration-800">(3452) 59-30-20</span>
+                    </a>
+                    <a href="{% url 'order_kp' %}" class="btn-premium text-white px-6 py-2.5 rounded-lg font-medium shadow-lg premium-hover">
+                        Заказать КП
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-all duration-800 premium-hover">
+                    <i data-lucide="menu" class="w-6 h-6 menu-icon" id="menuIcon"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="mobile-menu hidden lg:hidden py-4 border-t border-gray-100 bg-white/95 backdrop-blur-md transition-all duration-800">
+                <nav class="flex flex-col gap-1">
+                    {% with url_name=request.resolver_match.url_name %}
+                    <a href="{% url 'home' %}" class="px-5 py-3 rounded-lg transition-all duration-800 {% if url_name == 'home' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %} premium-hover">
+                        Главная
+                    </a>
+                    <a href="{% url 'about' %}" class="px-5 py-3 rounded-lg transition-all duration-800 {% if url_name == 'about' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %} premium-hover">
+                        О компании
+                    </a>
+                    <a href="{% url 'services' %}" class="px-5 py-3 rounded-lg transition-all duration-800 {% if url_name == 'services' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %} premium-hover">
+                        Услуги
+                    </a>
+                    <a href="{% url 'projects' %}" class="px-5 py-3 rounded-lg transition-all duration-800 {% if url_name == 'projects' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %} premium-hover">
+                        Проекты
+                    </a>
+                    <a href="{% url 'partners' %}" class="px-5 py-3 rounded-lg transition-all duration-800 {% if url_name == 'partners' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %} premium-hover">
+                        Партнеры
+                    </a>
+                    <a href="{% url 'contacts' %}" class="px-5 py-3 rounded-lg transition-all duration-800 {% if url_name == 'contacts' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %} premium-hover">
+                        Контакты
+                    </a>
+                    {% endwith %}
+                    <div class="px-5 py-3 space-y-3">
+                        <a href="tel:+73452593020" class="flex items-center gap-3 text-dark-blue p-3 rounded-lg bg-gray-50 hover:bg-gold/10 transition-all duration-800 premium-hover">
+                            <i data-lucide="phone" class="w-5 h-5 text-gold transition-all duration-800"></i>
+                            <span class="font-medium transition-all duration-800">(3452) 59-30-20</span>
+                        </a>
+                        <a href="{% url 'order_kp' %}" class="btn-premium text-white py-3 rounded-lg transition-all duration-800 shadow-lg font-medium text-center block premium-hover">
+                            Заказать КП
+                        </a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="animate-fade-in">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Golden Divider -->
+    <div class="w-full bg-gradient-to-r from-transparent via-gold/10 to-transparent h-px transition-all duration-800"></div>
+
+    <!-- Footer - Уменьшенный -->
+    <footer class="bg-dark-blue text-white py-8 transition-all duration-800">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Company Info -->
+                <div class="lg:col-span-2">
+                    <div class="flex items-center gap-3 mb-4">
+                        <img src="{% static 'images/logo.jpeg' %}" alt="Компания Аргус" class="h-8 w-auto transition-all duration-800">
+                        <div class="flex flex-col">
+                            <span class="text-white font-bold text-lg leading-tight transition-all duration-800">АРГУС</span>
+                            <span class="text-gold text-xs leading-tight transition-all duration-800">Компания</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-sm mb-4 leading-relaxed max-w-md transition-all duration-800">
+                        Ведущий эксперт в области пожарной безопасности и строительных решений с 2004 года
+                    </p>
+                    <div class="flex flex-wrap gap-4 text-sm">
+                        <a href="tel:+73452593020" class="flex items-center gap-2 text-gray-300 hover:text-gold transition-all duration-800 gold-hover">
+                            <i data-lucide="phone" class="w-4 h-4 transition-all duration-800"></i>
+                            (3452) 59-30-20
+                        </a>
+                        <a href="mailto:argus-ops@mail.ru" class="flex items-center gap-2 text-gray-300 hover:text-gold transition-all duration-800 gold-hover">
+                            <i data-lucide="mail" class="w-4 h-4 transition-all duration-800"></i>
+                            argus-ops@mail.ru
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div>
+                    <h3 class="text-base font-semibold mb-3 text-gold transition-all duration-800">Навигация</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="{% url 'home' %}" class="text-gray-300 hover:text-white transition-all duration-800 gold-hover block">Главная</a></li>
+                        <li><a href="{% url 'services' %}" class="text-gray-300 hover:text-white transition-all duration-800 gold-hover block">Услуги</a></li>
+                        <li><a href="{% url 'projects' %}" class="text-gray-300 hover:text-white transition-all duration-800 gold-hover block">Проекты</a></li>
+                        <li><a href="{% url 'partners' %}" class="text-gray-300 hover:text-white transition-all duration-800 gold-hover block">Партнеры</a></li>
+                        <li><a href="{% url 'contacts' %}" class="text-gray-300 hover:text-white transition-all duration-800 gold-hover block">Контакты</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contacts -->
+                <div>
+                    <h3 class="text-base font-semibold mb-3 text-gold transition-all duration-800">Контакты</h3>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li class="flex items-center gap-2 transition-all duration-800">
+                            <i data-lucide="clock" class="w-4 h-4 text-gold transition-all duration-800"></i>
+                            Пн-Пт: 9:00-18:00
+                        </li>
+                        <li class="flex items-center gap-2 transition-all duration-800">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-gold transition-all duration-800"></i>
+                            г. Тюмень
+                        </li>
+                        <li>
+                            <a href="{% url 'order_kp' %}" class="text-gold hover:text-amber-200 transition-all duration-800 font-medium inline-flex items-center gap-1 group gold-hover">
+                                Заказать КП
+                                <i data-lucide="arrow-right" class="w-3 h-3 group-hover:translate-x-1 transition-transform duration-800"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Copyright -->
+            <div class="border-t border-gray-700 mt-6 pt-4 text-center transition-all duration-800">
+                <p class="text-gray-400 text-xs transition-all duration-800">© 2025 Компания Аргус. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Инициализация иконок
+        lucide.createIcons();
+        
+        // Mobile menu toggle with smooth animation
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const icon = document.getElementById('menuIcon');
+            
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.style.opacity = '0';
+                menu.style.transform = 'scale(0.95)';
+                
+                setTimeout(() => {
+                    menu.style.transition = 'all 0.8s cubic-bezier(0.22, 0.61, 0.36, 1)';
+                    menu.style.opacity = '1';
+                    menu.style.transform = 'scale(1)';
+                }, 10);
+                
+                icon.setAttribute('data-lucide', 'x');
+            } else {
+                menu.style.transition = 'all 0.6s cubic-bezier(0.22, 0.61, 0.36, 1)';
+                menu.style.opacity = '0';
+                menu.style.transform = 'scale(0.95)';
+                
+                setTimeout(() => {
+                    menu.classList.add('hidden');
+                }, 600);
+                
+                icon.setAttribute('data-lucide', 'menu');
+            }
+            lucide.createIcons();
+        }
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('mobileMenu');
+            const button = document.querySelector('button[onclick="toggleMobileMenu()"]');
+            
+            if (menu && !menu.contains(event.target) && !button.contains(event.target) && !menu.classList.contains('hidden')) {
+                menu.style.transition = 'all 0.6s cubic-bezier(0.22, 0.61, 0.36, 1)';
+                menu.style.opacity = '0';
+                menu.style.transform = 'scale(0.95)';
+                
+                setTimeout(() => {
+                    menu.classList.add('hidden');
+                    const icon = document.getElementById('menuIcon');
+                    icon.setAttribute('data-lucide', 'menu');
+                    lucide.createIcons();
+                }, 600);
+            }
+        });
+
+        // Add scroll animation to elements
+        function initScrollAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, 100);
+                    }
+                });
+            }, { 
+                threshold: 0.05,
+                rootMargin: '0px 0px -30px 0px'
+            });
+            
+            document.querySelectorAll('.scroll-animate').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(10px)';
+                el.style.transition = 'all 1s cubic-bezier(0.22, 0.61, 0.36, 1)';
+                observer.observe(el);
+            });
+        }
+
+        // Smooth header appearance
+        function initHeaderAnimation() {
+            const header = document.querySelector('header');
+            header.style.opacity = '0';
+            header.style.transform = 'translateY(-5px)';
+            
+            setTimeout(() => {
+                header.style.transition = 'all 1.2s cubic-bezier(0.22, 0.61, 0.36, 1)';
+                header.style.opacity = '1';
+                header.style.transform = 'translateY(0)';
+            }, 200);
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initScrollAnimations();
+            initHeaderAnimation();
+            
+            // Add staggered animation to elements
+            document.querySelectorAll('.premium-hover').forEach((element, index) => {
+                element.style.transitionDelay = `${index * 0.08}s`;
+            });
+        });
+    </script>
+</body>
+</html>

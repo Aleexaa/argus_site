@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Компания Аргус - Заказать КП{% endblock %}
+
+{% block content %}
+<div class="min-h-screen py-12 md:py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-3xl md:text-5xl text-dark-blue mb-4 font-bold">Заказать коммерческое предложение</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                Заполните форму ниже, и наш специалист свяжется с вами для уточнения деталей. 
+                Мы подготовим индивидуальное коммерческое предложение с учетом всех особенностей вашего проекта.
+            </p>
+        </div>
+
+        <!-- Form -->
+        <div class="max-w-3xl mx-auto">
+            <div class="bg-white rounded-xl shadow-lg">
+                <div class="p-6 md:p-8">
+                    <form method="post" enctype="multipart/form-data" class="space-y-6">
+                        {% csrf_token %}
+                        
+                        <!-- Company Name -->
+                        <div>
+                            <label for="company_name" class="block text-dark-blue mb-2 font-medium">
+                                Название компании <span class="text-gold">*</span>
+                            </label>
+                            <input type="text" id="company_name" name="company_name" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-colors"
+                                   placeholder="ООО Компания">
+                        </div>
+
+                        <!-- Contact Person -->
+                        <div>
+                            <label for="contact_person" class="block text-dark-blue mb-2 font-medium">
+                                Контактное лицо <span class="text-gold">*</span>
+                            </label>
+                            <input type="text" id="contact_person" name="contact_person" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-colors"
+                                   placeholder="Иван Иванов">
+                        </div>
+
+                        <!-- Phone and Email -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="phone" class="block text-dark-blue mb-2 font-medium">
+                                    Телефон <span class="text-gold">*</span>
+                                </label>
+                                <input type="tel" id="phone" name="phone" required
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-colors"
+                                       placeholder="+7 (___) ___-__-__">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-dark-blue mb-2 font-medium">
+                                    E-mail <span class="text-gold">*</span>
+                                </label>
+                                <input type="email" id="email" name="email" required
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-colors"
+                                       placeholder="example@company.ru">
+                            </div>
+                        </div>
+
+                        <!-- Object Type -->
+                        <div>
+                            <label for="object_type" class="block text-dark-blue mb-2 font-medium">Тип объекта</label>
+                            <select id="object_type" name="object_type"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-colors">
+                                <option value="">Выберите тип объекта</option>
+                                <option value="residential">Жильё</option>
+                                <option value="commercial">Торговый центр</option>
+                                <option value="industrial">Промышленный объект</option>
+                                <option value="office">Офисное здание</option>
+                                <option value="government">Государственное учреждение</option>
+                                <option value="other">Иное</option>
+                            </select>
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label for="object_description" class="block text-dark-blue mb-2 font-medium">
+                                Краткая характеристика объекта
+                            </label>
+                            <textarea id="object_description" name="object_description" rows="4"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-colors"
+                                      placeholder="Опишите ваш объект: площадь, назначение, особенности..."></textarea>
+                        </div>
+
+                        <!-- Services -->
+                        <div>
+                            <label class="block text-dark-blue mb-3 font-medium">Выберите услуги</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="services" value="1" class="rounded border-gray-300 text-gold focus:ring-gold">
+                                    <span class="ml-3 text-gray-700">Разработка СТУ</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="services" value="2" class="rounded border-gray-300 text-gold focus:ring-gold">
+                                    <span class="ml-3 text-gray-700">Расчет пожарных рисков</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="services" value="3" class="rounded border-gray-300 text-gold focus:ring-gold">
+                                    <span class="ml-3 text-gray-700">Пожарный аудит</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- File Upload -->
+                        <div>
+                            <label class="block text-dark-blue mb-2 font-medium">Прикрепить документ</label>
+                            <div class="border-2 border-dashed border-gray-300 hover:border-gold transition-colors p-6 md:p-8 text-center cursor-pointer rounded-lg"
+                                 onclick="document.getElementById('fileInput').click()">
+                                <i data-lucide="upload" class="w-8 h-8 md:w-12 md:h-12 text-gray-400 mx-auto mb-4"></i>
+                                <p class="text-sm md:text-base text-gray-600 mb-2">Нажмите для загрузки или перетащите файл сюда</p>
+                                <p class="text-xs md:text-sm text-gray-500">Форматы: PDF, DOC, DOCX, XLS, XLSX (до 10 МБ)</p>
+                                <input type="file" id="fileInput" name="attached_file" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx">
+                            </div>
+                        </div>
+
+                        <!-- Info Note -->
+                        <div class="bg-light-gray p-4 rounded-lg border-l-4 border-gold">
+                            <p class="text-sm text-gray-700">
+                                <span class="text-gold font-medium">Примечание:</span> Ваши данные будут переданы 
+                                в нашу CRM-систему для обработки заявки. Мы гарантируем конфиденциальность 
+                                предоставленной информации.
+                            </p>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" 
+                                class="w-full bg-gold hover:bg-amber-600 text-white py-4 rounded-lg transition-colors font-medium text-lg">
+                            Отправить заявку
+                        </button>
+
+                        <!-- Required fields note -->
+                        <p class="text-sm text-gray-600 text-center">
+                            <span class="text-gold">*</span> — обязательные поля
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="max-w-3xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-xl shadow-lg text-center p-6">
+                <div class="text-2xl md:text-3xl text-gold font-bold mb-2">20+</div>
+                <p class="text-gray-600">лет опыта работы</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg text-center p-6">
+                <div class="text-2xl md:text-3xl text-gold font-bold mb-2">24ч</div>
+                <p class="text-gray-600">срок подготовки КП</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg text-center p-6">
+                <div class="text-2xl md:text-3xl text-gold font-bold mb-2">100%</div>
+                <p class="text-gray-600">конфиденциальность</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name;
+        if (fileName) {
+            alert('Выбран файл: ' + fileName);
+        }
+    });
+</script>
+{% endblock %}

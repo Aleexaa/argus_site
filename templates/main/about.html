@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Компания Аргус - О компании{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative h-[350px] flex items-center justify-center overflow-hidden bg-gradient-to-r from-dark-blue to-blue-900">
+    <div class="absolute inset-0">
+        <img src="{% static 'images/ЖК Домашний ГП-11.jpeg' %}" alt="Компания Аргус" class="w-full h-full object-cover transition-transform duration-800 hover:scale-105">
+        <div class="absolute inset-0 bg-dark-blue/80 transition-all duration-500"></div>
+    </div>
+    <div class="relative z-10 container mx-auto px-6 text-center text-white">
+        <h1 class="text-4xl md:text-5xl mb-4 font-bold animate-slide-up">О компании</h1>
+        <p class="text-xl text-white/90 max-w-2xl mx-auto animate-slide-up" style="animation-delay: 0.1s">
+            Компания Аргус — эксперт в области строительства и пожарной безопасности с 2004 года
+        </p>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-8 bg-light-gray">
+    <div class="container mx-auto px-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white rounded-xl shadow-lg text-center p-4 transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-dark-blue text-gold mb-3 rounded-lg transition-all duration-400 hover:scale-110">
+                    <i data-lucide="calendar" class="w-6 h-6"></i>
+                </div>
+                <div class="text-2xl text-gold font-bold mb-1">20+</div>
+                <p class="text-sm text-gray-600">лет опыта</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg text-center p-4 transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate" style="animation-delay: 0.1s">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-dark-blue text-gold mb-3 rounded-lg transition-all duration-400 hover:scale-110">
+                    <i data-lucide="folder" class="w-6 h-6"></i>
+                </div>
+                <div class="text-2xl text-gold font-bold mb-1">500+</div>
+                <p class="text-sm text-gray-600">проектов</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg text-center p-4 transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate" style="animation-delay: 0.2s">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-dark-blue text-gold mb-3 rounded-lg transition-all duration-400 hover:scale-110">
+                    <i data-lucide="users" class="w-6 h-6"></i>
+                </div>
+                <div class="text-2xl text-gold font-bold mb-1">100+</div>
+                <p class="text-sm text-gray-600">специалистов</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg text-center p-4 transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate" style="animation-delay: 0.3s">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-dark-blue text-gold mb-3 rounded-lg transition-all duration-400 hover:scale-110">
+                    <i data-lucide="heart" class="w-6 h-6"></i>
+                </div>
+                <div class="text-2xl text-gold font-bold mb-1">98%</div>
+                <p class="text-sm text-gray-600">довольных клиентов</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="py-12 bg-white">
+    <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-4xl text-dark-blue mb-6 text-center font-bold scroll-animate">Наша история</h2>
+            <div class="space-y-4 text-lg text-gray-700 leading-relaxed">
+                <p class="scroll-animate" style="animation-delay: 0.1s">
+                    Компания Аргус начала свою деятельность в 2004 году как небольшая команда специалистов 
+                    в области пожарной безопасности. За более чем 20 лет работы мы выросли в крупную компанию, 
+                    предоставляющую комплексные решения в сфере строительства и инженерных систем.
+                </p>
+                <p class="scroll-animate" style="animation-delay: 0.2s">
+                    Сегодня Компания Аргус — это команда из более чем 100 квалифицированных специалистов, 
+                    современное оборудование и собственная производственная база. Мы реализовали сотни 
+                    проектов различной сложности, от небольших офисных помещений до крупных торговых центров 
+                    и промышленных объектов.
+                </p>
+                <p class="scroll-animate" style="animation-delay: 0.3s">
+                    Наши клиенты — это крупные девелоперы, федеральные и региональные ритейлеры, 
+                    промышленные предприятия и государственные учреждения. Мы гордимся доверием наших 
+                    заказчиков и стремимся поддерживать высочайшие стандарты качества во всех проектах.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Advantages Section -->
+<section class="py-12 bg-light-gray">
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl md:text-4xl text-dark-blue mb-8 text-center font-bold scroll-animate">Наши преимущества</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-6xl mx-auto">
+            <div class="bg-white rounded-xl shadow-lg border-t-4 border-gold transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate">
+                <div class="p-6">
+                    <div class="inline-flex items-center justify-center w-14 h-14 bg-dark-blue text-gold mb-4 rounded-lg transition-all duration-400 hover:scale-110">
+                        <i data-lucide="award" class="w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">Опыт и экспертиза</h3>
+                    <p class="text-gray-700 leading-relaxed">Более 20 лет успешной работы в сфере строительства и пожарной безопасности</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg border-t-4 border-gold transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate" style="animation-delay: 0.1s">
+                <div class="p-6">
+                    <div class="inline-flex items-center justify-center w-14 h-14 bg-dark-blue text-gold mb-4 rounded-lg transition-all duration-400 hover:scale-110">
+                        <i data-lucide="shield" class="w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">Качество и надежность</h3>
+                    <p class="text-gray-700 leading-relaxed">Гарантия качества на все виды работ и используемые материалы</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg border-t-4 border-gold transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate" style="animation-delay: 0.2s">
+                <div class="p-6">
+                    <div class="inline-flex items-center justify-center w-14 h-14 bg-dark-blue text-gold mb-4 rounded-lg transition-all duration-400 hover:scale-110">
+                        <i data-lucide="users" class="w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">Команда профессионалов</h3>
+                    <p class="text-gray-700 leading-relaxed">Квалифицированные специалисты с многолетним опытом работы</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg border-t-4 border-gold transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate" style="animation-delay: 0.3s">
+                <div class="p-6">
+                    <div class="inline-flex items-center justify-center w-14 h-14 bg-dark-blue text-gold mb-4 rounded-lg transition-all duration-400 hover:scale-110">
+                        <i data-lucide="settings" class="w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">Комплексный подход</h3>
+                    <p class="text-gray-700 leading-relaxed">Полный цикл услуг от проектирования до сдачи объекта</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission Section -->
+<section class="py-12 bg-white">
+    <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl text-dark-blue mb-6 font-bold scroll-animate">Наша миссия</h2>
+            <p class="text-xl text-gray-700 leading-relaxed mb-6 scroll-animate" style="animation-delay: 0.1s">
+                Обеспечивать безопасность людей и сохранность имущества наших клиентов через предоставление 
+                качественных услуг в области пожарной безопасности и строительства. Мы стремимся быть надежным 
+                партнером и экспертом, на которого можно положиться.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+                <div class="bg-dark-blue text-white rounded-xl p-4 transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate">
+                    <h3 class="text-lg text-gold mb-2 font-semibold">Качество</h3>
+                    <p class="text-white/80 text-sm">Высокие стандарты на всех этапах работы</p>
+                </div>
+                <div class="bg-dark-blue text-white rounded-xl p-4 transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate" style="animation-delay: 0.1s">
+                    <h3 class="text-lg text-gold mb-2 font-semibold">Ответственность</h3>
+                    <p class="text-white/80 text-sm">Гарантируем выполнение обязательств</p>
+                </div>
+                <div class="bg-dark-blue text-white rounded-xl p-4 transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate" style="animation-delay: 0.2s">
+                    <h3 class="text-lg text-gold mb-2 font-semibold">Развитие</h3>
+                    <p class="text-white/80 text-sm">Постоянное совершенствование процессов</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-12 bg-dark-blue text-white">
+    <div class="container mx-auto px-6 text-center">
+        <h2 class="text-3xl md:text-4xl mb-4 font-bold scroll-animate">Станьте нашим партнером</h2>
+        <p class="text-lg text-white/80 mb-6 max-w-2xl mx-auto scroll-animate" style="animation-delay: 0.1s">
+            Мы всегда открыты для новых проектов и с удовольствием обсудим возможности сотрудничества
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center scroll-animate" style="animation-delay: 0.2s">
+            <a href="{% url 'order_kp' %}" class="bg-gold hover:bg-amber-700 text-white px-6 py-3 rounded-lg transition-all duration-400 font-medium shadow-lg hover:scale-105">
+                Заказать КП
+            </a>
+            <a href="{% url 'contacts' %}" class="border-2 border-white text-white hover:bg-white hover:text-dark-blue px-6 py-3 rounded-lg transition-all duration-400 font-medium hover:scale-105">
+                Связаться с нами
+            </a>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Инициализация иконок
+    lucide.createIcons();
+</script>
+{% endblock %}

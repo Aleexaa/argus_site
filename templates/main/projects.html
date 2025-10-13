@@ -1,0 +1,541 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Компания Аргус - Проекты{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative py-12 bg-dark-blue">
+    <div class="container mx-auto px-6 text-center text-white">
+        <h1 class="text-4xl md:text-5xl mb-4 font-bold animate-slide-up">Наши проекты</h1>
+        <p class="text-xl text-white/90 max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.1s">
+            Более 500 реализованных проектов за 20 лет успешной работы
+        </p>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="py-12 bg-white">
+    <div class="container mx-auto px-6 max-w-7xl">
+        <!-- Filters -->
+        <div class="flex flex-wrap gap-3 justify-center mb-12 scroll-animate">
+            <button onclick="filterProjects('all')" class="filter-btn px-6 py-3 rounded-lg transition-all duration-300 font-medium bg-gold text-white shadow-lg hover:scale-105" data-filter="all">
+                Все проекты
+            </button>
+            <button onclick="filterProjects('residential')" class="filter-btn px-6 py-3 rounded-lg transition-all duration-300 font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-105" data-filter="residential">
+                Жилые комплексы
+            </button>
+            <button onclick="filterProjects('commercial')" class="filter-btn px-6 py-3 rounded-lg transition-all duration-300 font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-105" data-filter="commercial">
+                Торговые центры
+            </button>
+            <button onclick="filterProjects('sports')" class="filter-btn px-6 py-3 rounded-lg transition-all duration-300 font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-105" data-filter="sports">
+                Спортивные объекты
+            </button>
+            <button onclick="filterProjects('medical')" class="filter-btn px-6 py-3 rounded-lg transition-all duration-300 font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-105" data-filter="medical">
+                Медицинские учреждения
+            </button>
+        </div>
+
+        <!-- Projects Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16" id="projectsGrid">
+            <!-- МФК АРСИБ ТАУЭР -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" data-type="commercial" data-image="{% static 'images/Арсиб Тауэр.jpeg' %}" data-title="МФК АРСИБ ТАУЭР" data-description="Многофункциональный комплекс с современными системами безопасности" data-location="г. Тюмень" data-category="Многофункциональный комплекс">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/Арсиб Тауэр.jpeg' %}" alt="МФК АРСИБ ТАУЭР" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Многофункциональный комплекс
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">МФК АРСИБ ТАУЭР</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Тюмень</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Многофункциональный комплекс с современными системами безопасности</p>
+                </div>
+            </div>
+
+            <!-- МФК Магеллан -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" style="animation-delay: 0.1s" data-type="commercial" data-image="{% static 'images/Магеллан.jpg' %}" data-title="МФК Магеллан" data-description="Современный бизнес-центр с комплексом систем безопасности" data-location="г. Тюмень" data-category="Многофункциональный комплекс">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/Магеллан.jpg' %}" alt="МФК Магеллан" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Многофункциональный комплекс
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">МФК Магеллан</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Тюмень</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Современный бизнес-центр с комплексом систем безопасности</p>
+                </div>
+            </div>
+
+            <!-- ТРЦ Колумб -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" style="animation-delay: 0.2s" data-type="commercial" data-image="{% static 'images/Колумб.jpg' %}" data-title="ТРЦ Колумб" data-description="Крупный торгово-развлекательный центр" data-location="г. Тюмень" data-category="Торговый центр">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/Колумб.jpg' %}" alt="ТРЦ Колумб" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Торговый центр
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">ТРЦ Колумб</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Тюмень</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Крупный торгово-развлекательный центр</p>
+                </div>
+            </div>
+
+            <!-- Отель Ремезов -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" data-type="commercial" data-image="{% static 'images/Ремезов.jpg' %}" data-title="Отель Ремезов" data-description="Премиальный отель с системами пожарной безопасности" data-location="г. Тюмень" data-category="Гостиница">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/Ремезов.jpg' %}" alt="Отель Ремезов" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Гостиница
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">Отель Ремезов</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Тюмень</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Премиальный отель с системами пожарной безопасности</p>
+                </div>
+            </div>
+
+            <!-- Стадион Геолог -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" style="animation-delay: 0.1s" data-type="sports" data-image="{% static 'images/Стадион Геолог.jpg' %}" data-title="Стадион Геолог" data-description="Современный спортивный комплекс" data-location="г. Тюмень" data-category="Спортивный объект">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/Стадион Геолог.jpg' %}" alt="Стадион Геолог" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Спортивный объект
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">Стадион Геолог</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Тюмень</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Современный спортивный комплекс</p>
+                </div>
+            </div>
+
+            <!-- ДС Звездный -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" style="animation-delay: 0.2s" data-type="sports" data-image="{% static 'images/ДС Звёздный.jpg' %}" data-title="Дворец спорта Звездный" data-description="Крупный спортивный комплекс" data-location="г. Новый Уренгой" data-category="Спортивный объект">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/ДС Звёздный.jpg' %}" alt="Дворец спорта Звездный" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Спортивный объект
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">Дворец спорта Звездный</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Новый Уренгой</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Крупный спортивный комплекс</p>
+                </div>
+            </div>
+
+            <!-- Радиологический центр -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" data-type="medical" data-image="{% static 'images/Радиологический центр.jpg' %}" data-title="Радиологический центр" data-description="Современный медицинский диагностический центр" data-location="г. Тюмень" data-category="Медицинское учреждение">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/Радиологический центр.jpg' %}" alt="Радиологический центр" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Медицинское учреждение
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">Радиологический центр</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Тюмень</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Современный медицинский диагностический центр</p>
+                </div>
+            </div>
+
+            <!-- МСЧ Нефтяник -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" style="animation-delay: 0.1s" data-type="medical" data-image="{% static 'images/МСЧ Нефтяник.jpg' %}" data-title="МСЧ Нефтяник" data-description="Медико-санитарная часть" data-location="г. Тюмень" data-category="Медицинское учреждение">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/МСЧ Нефтяник.jpg' %}" alt="МСЧ Нефтяник" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Медицинское учреждение
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">МСЧ Нефтяник</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Тюмень</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Медико-санитарная часть</p>
+                </div>
+            </div>
+
+            <!-- СПИД-Центр -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" style="animation-delay: 0.2s" data-type="medical" data-image="{% static 'images/СПИД Центр Ноябрьск.jpg' %}" data-title="СПИД-Центр" data-description="Центр профилактики и борьбы со СПИД" data-location="г. Ноябрьск" data-category="Медицинское учреждение">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/СПИД Центр Ноябрьск.jpg' %}" alt="СПИД-Центр" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Медицинское учреждение
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">СПИД-Центр</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Ноябрьск</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Центр профилактики и борьбы со СПИД</p>
+                </div>
+            </div>
+
+            <!-- ЖК Озерный парк -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" data-type="residential" data-image="{% static 'images/Озерный Парк.jpg' %}" data-title="ЖК Озерный парк" data-description="Современный жилой комплекс комфорт-класса" data-location="г. Тюмень" data-category="Жилой комплекс">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/Озерный Парк.jpg' %}" alt="ЖК Озерный парк" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Жилой комплекс
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">ЖК Озерный парк</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Тюмень</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Современный жилой комплекс комфорт-класса</p>
+                </div>
+            </div>
+
+            <!-- ЖК Салют -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" style="animation-delay: 0.1s" data-type="residential" data-image="{% static 'images/ЖК Салют.jpg' %}" data-title="ЖК Салют" data-description="Многоэтажный жилой комплекс" data-location="г. Тюмень" data-category="Жилой комплекс">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/ЖК Салют.jpg' %}" alt="ЖК Салют" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Жилой комплекс
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">ЖК Салют</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Тюмень</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Многоэтажный жилой комплекс</p>
+                </div>
+            </div>
+
+            <!-- ЖК Первая линия -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" style="animation-delay: 0.2s" data-type="residential" data-image="{% static 'images/ЖК Первая линия.jpg' %}" data-title="ЖК Первая линия" data-description="Жилой комплекс с видом на водоем" data-location="г. Тюмень" data-category="Жилой комплекс">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/ЖК Первая линия.jpg' %}" alt="ЖК Первая линия" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Жилой комплекс
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">ЖК Первая линия</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Тюмень</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Жилой комплекс с видом на водоем</p>
+                </div>
+            </div>
+
+            <!-- ЖК Горизонт -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" data-type="residential" data-image="{% static 'images/ЖК Горизонт.jpeg' %}" data-title="ЖК Горизонт" data-description="Современный жилой комплекс бизнес-класса" data-location="г. Тюмень" data-category="Жилой комплекс">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/ЖК Горизонт.jpeg' %}" alt="ЖК Горизонт" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Жилой комплекс
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">ЖК Горизонт</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Тюмень</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Современный жилой комплекс бизнес-класса</p>
+                </div>
+            </div>
+
+            <!-- ЖК Беринг -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" style="animation-delay: 0.1s" data-type="residential" data-image="{% static 'images/ЭНКО Беринг.jpeg' %}" data-title="ЖК Беринг" data-description="Жилой комплекс от застройщика ЭНКО" data-location="г. Тюмень" data-category="Жилой комплекс">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/ЭНКО Беринг.jpeg' %}" alt="ЖК Беринг" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Жилой комплекс
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">ЖК Беринг</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Тюмень</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Жилой комплекс от застройщика ЭНКО</p>
+                </div>
+            </div>
+
+            <!-- ЖК Айвазовский -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" style="animation-delay: 0.2s" data-type="residential" data-image="{% static 'images/ЖК Айвазовский.jpeg' %}" data-title="ЖК Айвазовский" data-description="Премиальный жилой комплекс" data-location="г. Тюмень" data-category="Жилой комплекс">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/ЖК Айвазовский.jpeg' %}" alt="ЖК Айвазовский" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Жилой комплекс
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">ЖК Айвазовский</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Тюмень</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Премиальный жилой комплекс</p>
+                </div>
+            </div>
+
+            <!-- ЖК Уездные кварталы -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" data-type="residential" data-image="{% static 'images/ЖК Уездные кварталы.jpg' %}" data-title="ЖК Уездные кварталы" data-description="Жилой комплекс в историческом стиле" data-location="г. Тюмень" data-category="Жилой комплекс">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/ЖК Уездные кварталы.jpg' %}" alt="ЖК Уездные кварталы" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Жилой комплекс
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">ЖК Уездные кварталы</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Тюмень</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Жилой комплекс в историческом стиле</p>
+                </div>
+            </div>
+
+            <!-- ЖК Домашний ГП-11 -->
+            <div class="project-item bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 overflow-hidden group scroll-animate project-card cursor-pointer" style="animation-delay: 0.1s" data-type="residential" data-image="{% static 'images/ЖК Домашний ГП-11.jpeg' %}" data-title="ЖК Домашний ГП-11" data-description="Семейный жилой комплекс" data-location="г. Тюмень" data-category="Жилой комплекс">
+                <div class="h-64 relative overflow-hidden">
+                    <img src="{% static 'images/ЖК Домашний ГП-11.jpeg' %}" alt="ЖК Домашний ГП-11" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-gold text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+                            Жилой комплекс
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">ЖК Домашний ГП-11</h3>
+                    <div class="flex items-center gap-2 text-gray-600 mb-4">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                        <span class="text-base">г. Тюмень</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">Семейный жилой комплекс</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="bg-dark-blue text-white rounded-xl p-8 md:p-12 text-center transition-all duration-400 hover:shadow-2xl scroll-animate">
+            <h2 class="text-3xl md:text-4xl mb-6 font-bold">Хотите увидеть свой проект в нашем портфолио?</h2>
+            <p class="text-xl text-white/80 mb-8 max-w-2xl mx-auto leading-relaxed">
+                Свяжитесь с нами, и мы обсудим детали вашего проекта
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'order_kp' %}" class="bg-gold hover:bg-amber-700 text-white px-8 py-4 rounded-lg transition-all duration-300 font-medium shadow-lg hover:scale-105">
+                    Заказать КП
+                </a>
+                <a href="{% url 'contacts' %}" class="border-2 border-white text-white hover:bg-white hover:text-dark-blue px-8 py-4 rounded-lg transition-all duration-300 font-medium hover:scale-105">
+                    Связаться с нами
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal for project details -->
+<div id="projectModal" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center p-4">
+    <div class="relative max-w-4xl max-h-full w-full">
+        <button id="closeModal" class="absolute -top-12 right-0 text-white hover:text-gold transition-colors duration-300 z-10">
+            <i data-lucide="x" class="w-8 h-8"></i>
+        </button>
+        <div class="bg-white rounded-2xl overflow-hidden">
+            <img id="modalImage" src="" alt="" class="w-full h-80 object-cover">
+            <div class="p-8">
+                <div class="flex items-center gap-4 mb-4">
+                    <h3 id="modalTitle" class="text-2xl text-dark-blue font-semibold"></h3>
+                    <span id="modalCategory" class="bg-gold text-white px-3 py-1 rounded-lg text-sm font-medium"></span>
+                </div>
+                <div class="flex items-center gap-2 text-gray-600 mb-6">
+                    <i data-lucide="map-pin" class="w-5 h-5 text-gold"></i>
+                    <span id="modalLocation" class="text-lg"></span>
+                </div>
+                <p id="modalDescription" class="text-gray-700 leading-relaxed text-lg mb-6"></p>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Инициализация иконок
+    lucide.createIcons();
+
+    function filterProjects(type) {
+        const projects = document.querySelectorAll('.project-item');
+        const buttons = document.querySelectorAll('.filter-btn');
+        
+        // Update active button
+        buttons.forEach(btn => {
+            if (btn.dataset.filter === type) {
+                btn.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+                btn.classList.add('bg-gold', 'text-white', 'shadow-lg');
+            } else {
+                btn.classList.remove('bg-gold', 'text-white', 'shadow-lg');
+                btn.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+            }
+        });
+        
+        // Filter projects with animation
+        projects.forEach((project, index) => {
+            setTimeout(() => {
+                if (type === 'all' || project.dataset.type === type) {
+                    project.style.display = 'block';
+                    project.style.opacity = '0';
+                    project.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        project.style.transition = 'all 0.5s ease';
+                        project.style.opacity = '1';
+                        project.style.transform = 'translateY(0)';
+                    }, 50);
+                } else {
+                    project.style.transition = 'all 0.3s ease';
+                    project.style.opacity = '0';
+                    project.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        project.style.display = 'none';
+                    }, 300);
+                }
+            }, index * 50);
+        });
+    }
+
+    // Project modal functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const projectCards = document.querySelectorAll('.project-card');
+        const modal = document.getElementById('projectModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDescription = document.getElementById('modalDescription');
+        const modalLocation = document.getElementById('modalLocation');
+        const modalCategory = document.getElementById('modalCategory');
+        const closeModal = document.getElementById('closeModal');
+        
+        // Open modal on project click
+        projectCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const imageSrc = this.getAttribute('data-image');
+                const title = this.getAttribute('data-title');
+                const description = this.getAttribute('data-description');
+                const location = this.getAttribute('data-location');
+                const category = this.getAttribute('data-category');
+                
+                modalImage.src = imageSrc;
+                modalImage.alt = title;
+                modalTitle.textContent = title;
+                modalDescription.textContent = description;
+                modalLocation.textContent = location;
+                modalCategory.textContent = category;
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.style.opacity = '1';
+                }, 10);
+                document.body.style.overflow = 'hidden';
+            });
+        });
+        
+        // Close modal
+        function closeProjectModal() {
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+        
+        closeModal.addEventListener('click', closeProjectModal);
+        
+        // Close on background click
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeProjectModal();
+            }
+        });
+        
+        // Close on ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                closeProjectModal();
+            }
+        });
+    });
+</script>
+
+<style>
+    #projectModal {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    #projectModal:not(.hidden) {
+        opacity: 1;
+    }
+</style>
+{% endblock %}
