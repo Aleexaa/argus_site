@@ -149,33 +149,13 @@ def projects(request):
     return render(request, 'main/partners.html', context)
 '''
 def partners(request):
-    try:
-        # Пробуем получить данные из базы
-        partners_list = list(Partner.objects.all())
-        if not partners_list:
-            # Если в базе нет данных, используем статические
-            partners_list = [
-                {'name': 'ТехноПрофи', 'description': 'Официальный партнер'},
-                {'name': 'СтройГарант', 'description': 'Надежный поставщик'},
-                {'name': 'ЭнергоСервис', 'description': 'Технологический партнер'},
-                {'name': 'Безопасность+', 'description': 'Эксперты в области СОУЭ'},
-                {'name': 'МонтажСтрой', 'description': 'Партнер по монтажу'},
-                {'name': 'ПроектГрупп', 'description': 'Проектные решения'},
-                {'name': 'Огнезащита', 'description': 'Специалисты по огнезащите'},
-                {'name': 'ТехКонтроль', 'description': 'Технический надзор'},
-            ]
-    except Exception as e:
-        # Если ошибка базы данных, используем статические данные
-        partners_list = [
-            {'name': 'ТехноПрофи', 'description': 'Официальный партнер'},
-            {'name': 'СтройГарант', 'description': 'Надежный поставщик'},
-            {'name': 'ЭнергоСервис', 'description': 'Технологический партнер'},
-            {'name': 'Безопасность+', 'description': 'Эксперты в области СОУЭ'},
-            {'name': 'МонтажСтрой', 'description': 'Партнер по монтажу'},
-            {'name': 'ПроектГрупп', 'description': 'Проектные решения'},
-            {'name': 'Огнезащита', 'description': 'Специалисты по огнезащите'},
-            {'name': 'ТехКонтроль', 'description': 'Технический надзор'},
-        ]
+    # Максимально простая версия без базы данных
+    partners_list = [
+        {'name': 'ТехноПрофи', 'description': 'Официальный партнер'},
+        {'name': 'СтройГарант', 'description': 'Надежный поставщик'},
+        {'name': 'ЭнергоСервис', 'description': 'Технологический партнер'},
+        {'name': 'Безопасность+', 'description': 'Эксперты в области СОУЭ'},
+    ]
     
     context = {
         'partners': partners_list
