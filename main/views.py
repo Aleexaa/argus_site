@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Service, Project, Partner
 from .forms import RequestForm
+from django.http import HttpResponse
 
 def home(request):
     services = Service.objects.all()[:8]
@@ -148,32 +149,12 @@ def projects(request):
     }
     return render(request, 'main/partners.html', context)
 '''
-def partners_debug(request):
-    try:
-        # Тест 1: Проверяем импорт модели
-        from .models import Partner
-        print("✓ Модель Partner импортирована")
-        
-        # Тест 2: Проверяем доступ к базе
-        count = Partner.objects.count()
-        print(f"✓ В базе {count} партнеров")
-        
-        # Тест 3: Пробуем получить данные
-        partners_list = list(Partner.objects.all())
-        print("✓ Данные получены из базы")
-        
-    except Exception as e:
-        print(f"✗ Ошибка: {e}")
-        partners_list = [
-            {'name': 'ТехноПрофи', 'description': 'Официальный партнер'},
-            {'name': 'СтройГарант', 'description': 'Надежный поставщик'},
-        ]
-    
-    context = {'partners': partners_list}
-    return render(request, 'main/partners.html', context)
+def partners(request):
+    # Максимально простая версия без БД и сложной логики
+    return HttpResponse("Партнеры - базовая страница работает!")
 def contacts(request):
     if request.method == 'POST':
-        # Обработка формы обратной связи
+        # Обработка формы оSбратной связи
         name = request.POST.get('name')
         contact = request.POST.get('contact')
         message = request.POST.get('message')
