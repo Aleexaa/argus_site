@@ -15,6 +15,9 @@ def home(request):
     }
     return render(request, 'main/home.html', context)
 
+def partners_new(request):
+    return HttpResponse("НОВАЯ версия партнеров работает!")
+
 def about(request):
     stats = [
         {'value': '20+', 'label': 'лет на рынке', 'icon': 'award'},
