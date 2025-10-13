@@ -151,20 +151,30 @@ def projects(request):
 def partners(request):
     try:
         # Пробуем получить данные из базы
-        partners_list = Partner.objects.all()
-        if not partners_list.exists():
+        partners_list = list(Partner.objects.all())
+        if not partners_list:
             # Если в базе нет данных, используем статические
             partners_list = [
-                {'name': 'Компания 1', 'description': 'Официальный партнер'},
-                {'name': 'Компания 2', 'description': 'Надежный поставщик'},
-                {'name': 'Компания 3', 'description': 'Технологический партнер'},
+                {'name': 'ТехноПрофи', 'description': 'Официальный партнер'},
+                {'name': 'СтройГарант', 'description': 'Надежный поставщик'},
+                {'name': 'ЭнергоСервис', 'description': 'Технологический партнер'},
+                {'name': 'Безопасность+', 'description': 'Эксперты в области СОУЭ'},
+                {'name': 'МонтажСтрой', 'description': 'Партнер по монтажу'},
+                {'name': 'ПроектГрупп', 'description': 'Проектные решения'},
+                {'name': 'Огнезащита', 'description': 'Специалисты по огнезащите'},
+                {'name': 'ТехКонтроль', 'description': 'Технический надзор'},
             ]
     except Exception as e:
         # Если ошибка базы данных, используем статические данные
         partners_list = [
-            {'name': 'Компания 1', 'description': 'Официальный партнер'},
-            {'name': 'Компания 2', 'description': 'Надежный поставщик'}, 
-            {'name': 'Компания 3', 'description': 'Технологический партнер'},
+            {'name': 'ТехноПрофи', 'description': 'Официальный партнер'},
+            {'name': 'СтройГарант', 'description': 'Надежный поставщик'},
+            {'name': 'ЭнергоСервис', 'description': 'Технологический партнер'},
+            {'name': 'Безопасность+', 'description': 'Эксперты в области СОУЭ'},
+            {'name': 'МонтажСтрой', 'description': 'Партнер по монтажу'},
+            {'name': 'ПроектГрупп', 'description': 'Проектные решения'},
+            {'name': 'Огнезащита', 'description': 'Специалисты по огнезащите'},
+            {'name': 'ТехКонтроль', 'description': 'Технический надзор'},
         ]
     
     context = {
