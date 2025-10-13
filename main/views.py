@@ -175,9 +175,7 @@ def projects(request):
     }
     return render(request, 'main/partners.html', context)
 '''
-def partners(request):
-    # Максимально простая версия без БД и сложной логики
-    return HttpResponse("Партнеры - базовая страница работает!")
+
 def contacts(request):
     if request.method == 'POST':
         # Обработка формы оSбратной связи
