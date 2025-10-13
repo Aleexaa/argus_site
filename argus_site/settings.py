@@ -1,20 +1,29 @@
 """
-Django settings for argus_site project.
+Настройки Django для проекта argus_site.
 """
 
 import os
 from pathlib import Path
- # для работы с переменными окружения
+import dj_database_url
+from django.core.management.utils import get_random_secret_key
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Пути внутри проекта: BASE_DIR / 'папка'
 BASE_DIR = Path(__file__).resolve().parent.parent
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-94*2sp%f6f(z_b)a+-ru43ueqpx@da%%*(nq&6@d4iv9e7_v5d')
+
+# ВАЖНО ДЛЯ БЕЗОПАСНОСТИ: храните секретный ключ в секрете в продакшене!
+SECRET_KEY = os.environ.get('SECRET_KEY', get_random_secret_key())
+
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
+# Разрешенные хосты
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.pythonanywhere.com', '.onrender.com']
 
-# Application definition
+# Добавляем домен Render.com когда он будет известен
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+# Установленные приложения
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -28,8 +37,10 @@ INSTALLED_APPS = [
     'crm',
 ]
 
+# Промежуточное ПО
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Добавлено для статических файлов
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -40,10 +51,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'argus_site.urls'
 
+# Шаблоны
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # ваша папка templates
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -58,15 +70,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'argus_site.wsgi.application'
 
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# База данных
+if os.environ.get('DATABASE_URL'):
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600
+        )
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
-# Password validation
+# Валидация паролей
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -82,25 +102,37 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-LANGUAGE_CODE = 'ru-ru'  # или 'en-us'
-TIME_ZONE = 'Europe/Moscow'  # или ваша временная зона
+# Интернационализация
+LANGUAGE_CODE = 'ru-ru'
+TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# Статические файлы
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']  # для разработки
-STATIC_ROOT = BASE_DIR / 'staticfiles'    # для продакшена
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Media files (загрузки пользователей)
+# Поддержка WhiteNoise для статических файлов
+if not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Медиа файлы
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Default primary key field type
+# Тип поля первичного ключа по умолчанию
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Login/Logout URLs
+# URL для входа/выхода
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+# Настройки безопасности для продакшена
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True

@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
+# Скрипт сборки для Render.com
+
 set -o errexit
 
-# Обновляем pip
-pip install --upgrade pip
-
-# Устанавливаем зависимости
+# Установка зависимостей
 pip install -r requirements.txt
 
-# Собираем статические файлы
-python manage.py collectstatic --noinput --clear
-
-# Применяем миграции
+# Применение миграций базы данных
 python manage.py migrate
+
+# Сборка статических файлов
+python manage.py collectstatic --noinput
