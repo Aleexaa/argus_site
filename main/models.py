@@ -37,14 +37,6 @@ class Project(models.Model):
     def __str__(self):
         return self.title
 
-class Partner(models.Model):
-    name = models.CharField(max_length=255, verbose_name="Название компании")
-    logo = models.ImageField(upload_to='partners/', verbose_name="Логотип", blank=True, null=True)
-    website = models.URLField(blank=True, verbose_name="Сайт")
-    description = models.TextField(blank=True, verbose_name="Описание")
-
-    def __str__(self):
-        return self.name
 
 class Client(models.Model):
     company_name = models.CharField(max_length=255, verbose_name="Название компании")

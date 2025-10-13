@@ -1,7 +1,7 @@
 # main/views.py
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Service, Project, Partner
+from .models import Service, Project
 from .forms import RequestForm
 from django.http import HttpResponse
 
@@ -16,7 +16,30 @@ def home(request):
     return render(request, 'main/home.html', context)
 
 def partners(request):
-    return HttpResponse("ПАРТНЕРЫ ЧИСТАЯ ВЕРСИЯ")
+    # Статические данные для партнеров (временное решение)
+    partners_list = [
+        {
+            'name': 'ТехноПрофи',
+            'description': 'Официальный партнер'
+        },
+        {
+            'name': 'СтройГарант', 
+            'description': 'Надежный поставщик'
+        },
+        {
+            'name': 'ЭнергоСервис',
+            'description': 'Технологический партнер'
+        },
+        {
+            'name': 'Безопасность+',
+            'description': 'Эксперты в СОУЭ'
+        },
+    ]
+    
+    context = {
+        'partners': partners_list
+    }
+    return render(request, 'main/partners.html', context)
 
 def about(request):
     stats = [
