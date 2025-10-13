@@ -141,14 +141,36 @@ def projects(request):
         'object_types': object_types
     }
     return render(request, 'main/projects.html', context)
-
-def partners(request):
+'''def partners(request):
     partners_list = Partner.objects.all()
     context = {
         'partners': partners_list
     }
     return render(request, 'main/partners.html', context)
-
+'''
+def partners(request):
+    try:
+        # Пробуем получить данные из базы
+        partners_list = Partner.objects.all()
+        if not partners_list.exists():
+            # Если в базе нет данных, используем статические
+            partners_list = [
+                {'name': 'Компания 1', 'description': 'Официальный партнер'},
+                {'name': 'Компания 2', 'description': 'Надежный поставщик'},
+                {'name': 'Компания 3', 'description': 'Технологический партнер'},
+            ]
+    except Exception as e:
+        # Если ошибка базы данных, используем статические данные
+        partners_list = [
+            {'name': 'Компания 1', 'description': 'Официальный партнер'},
+            {'name': 'Компания 2', 'description': 'Надежный поставщик'}, 
+            {'name': 'Компания 3', 'description': 'Технологический партнер'},
+        ]
+    
+    context = {
+        'partners': partners_list
+    }
+    return render(request, 'main/partners.html', context)
 def contacts(request):
     if request.method == 'POST':
         # Обработка формы обратной связи
