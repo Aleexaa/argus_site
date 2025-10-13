@@ -15,8 +15,20 @@ def home(request):
     }
     return render(request, 'main/home.html', context)
 
-def partners_new(request):
-    return HttpResponse("НОВАЯ версия партнеров работает!")
+def partners(request):
+    try:
+        print("=== PARTNERS VIEW START ===")
+        
+        # Тест 1: Базовый рендеринг
+        print("✓ Базовый рендеринг тест")
+        return HttpResponse("ПАРТНЕРЫ БАЗОВЫЙ ТЕСТ")
+        
+    except Exception as e:
+        print(f"✗ Ошибка в partners: {e}")
+        print(f"✗ Тип ошибки: {type(e)}")
+        import traceback
+        print(f"✗ Traceback: {traceback.format_exc()}")
+        return HttpResponse(f"Ошибка: {str(e)}")
 
 def about(request):
     stats = [
