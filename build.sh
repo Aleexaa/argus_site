@@ -1,13 +1,16 @@
-#!/usr/bin/env bash
-# Скрипт сборки для Render.com
+#!/bin/bash
+set -e
 
-set -o errexit
-
-# Установка зависимостей
+echo "=== Установка зависимостей ==="
 pip install -r requirements.txt
 
-# Применение миграций базы данных
-python manage.py migrate
+echo "=== Создание миграций ==="
+python manage.py makemigrations --noinput
 
-# Сборка статических файлов
+echo "=== Применение миграций ==="
+python manage.py migrate --noinput
+
+echo "=== Сборка статических файлов ==="
 python manage.py collectstatic --noinput
+
+echo "=== Сборка завершена ==="
