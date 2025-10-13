@@ -148,18 +148,28 @@ def projects(request):
     }
     return render(request, 'main/partners.html', context)
 '''
-def partners(request):
-    # Максимально простая версия без базы данных
-    partners_list = [
-        {'name': 'ТехноПрофи', 'description': 'Официальный партнер'},
-        {'name': 'СтройГарант', 'description': 'Надежный поставщик'},
-        {'name': 'ЭнергоСервис', 'description': 'Технологический партнер'},
-        {'name': 'Безопасность+', 'description': 'Эксперты в области СОУЭ'},
-    ]
+def partners_debug(request):
+    try:
+        # Тест 1: Проверяем импорт модели
+        from .models import Partner
+        print("✓ Модель Partner импортирована")
+        
+        # Тест 2: Проверяем доступ к базе
+        count = Partner.objects.count()
+        print(f"✓ В базе {count} партнеров")
+        
+        # Тест 3: Пробуем получить данные
+        partners_list = list(Partner.objects.all())
+        print("✓ Данные получены из базы")
+        
+    except Exception as e:
+        print(f"✗ Ошибка: {e}")
+        partners_list = [
+            {'name': 'ТехноПрофи', 'description': 'Официальный партнер'},
+            {'name': 'СтройГарант', 'description': 'Надежный поставщик'},
+        ]
     
-    context = {
-        'partners': partners_list
-    }
+    context = {'partners': partners_list}
     return render(request, 'main/partners.html', context)
 def contacts(request):
     if request.method == 'POST':
