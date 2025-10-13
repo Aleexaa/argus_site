@@ -8,11 +8,11 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-94*2sp%f6f(z_b)a+-ru43ueqpx@da%%*(nq&6@d4iv9e7_v5d')
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.pythonanywhere.com']
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.pythonanywhere.com', '.onrender.com']
 
 # Application definition
 INSTALLED_APPS = [
@@ -103,3 +103,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Login/Logout URLs
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
