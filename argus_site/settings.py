@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
-import dj_database_url
+
 
 # === БАЗОВАЯ КОНФИГУРАЦИЯ ===
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -74,12 +74,16 @@ WSGI_APPLICATION = 'argus_site.wsgi.application'
 #     }
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('postgresql://postgres:zCYJKRFJtVDCRMskGOitxEobjaBMGqFd@postgres.railway.internal:5432/railway'),
-        conn_max_age=600,
-        ssl_require=True
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('railway'),
+        'USER': os.getenv('postgres'), 
+        'PASSWORD': os.getenv('zCYJKRFJtVDCRMskGOitxEobjaBMGqFd'),
+        'HOST': os.getenv('postgres.railway.internal'),
+        'PORT': os.getenv('5432'),
+    }
 }
+
 # === ВАЛИДАЦИЯ ПАРОЛЕЙ ===
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
