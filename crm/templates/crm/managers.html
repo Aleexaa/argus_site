@@ -1,0 +1,27 @@
+{% extends 'crm/base_crm.html' %}
+{% block title %}Менеджеры - CRM Аргус{% endblock %}
+{% block content %}
+<h2 class="text-2xl font-bold text-dark-blue mb-6">Менеджеры</h2>
+
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for m in managers %}
+    <div class="bg-white shadow-soft rounded-xl p-6 hover:shadow-md transition">
+        <h3 class="text-lg font-semibold text-dark-blue mb-2">{{ m.user.get_full_name|default:m.user.username }}</h3>
+        <p class="text-sm text-gray-600 mb-1"><strong>Email:</strong> {{ m.corporate_email }}</p>
+        <p class="text-sm text-gray-600 mb-3"><strong>Роль:</strong> 
+            {% if m.role == 'owner' %}
+                <span class="text-gold font-medium">Владелец</span>
+            {% else %}
+                Менеджер
+            {% endif %}
+        </p>
+        <a href="{% url 'crm_manager_detail' m.id %}" 
+           class="inline-block btn-gold px-4 py-2 rounded-lg text-sm font-medium">
+           Открыть профиль
+        </a>
+    </div>
+    {% empty %}
+    <p class="text-gray-500">Менеджеров пока нет.</p>
+    {% endfor %}
+</div>
+{% endblock %}

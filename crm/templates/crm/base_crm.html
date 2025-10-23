@@ -1,0 +1,609 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CRM Аргус{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f8fa;
+        }
+        .bg-dark-blue { background-color: #0D1B2A; }
+        .text-gold { color: #C9A96A; }
+        .hover-gold:hover { color: #C9A96A; }
+
+        .btn-gold {
+            background-color: #C9A96A;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover {
+            background-color: #b9925b;
+            transform: translateY(-1px);
+        }
+
+        .btn-logout {
+            background-color: #b9925b;
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .btn-logout:hover {
+            background-color: #b91c1c;
+            transform: translateY(-1px);
+        }
+
+        .shadow-soft {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .nav-link {
+            color: #d1d5db;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        .nav-link:hover { color: #ffffff; }
+        .nav-active {
+            color: #C9A96A !important;
+            font-weight: 600;
+        }
+
+        /* Анимации для уведомлений */
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+            }
+        }
+
+        .notification-pulse {
+            animation: pulseGlow 2s infinite;
+        }
+
+        .badge-pulse {
+            animation: pulseGlow 1.5s infinite;
+        }
+
+        /* Анимация появления новой заявки */
+        .new-request-appear {
+            animation: slideInDown 0.5s ease-out;
+        }
+
+        /* Подсветка новых заявок */
+        .new-request-highlight {
+            border-left: 4px solid #10b981 !important;
+            background: linear-gradient(90deg, #f0fdf4 0%, #ffffff 30%) !important;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15) !important;
+        }
+
+        .pulse-animation {
+            animation: pulseGlow 2s ease-in-out 3;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+    <!-- 🔹 Глобальное уведомление о новых заявках -->
+    <div id="global-requests-alert" class="hidden fixed top-20 right-4 z-50 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg border-l-4 border-green-600 cursor-pointer max-w-sm">
+        <div class="flex items-center gap-3">
+            <span class="text-lg">🔔</span>
+            <div class="flex-1">
+                <div class="font-semibold" id="global-alert-text">Новые заявки!</div>
+                <div class="text-xs opacity-90">Нажмите для просмотра</div>
+            </div>
+            <button onclick="hideGlobalAlert()" class="ml-2 text-white hover:text-gray-200 text-lg">
+                ✕
+            </button>
+        </div>
+    </div>
+
+    <!-- 🔹 Верхнее меню -->
+    <header class="bg-dark-blue shadow-md text-white sticky top-0 z-40">
+        <div class="container mx-auto flex justify-between items-center px-6 py-4">
+            <div class="flex items-center gap-6">
+                <h1 class="text-xl md:text-2xl font-bold tracking-wide">
+                    CRM <span class="text-gold">Аргус</span>
+                </h1>
+
+                <!-- Навигация -->
+                <nav class="flex flex-wrap gap-6 text-sm md:text-base items-center">
+                    <a href="{% url 'crm_dashboard' %}" 
+                       class="nav-link {% if request.path == '/crm/' %}nav-active{% endif %}">
+                       Все заявки
+                    </a>
+                    <a href="{% url 'crm_my_requests' %}" 
+                       class="nav-link {% if '/crm/my-requests' in request.path %}nav-active{% endif %}">
+                       Мои заявки
+                    </a>
+                    <a href="{% url 'crm_clients' %}" 
+                       class="nav-link {% if '/crm/clients' in request.path %}nav-active{% endif %}">
+                       Все клиенты
+                    </a>
+                    <a href="{% url 'crm_projects' %}" 
+                       class="nav-link {% if '/crm/projects' in request.path %}nav-active{% endif %}">
+                       Проекты
+                    </a>
+
+                    {% if request.user.managerprofile.role == 'owner' %}
+                    <a href="{% url 'crm_managers' %}" 
+                       class="nav-link {% if '/crm/managers' in request.path %}nav-active{% endif %}">
+                       Менеджеры
+                    </a>
+                    {% endif %}
+
+                    <a href="{% url 'crm_profile' %}" 
+                       class="nav-link {% if '/crm/profile' in request.path %}nav-active{% endif %}">
+                       Профиль
+                    </a>
+                </nav>
+            </div>
+
+            <!-- 🔹 Кнопки справа -->
+            <div class="flex items-center gap-3">
+                <!-- Индикатор новых заявок -->
+                <div id="header-notification" class="hidden items-center gap-2 px-3 py-1 bg-red-500 text-white rounded-full text-sm font-medium notification-pulse mr-2">
+                    <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                    <span id="header-notification-count">0</span>
+                    <span>новых</span>
+                </div>
+
+                <!-- Имя пользователя -->
+                <span class="text-sm text-gray-300">
+                    {{ request.user.get_full_name|default:request.user.username }}
+                </span>
+
+                {% if request.user.managerprofile.role == 'manager' %}
+                <a href="{% url 'crm_add_project' %}" class="btn-gold px-4 py-2 rounded-lg text-sm font-medium">
+                    + Добавить проект
+                </a>
+                {% endif %}
+                
+                <a href="{% url 'logout' %}" class="btn-logout flex items-center gap-1 text-sm">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Выйти
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 🔹 Контент -->
+    <main class="flex-1 container mx-auto px-6 py-8">
+        <!-- Сообщения -->
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- 🔹 Глобальный скрипт для уведомлений и добавления заявок -->
+    <script>
+        class GlobalNotifications {
+            constructor() {
+                this.alertElement = document.getElementById('global-requests-alert');
+                this.alertText = document.getElementById('global-alert-text');
+                this.headerIndicator = document.getElementById('header-notification');
+                this.headerCount = document.getElementById('header-notification-count');
+                
+                this.isChecking = false;
+                this.checkInterval = 10000; // 10 секунд
+                this.lastCount = 0;
+                this.displayedRequests = new Set(); // Заявки, которые уже показаны
+                
+                this.init();
+            }
+
+            init() {
+                console.log('🚀 Инициализация расширенной системы уведомлений...');
+                
+                // Запускаем проверку сразу
+                setTimeout(() => this.checkForNewRequests(), 2000);
+                
+                // Затем по интервалу
+                setInterval(() => this.checkForNewRequests(), this.checkInterval);
+
+                // Проверяем при возвращении на вкладку
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) {
+                        console.log('👀 Вкладка активна, проверяем новые заявки...');
+                        this.checkForNewRequests();
+                    }
+                });
+
+                // Обработчик клика на уведомление - ПЕРЕХОДИМ НА СТРАНИЦУ
+                if (this.alertElement) {
+                    this.alertElement.addEventListener('click', () => {
+                        window.location.href = "{% url 'crm_dashboard' %}";
+                    });
+                }
+
+                console.log('✅ Расширенная система уведомлений инициализирована');
+            }
+
+            async checkForNewRequests() {
+                if (this.isChecking) {
+                    return;
+                }
+                
+                this.isChecking = true;
+                try {
+                    console.log('🔍 Запрос новых заявок с данными...');
+                    
+                    const response = await fetch('{% url "crm_check_new_requests" %}', {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        cache: 'no-store'
+                    });
+
+                    console.log('📨 Ответ получен, статус:', response.status);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('📊 Данные о заявках:', data);
+                        
+                        if (data.status === 'success') {
+                            this.handleNewRequests(data);
+                        } else {
+                            console.error('❌ Ошибка от сервера:', data.error);
+                        }
+                    } else {
+                        console.error('❌ Ошибка HTTP:', response.status);
+                    }
+                } catch (error) {
+                    console.error('❌ Ошибка проверки новых заявок:', error);
+                } finally {
+                    this.isChecking = false;
+                }
+            }
+
+            handleNewRequests(data) {
+                const currentCount = data.unviewed_requests_count || 0;
+                const newRequests = data.new_requests || [];
+                
+                console.log(`📈 Статистика: Непросмотренных заявок - ${currentCount}`);
+                console.log(`📊 Всего заявок: ${data.all_requests_count || 0}`);
+                console.log(`👀 Просмотренных: ${data.viewed_requests_count || 0}`);
+                console.log(`🆕 Новых заявок получено: ${newRequests.length}`);
+                
+                // 🔹 ЕСЛИ КОЛИЧЕСТВО 0 - СБРАСЫВАЕМ УВЕДОМЛЕНИЯ
+                if (currentCount === 0) {
+                    this.resetNotifications();
+                    return;
+                }
+                
+                // Обновляем индикатор
+                this.updateHeaderIndicator(currentCount);
+                
+                // Показываем уведомление и добавляем заявки если количество УВЕЛИЧИЛОСЬ
+                if (currentCount > this.lastCount && newRequests.length > 0) {
+                    const newCount = currentCount - this.lastCount;
+                    console.log(`🎯 Показываем уведомление и добавляем ${newCount} новых заявок`);
+                    
+                    // Показываем всплывающее уведомление
+                    this.showAlert(newCount);
+                    
+                    // Добавляем заявки на страницу
+                    this.addNewRequestsToPage(newRequests);
+                }
+                
+                // Сохраняем текущее значение
+                this.lastCount = currentCount;
+            }
+
+            resetNotifications() {
+                console.log('🔄 Сброс состояния уведомлений');
+                
+                this.lastCount = 0;
+                this.updateHeaderIndicator(0);
+                this.hideAlert();
+                
+                // Очищаем отображенные заявки
+                this.displayedRequests.clear();
+            }
+
+            addNewRequestsToPage(newRequests) {
+                if (!newRequests.length) {
+                    console.log('❌ Нет заявок для добавления');
+                    return;
+                }
+                
+                console.log('📝 Добавляем новые заявки на страницу:', newRequests.length);
+                console.log('📋 ID новых заявок:', newRequests.map(req => req.id));
+                
+                // Фильтруем заявки, которые еще не были показаны
+                const requestsToShow = newRequests.filter(req => !this.displayedRequests.has(req.id));
+                
+                console.log('👀 Заявки для показа:', requestsToShow.length);
+                console.log('📊 Уже отображенные заявки:', Array.from(this.displayedRequests));
+                
+                if (requestsToShow.length === 0) {
+                    console.log('ℹ️ Все новые заявки уже отображены');
+                    return;
+                }
+                
+                const requestsList = document.getElementById('requests-list');
+                if (!requestsList) {
+                    console.log('❌ Контейнер requests-list не найден на странице');
+                    return;
+                }
+                
+                console.log('✅ Контейнер найден, добавляем заявки...');
+                
+                requestsToShow.forEach(requestData => {
+                    // Создаем HTML для новой заявки
+                    const requestHtml = this.createRequestHTML(requestData);
+                    
+                    // Если есть контейнер "нет заявок" - удаляем его
+                    const emptyState = requestsList.querySelector('.bg-white.rounded-xl');
+                    if (emptyState && emptyState.textContent.includes('Нет заявок')) {
+                        console.log('🗑️ Удаляем пустой state');
+                        emptyState.remove();
+                    }
+                    
+                    // Добавляем в начало списка
+                    requestsList.insertAdjacentHTML('afterbegin', requestHtml);
+                    this.displayedRequests.add(requestData.id);
+                    
+                    console.log('✅ Добавлена заявка:', requestData.id);
+                    
+                    // Добавляем анимацию появления
+                    setTimeout(() => {
+                        const newElement = document.querySelector(`[data-request-id="${requestData.id}"]`);
+                        if (newElement) {
+                            newElement.classList.add('new-request-highlight', 'pulse-animation');
+                            console.log('🎨 Добавлена анимация для заявки:', requestData.id);
+                        }
+                    }, 100);
+                });
+                
+                // Обновляем счетчик в dashboard (если он есть)
+                this.updateDashboardCounter(requestsToShow.length);
+                
+                console.log('🎉 Все заявки успешно добавлены');
+            }
+
+            createRequestHTML(requestData) {
+                const fileBadge = requestData.has_file ? 
+                    `<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full ml-2">📎 Файл</span>` : '';
+                
+                const statusBadge = this.getStatusBadge(requestData.status, requestData.status_display);
+                const managerInfo = requestData.responsible_manager ? 
+                    `<p class="text-gray-600 text-sm"><strong>Менеджер:</strong> ${requestData.responsible_manager}</p>` :
+                    `<p class="text-gray-600 text-sm"><strong>Менеджер:</strong> <span class="text-orange-500">Не назначен</span></p>`;
+                
+                const description = requestData.description ? 
+                    `<div class="bg-gray-50 rounded-lg p-3 mb-3">
+                        <p class="text-sm text-gray-700 italic">📝 ${this.truncateText(requestData.description, 200)}</p>
+                    </div>` : '';
+                
+                return `
+                <div class="request-item bg-white rounded-xl shadow-sm p-6 border-l-4 border-gold hover:shadow-md transition-all duration-300 relative new-request-appear"
+                     data-request-id="${requestData.id}" data-status="${requestData.status}">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="font-semibold text-lg text-gray-800">${requestData.company_name}</h3>
+                                <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full animate-pulse">
+                                    НОВАЯ
+                                </span>
+                                ${fileBadge}
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                                <div>
+                                    <p class="text-gray-600 text-sm"><strong>Тип объекта:</strong> ${requestData.object_type}</p>
+                                    ${requestData.area !== 'Не указана' ? `<p class="text-gray-600 text-sm"><strong>Площадь:</strong> ${requestData.area} м²</p>` : ''}
+                                </div>
+                                <div>
+                                    ${managerInfo}
+                                    <p class="text-gray-600 text-sm"><strong>Контакт:</strong> ${requestData.client_contact}</p>
+                                </div>
+                            </div>
+                            
+                            ${description}
+
+                            <p class="text-sm text-gray-600 mb-2">📍 <strong>Адрес:</strong> ${requestData.object_address}</p>
+                            
+                            ${requestData.has_file ? `
+                            <div class="mt-4">
+                                <a href="/crm/request/${requestData.id}/download/" 
+                                   class="download-btn inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shadow-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    Скачать файл
+                                </a>
+                            </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="flex flex-col items-end gap-3 ml-4">
+                            ${statusBadge}
+                            
+                            <a href="/crm/request/${requestData.id}/" 
+                               class="view-request-btn bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                                <span>Подробнее</span>
+                                <span>→</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center text-xs text-gray-500">
+                        <div class="flex items-center gap-4">
+                            <span>📅 Создано: ${requestData.created_at}</span>
+                        </div>
+                        
+                        {% if is_owner %}
+                        <span class="text-orange-500 font-medium">🆕 Новая заявка!</span>
+                        {% endif %}
+                    </div>
+                </div>
+                `;
+            }
+
+            getStatusBadge(status, display) {
+                const statusClasses = {
+                    'new': 'bg-blue-100 text-blue-800 border border-blue-200',
+                    'in_progress': 'bg-yellow-100 text-yellow-800 border border-yellow-200',
+                    'kp_ready': 'bg-purple-100 text-purple-800 border border-purple-200',
+                    'closed': 'bg-green-100 text-green-800 border border-green-200'
+                };
+                
+                const className = statusClasses[status] || 'bg-gray-100 text-gray-800 border border-gray-200';
+                
+                return `<span class="text-sm px-3 py-1 rounded-full font-medium ${className}">${display}</span>`;
+            }
+
+            truncateText(text, length) {
+                return text.length > length ? text.substring(0, length) + '...' : text;
+            }
+
+            updateDashboardCounter(newCount) {
+                // Обновляем счетчик в dashboard если он есть
+                const newAlert = document.getElementById('new-alert');
+                const newCountElement = document.getElementById('new-count');
+                
+                if (newAlert && newCountElement) {
+                    const currentCount = parseInt(newCountElement.textContent) || 0;
+                    newCountElement.textContent = currentCount + newCount;
+                    newAlert.classList.remove('hidden');
+                }
+            }
+
+            updateHeaderIndicator(count) {
+                if (!this.headerIndicator) return;
+                
+                if (count > 0) {
+                    this.headerCount.textContent = count;
+                    this.headerIndicator.classList.remove('hidden');
+                    console.log('🔴 Показываем индикатор в хедере:', count);
+                } else {
+                    this.headerIndicator.classList.add('hidden');
+                    console.log('🟢 Скрываем индикатор в хедере');
+                }
+            }
+
+            showAlert(count) {
+                if (!this.alertElement || count <= 0) return;
+                
+                const text = this.getAlertText(count);
+                this.alertText.textContent = text;
+                
+                // Показываем уведомление
+                this.alertElement.classList.remove('hidden');
+                this.alertElement.style.animation = 'slideInRight 0.5s ease-out';
+                
+                console.log('🔔 Показываем всплывающее уведомление:', text);
+                
+                // Автоматически скрываем через 8 секунд
+                setTimeout(() => {
+                    this.hideAlert();
+                }, 8000);
+            }
+
+            hideAlert() {
+                if (this.alertElement && !this.alertElement.classList.contains('hidden')) {
+                    this.alertElement.style.animation = 'slideOutRight 0.5s ease-in';
+                    setTimeout(() => {
+                        this.alertElement.classList.add('hidden');
+                        this.alertElement.style.animation = '';
+                    }, 500);
+                }
+            }
+
+            getAlertText(count) {
+                if (count === 1) return '1 новая заявка!';
+                if (count >= 2 && count <= 4) return `${count} новые заявки!`;
+                return `${count} новых заявок!`;
+            }
+        }
+
+        // Глобальные функции
+        function hideGlobalAlert() {
+            const alert = document.getElementById('global-requests-alert');
+            if (alert) {
+                alert.style.animation = 'slideOutRight 0.5s ease-in';
+                setTimeout(() => {
+                    alert.classList.add('hidden');
+                    alert.style.animation = '';
+                }, 500);
+            }
+        }
+
+        function resetAllNotifications() {
+            console.log('🔕 Глобальный сброс всех уведомлений');
+            
+            // Сбрасываем глобальные уведомления
+            if (window.globalNotifications) {
+                window.globalNotifications.resetNotifications();
+            }
+            
+            // Скрываем глобальный алерт
+            hideGlobalAlert();
+        }
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 DOM загружен, запускаем систему уведомлений...');
+            window.globalNotifications = new GlobalNotifications();
+        });
+    </script>
+
+    <!-- 🔹 БЛОК ДЛЯ СКРИПТОВ -->
+    {% block scripts %}
+    {% endblock %}
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

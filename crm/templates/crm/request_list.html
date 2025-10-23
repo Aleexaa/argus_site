@@ -1,0 +1,176 @@
+{% extends 'crm/base_crm.html' %}
+{% load static %}
+
+{% block title %}Заявки | CRM Аргус{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h2 class="text-2xl font-semibold text-dark flex items-center gap-3">
+    📋 Список заявок
+    <span id="loading-spinner" class="hidden text-sm text-blue-500">
+      <svg class="animate-spin h-5 w-5 mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      Обновление...
+    </span>
+  </h2>
+  <span id="new-alert"
+        class="hidden text-sm bg-green-500/20 text-green-600 px-3 py-2 rounded-lg border border-green-500/30 shadow-sm">
+    🔔 <span id="new-count">0</span> новых заявок!
+  </span>
+</div>
+
+<!-- Фильтры по статусу -->
+<div class="mb-6 flex gap-2 flex-wrap">
+  <a href="{% url 'crm_requests' %}" class="px-3 py-1 text-sm rounded-full {% if not status_filter %}bg-gold text-white{% else %}bg-gray-200 text-gray-700{% endif %}">
+    Все
+  </a>
+  <a href="?status=new" class="px-3 py-1 text-sm rounded-full {% if status_filter == 'new' %}bg-blue-500 text-white{% else %}bg-gray-200 text-gray-700{% endif %}">
+    Новые
+  </a>
+  <a href="?status=in_progress" class="px-3 py-1 text-sm rounded-full {% if status_filter == 'in_progress' %}bg-yellow-500 text-white{% else %}bg-gray-200 text-gray-700{% endif %}">
+    В работе
+  </a>
+  <a href="?status=completed" class="px-3 py-1 text-sm rounded-full {% if status_filter == 'completed' %}bg-green-500 text-white{% else %}bg-gray-200 text-gray-700{% endif %}">
+    Завершены
+  </a>
+  <a href="?status=cancelled" class="px-3 py-1 text-sm rounded-full {% if status_filter == 'cancelled' %}bg-red-500 text-white{% else %}bg-gray-200 text-gray-700{% endif %}">
+    Отменены
+  </a>
+</div>
+
+<!-- Контейнер для списка заявок -->
+<div id="requests-list" class="space-y-4">
+  {% include 'crm/partials/requests_list.html' %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const container = document.getElementById("requests-list");
+  const alertBox = document.getElementById("new-alert");
+  const newCount = document.getElementById("new-count");
+  const loadingSpinner = document.getElementById("loading-spinner");
+  
+  // Сохраняем текущие ID заявок при загрузке
+  let lastIds = getCurrentRequestIds();
+  let isUpdating = false;
+
+  function getCurrentRequestIds() {
+    const elements = container.querySelectorAll("[data-request-id]");
+    return Array.from(elements).map(el => parseInt(el.dataset.requestId));
+  }
+
+  async function loadRequests() {
+    if (isUpdating) return;
+    
+    isUpdating = true;
+    loadingSpinner.classList.remove("hidden");
+    
+    try {
+      // Сохраняем текущие параметры URL (фильтры)
+      const currentUrl = window.location.href;
+      
+      const response = await fetch(currentUrl, { 
+        headers: { 
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        cache: 'no-cache'
+      });
+      
+      if (!response.ok) throw new Error('Ошибка сети: ' + response.status);
+      
+      const html = await response.text();
+      
+      // Создаем временный элемент для парсинга HTML
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+      
+      // Получаем новые элементы заявок
+      const newElements = tempDiv.querySelectorAll("[data-request-id]");
+      const newIds = Array.from(newElements).map(el => parseInt(el.dataset.requestId));
+      
+      console.log('Старые ID:', lastIds);
+      console.log('Новые ID:', newIds);
+      
+      // Проверяем, есть ли новые заявки
+      const newOnes = newIds.filter(id => !lastIds.includes(id));
+      
+      // Если есть новые заявки, показываем уведомление
+      if (newOnes.length > 0) {
+        console.log('Найдены новые заявки:', newOnes);
+        showNotification(newOnes.length);
+      }
+      
+      // Обновляем содержимое контейнера
+      container.innerHTML = html;
+      
+      // Обновляем список ID
+      lastIds = newIds;
+      
+    } catch (error) {
+      console.error("Ошибка автообновления заявок:", error);
+    } finally {
+      isUpdating = false;
+      loadingSpinner.classList.add("hidden");
+    }
+  }
+
+  function showNotification(count) {
+    // Обновляем текст уведомления
+    newCount.textContent = count;
+    
+    // Показываем уведомление с анимацией
+    alertBox.classList.remove("hidden");
+    alertBox.style.animation = 'fadeIn 0.5s ease-out';
+    
+    // Скрываем через 5 секунд
+    setTimeout(() => {
+      alertBox.style.opacity = '0';
+      alertBox.style.transition = 'opacity 0.5s ease';
+      
+      setTimeout(() => {
+        alertBox.classList.add("hidden");
+        alertBox.style.opacity = '1';
+        alertBox.style.transition = '';
+        alertBox.style.animation = '';
+      }, 500);
+    }, 5000);
+  }
+
+  // Запускаем автообновление каждые 8 секунд
+  setInterval(loadRequests, 8000);
+  
+  // Также обновляем при возвращении на вкладку
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+      loadRequests();
+    }
+  });
+});
+</script>
+
+<style>
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(-10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Стили для плавных переходов */
+#requests-list > div {
+  transition: all 0.3s ease;
+}
+</style>
+{% endblock %}

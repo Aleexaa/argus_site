@@ -1,0 +1,668 @@
+{% extends 'crm/base_crm.html' %}
+{% load static %}
+
+{% block title %}Заявки | CRM Аргус{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h2 class="text-2xl font-semibold text-dark flex items-center gap-3">
+    📋 Список заявок
+    <span id="loading-spinner" class="hidden text-sm text-blue-500">
+      <svg class="animate-spin h-5 w-5 mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      Загрузка...
+    </span>
+  </h2>
+  <div class="flex items-center gap-4">
+    <span id="new-alert"
+          class="hidden text-sm bg-green-500/20 text-green-600 px-3 py-2 rounded-lg border border-green-500/30 shadow-sm">
+      🔔 <span id="new-count">0</span> непросмотренных заявок!
+    </span>
+    <button onclick="markAllAsViewed()" 
+            class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+      <i data-lucide="eye" class="w-4 h-4"></i>
+      Отметить все как просмотренные
+    </button>
+  </div>
+</div>
+
+<!-- Фильтры по статусу -->
+<div class="mb-6 flex gap-2 flex-wrap">
+    <a href="{% url 'crm_dashboard' %}" class="px-4 py-2 text-sm rounded-lg {% if not status_filter %}bg-gold text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %} transition-colors">
+        Все заявки
+    </a>
+    <a href="?status=new" class="px-4 py-2 text-sm rounded-lg {% if status_filter == 'new' %}bg-blue-500 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %} transition-colors">
+        Новые
+    </a>
+    <a href="?status=in_progress" class="px-4 py-2 text-sm rounded-lg {% if status_filter == 'in_progress' %}bg-yellow-500 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %} transition-colors">
+        В работе
+    </a>
+    <a href="?status=kp_ready" class="px-4 py-2 text-sm rounded-lg {% if status_filter == 'kp_ready' %}bg-purple-500 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %} transition-colors">
+        КП готово
+    </a>
+    <a href="?status=closed" class="px-4 py-2 text-sm rounded-lg {% if status_filter == 'closed' %}bg-green-500 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %} transition-colors">
+        Завершены
+    </a>
+</div>
+
+<!-- Контейнер для списка заявок -->
+<div id="requests-list" class="space-y-4">
+    {% for req in requests %}
+    <div class="request-item bg-white rounded-xl shadow-sm p-6 border-l-4 border-gold hover:shadow-md transition-all duration-300 relative"
+         data-request-id="{{ req.id }}" data-status="{{ req.status }}">
+        <div class="flex justify-between items-start">
+            <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                    <h3 class="font-semibold text-lg text-gray-800">{{ req.client.company_name }}</h3>
+                    {% if req.status == 'new' %}
+                    <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full animate-pulse">
+                        НОВАЯ
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                    <div>
+                        <p class="text-gray-600 text-sm"><strong>Тип объекта:</strong> {{ req.get_object_type_display_ru }}</p>
+                        {% if req.area %}
+                        <p class="text-gray-600 text-sm"><strong>Площадь:</strong> {{ req.area }} м²</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% if req.responsible_manager %}
+                        <p class="text-gray-600 text-sm"><strong>Менеджер:</strong> {{ req.responsible_manager.user.get_full_name|default:req.responsible_manager.user.username }}</p>
+                        {% else %}
+                        <p class="text-gray-600 text-sm"><strong>Менеджер:</strong> <span class="text-orange-500">Не назначен</span></p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if req.description %}
+                <div class="bg-gray-50 rounded-lg p-3 mb-3">
+                    <p class="text-sm text-gray-700 italic">📝 {{ req.description|truncatechars:200 }}</p>
+                </div>
+                {% endif %}
+
+                {% if req.object_address %}
+                <p class="text-sm text-gray-600 mb-2">📍 <strong>Адрес:</strong> {{ req.object_address }}</p>
+                {% endif %}
+
+                {% if req.attached_file %}
+                <div class="mt-4">
+                    <a href="{% url 'crm_download_file' req.id %}" 
+                       class="download-btn inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Скачать файл
+                        <span class="text-xs bg-green-700 px-2 py-1 rounded">
+                            {{ req.attached_file.size|filesizeformat }}
+                        </span>
+                    </a>
+                    <p class="text-xs text-gray-500 mt-1">
+                        {{ req.attached_file.name|cut:"requests/"|cut:"kp_files/" }}
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="flex flex-col items-end gap-3 ml-4">
+                <span class="text-sm px-3 py-1 rounded-full font-medium 
+                    {% if req.status == 'new' %}bg-blue-100 text-blue-800 border border-blue-200
+                    {% elif req.status == 'in_progress' %}bg-yellow-100 text-yellow-800 border border-yellow-200
+                    {% elif req.status == 'kp_ready' %}bg-purple-100 text-purple-800 border border-purple-200
+                    {% elif req.status == 'closed' %}bg-green-100 text-green-800 border border-green-200
+                    {% else %}bg-gray-100 text-gray-800 border border-gray-200{% endif %}">
+                    {{ req.get_status_display }}
+                </span>
+                
+                <a href="{% url 'crm_request_detail' req.id %}" 
+                   class="view-request-btn bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                    <span>Подробнее</span>
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center text-xs text-gray-500">
+            <div class="flex items-center gap-4">
+                <span>📅 Создано: {{ req.created_at|date:"d.m.Y H:i" }}</span>
+                {% if req.updated_at != req.created_at %}
+                <span>🔄 Обновлено: {{ req.updated_at|date:"d.m.Y H:i" }}</span>
+                {% endif %}
+            </div>
+            
+            {% if is_owner and not req.responsible_manager %}
+            <span class="text-orange-500 font-medium">⚠️ Требуется назначение менеджера</span>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="bg-white rounded-xl shadow-sm p-12 text-center">
+        <div class="text-6xl mb-4">📭</div>
+        <p class="text-gray-500 text-xl font-medium mb-2">Нет заявок для отображения</p>
+        <p class="text-gray-400">Новые заявки появятся здесь автоматически</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Система управления непросмотренными заявками
+class RequestManager {
+    constructor() {
+        this.container = document.getElementById("requests-list");
+        this.alertBox = document.getElementById("new-alert");
+        this.newCount = document.getElementById("new-count");
+        this.loadingSpinner = document.getElementById("loading-spinner");
+        
+        // Загружаем просмотренные заявки из localStorage
+        this.viewedRequests = new Set(this.getViewedRequestsFromStorage());
+        this.lastRequestIds = this.getCurrentRequestIds();
+        this.isUpdating = false;
+        this.notifiedRequests = new Set(); // Заявки, по которым уже было уведомление
+        
+        console.log('🔄 Инициализация менеджера заявок');
+        console.log('👀 Просмотренные заявки:', Array.from(this.viewedRequests));
+        console.log('📋 Текущие заявки:', this.lastRequestIds);
+        
+        this.init();
+    }
+
+    init() {
+        // Подсвечиваем непросмотренные заявки
+        this.highlightUnviewedRequests();
+        
+        // Устанавливаем обработчики кликов
+        this.setupClickHandlers();
+        
+        // Запускаем автообновление
+        this.startAutoRefresh();
+        
+        // Обновляем счетчик
+        this.updateUnviewedCount();
+    }
+
+    // 🔹 ХРАНЕНИЕ ДАННЫХ
+    getViewedRequestsFromStorage() {
+        try {
+            const stored = localStorage.getItem('crm_viewed_requests');
+            return stored ? JSON.parse(stored) : [];
+        } catch (e) {
+            console.error('❌ Ошибка чтения localStorage:', e);
+            return [];
+        }
+    }
+
+    saveViewedRequestsToStorage() {
+        try {
+            localStorage.setItem('crm_viewed_requests', JSON.stringify(Array.from(this.viewedRequests)));
+        } catch (e) {
+            console.error('❌ Ошибка сохранения в localStorage:', e);
+        }
+    }
+
+    getCurrentRequestIds() {
+        const elements = this.container.querySelectorAll("[data-request-id]");
+        return Array.from(elements).map(el => parseInt(el.dataset.requestId));
+    }
+
+    // 🔹 ОТМЕТКА ЗАЯВОК
+    markRequestAsViewed(requestId) {
+        const id = parseInt(requestId);
+        if (!this.viewedRequests.has(id)) {
+            this.viewedRequests.add(id);
+            this.saveViewedRequestsToStorage();
+            console.log('✅ Заявка отмечена как просмотренная:', id);
+            
+            // Убираем подсветку
+            this.removeHighlightFromRequest(id);
+            
+            // Обновляем счетчик
+            this.updateUnviewedCount();
+        }
+    }
+
+    async markAllRequestsAsViewed() {
+        try {
+            console.log('🔄 Отмечаем все заявки как просмотренные...');
+            
+            const response = await fetch('/crm/mark-all-viewed/', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': this.getCSRFToken(),
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                console.log('✅ Все заявки отмечены как просмотренные на сервере');
+                
+                // Обновляем локальное состояние
+                const allIds = this.getCurrentRequestIds();
+                allIds.forEach(id => {
+                    if (!this.viewedRequests.has(id)) {
+                        this.viewedRequests.add(id);
+                        this.removeHighlightFromRequest(id);
+                    }
+                });
+                
+                this.saveViewedRequestsToStorage();
+                this.updateUnviewedCount();
+                
+                // 🔹 УБИРАЕМ УВЕДОМЛЕНИЯ
+                this.hideAllNotifications();
+                
+                this.showTemporaryMessage(data.message, 'success');
+            } else {
+                throw new Error(data.error);
+            }
+            
+        } catch (error) {
+            console.error('❌ Ошибка отметки всех заявок:', error);
+            this.showTemporaryMessage('Ошибка при отметке заявок', 'error');
+        }
+    }
+
+    hideAllNotifications() {
+        console.log('🔕 Скрываем все уведомления');
+        
+        // Скрываем индикатор в хедере
+        if (this.headerIndicator) {
+            this.headerIndicator.classList.add('hidden');
+        }
+        
+        // Скрываем алерт на странице
+        if (this.alertBox) {
+            this.alertBox.classList.add('hidden');
+        }
+        
+        // 🔹 СБРАСЫВАЕМ СОСТОЯНИЕ В ГЛОБАЛЬНОЙ СИСТЕМЕ УВЕДОМЛЕНИЙ
+        if (window.globalNotifications) {
+            window.globalNotifications.resetNotifications();
+        }
+        
+        // Очищаем множество уведомленных заявок
+        this.notifiedRequests.clear();
+    }
+
+    // 🔹 ПОДСВЕТКА
+    highlightUnviewedRequests() {
+        const allElements = this.container.querySelectorAll('[data-request-id]');
+        let unviewedCount = 0;
+        
+        allElements.forEach(element => {
+            const requestId = parseInt(element.dataset.requestId);
+            
+            if (!this.viewedRequests.has(requestId)) {
+                // Добавляем подсветку
+                element.classList.add('new-request-highlight');
+                unviewedCount++;
+                
+                // Добавляем бейдж
+                if (!element.querySelector('.new-badge')) {
+                    const badge = document.createElement('span');
+                    badge.className = 'new-badge absolute -top-2 -right-2 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-medium';
+                    badge.textContent = 'НОВАЯ';
+                    element.style.position = 'relative';
+                    element.appendChild(badge);
+                }
+            } else {
+                // Убираем подсветку с просмотренных
+                this.removeHighlightFromRequest(requestId);
+            }
+        });
+        
+        console.log('🌟 Подсвечено заявок:', unviewedCount);
+    }
+
+    removeHighlightFromRequest(requestId) {
+        const element = this.container.querySelector(`[data-request-id="${requestId}"]`);
+        if (element) {
+            element.classList.remove('new-request-highlight');
+            const badge = element.querySelector('.new-badge');
+            if (badge) badge.remove();
+        }
+    }
+
+    removeAllHighlights() {
+        const elements = this.container.querySelectorAll('.new-request-highlight');
+        elements.forEach(element => {
+            element.classList.remove('new-request-highlight');
+        });
+        
+        const badges = this.container.querySelectorAll('.new-badge');
+        badges.forEach(badge => badge.remove());
+    }
+
+    // 🔹 СЧЕТЧИКИ И УВЕДОМЛЕНИЯ
+    updateUnviewedCount() {
+        const unviewedCount = this.getUnviewedCount();
+        console.log('📊 Непросмотренных заявок:', unviewedCount);
+        
+        if (unviewedCount > 0) {
+            this.newCount.textContent = unviewedCount;
+            this.alertBox.classList.remove('hidden');
+        } else {
+            this.alertBox.classList.add('hidden');
+        }
+        
+        return unviewedCount;
+    }
+
+    getUnviewedCount() {
+        const allIds = this.getCurrentRequestIds();
+        return allIds.filter(id => !this.viewedRequests.has(id)).length;
+    }
+
+    // 🔹 УВЕДОМЛЕНИЯ О НОВЫХ ЗАЯВКАХ
+    checkForNewRequests(newIds) {
+        const newRequests = newIds.filter(id => !this.lastRequestIds.includes(id));
+        const unviewedNewRequests = newRequests.filter(id => !this.viewedRequests.has(id));
+        
+        console.log('🆕 Новые заявки:', newRequests);
+        console.log('👀 Непросмотренные новые:', unviewedNewRequests);
+        
+        // Фильтруем заявки, по которым еще не было уведомления
+        const newUnnotifiedRequests = unviewedNewRequests.filter(id => !this.notifiedRequests.has(id));
+        
+        if (newUnnotifiedRequests.length > 0) {
+            console.log('🔔 Показываем уведомление для', newUnnotifiedRequests.length, 'новых заявок');
+            this.showNotification(newUnnotifiedRequests.length);
+            
+            // Добавляем в список уведомленных
+            newUnnotifiedRequests.forEach(id => this.notifiedRequests.add(id));
+            
+            // Подсвечиваем новые заявки
+            newUnnotifiedRequests.forEach(id => {
+                const element = this.container.querySelector(`[data-request-id="${id}"]`);
+                if (element) {
+                    element.classList.add('new-request-highlight', 'pulse-animation');
+                    
+                    if (!element.querySelector('.new-badge')) {
+                        const badge = document.createElement('span');
+                        badge.className = 'new-badge absolute -top-2 -right-2 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-medium';
+                        badge.textContent = 'НОВАЯ';
+                        element.style.position = 'relative';
+                        element.appendChild(badge);
+                    }
+                }
+            });
+        }
+        
+        return unviewedNewRequests;
+    }
+
+    // 🔹 ОБРАБОТЧИКИ КЛИКОВ
+    setupClickHandlers() {
+        // Используем делегирование событий для работы с динамическими элементами
+        document.addEventListener('click', (e) => {
+            // Клик на кнопку "Подробнее"
+            if (e.target.closest('.view-request-btn')) {
+                const requestItem = e.target.closest('.request-item');
+                if (requestItem) {
+                    const requestId = requestItem.dataset.requestId;
+                    console.log('👆 Клик на заявку:', requestId);
+                    this.markRequestAsViewed(requestId);
+                    this.markRequestAsViewedOnServer(requestId);
+                }
+            }
+            
+            // Клик на саму заявку
+            if (e.target.closest('.request-item') && !e.target.closest('a') && !e.target.closest('button')) {
+                const requestItem = e.target.closest('.request-item');
+                if (requestItem) {
+                    const requestId = requestItem.dataset.requestId;
+                    console.log('👆 Клик на карточку заявки:', requestId);
+                    this.markRequestAsViewed(requestId);
+                    this.markRequestAsViewedOnServer(requestId);
+                }
+            }
+        });
+    }
+
+    async markRequestAsViewedOnServer(requestId) {
+        try {
+            const response = await fetch(`/crm/request/${requestId}/mark-viewed/`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': this.getCSRFToken(),
+                }
+            });
+            
+            const data = await response.json();
+            if (data.status === 'success') {
+                console.log('✅ Заявка отмечена как просмотренная на сервере:', requestId);
+            }
+        } catch (error) {
+            console.error('❌ Ошибка отметки заявки как просмотренной:', error);
+        }
+    }
+
+    getCSRFToken() {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+        return csrfToken ? csrfToken.value : '';
+    }
+
+    // 🔹 АВТООБНОВЛЕНИЕ
+    async loadRequests() {
+        if (this.isUpdating) return;
+        
+        this.isUpdating = true;
+        this.loadingSpinner.classList.remove("hidden");
+        
+        try {
+            console.log('🔄 Проверка обновлений...');
+            const currentUrl = window.location.href;
+            
+            const response = await fetch(currentUrl, { 
+                headers: { 
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+                cache: 'no-cache'
+            });
+            
+            if (!response.ok) throw new Error('HTTP error: ' + response.status);
+            
+            const html = await response.text();
+            
+            if (!html.trim()) {
+                console.log('📭 Пустой ответ от сервера');
+                return;
+            }
+            
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            
+            const newContainer = tempDiv.querySelector("#requests-list");
+            if (!newContainer) {
+                console.log('❌ Контейнер заявок не найден в ответе');
+                return;
+            }
+            
+            const newElements = newContainer.querySelectorAll("[data-request-id]");
+            const newIds = Array.from(newElements).map(el => parseInt(el.dataset.requestId));
+            
+            console.log('🆕 Новые ID:', newIds);
+            console.log('📋 Старые ID:', this.lastRequestIds);
+            
+            // Проверяем изменения
+            const hasChanges = JSON.stringify(newIds) !== JSON.stringify(this.lastRequestIds);
+            
+            if (hasChanges) {
+                console.log('🔄 Обнаружены изменения!');
+                
+                // Сохраняем текущие ID просмотренных заявок
+                const currentViewed = new Set(this.viewedRequests);
+                
+                // Обновляем контент
+                this.container.innerHTML = newContainer.innerHTML;
+                
+                // Восстанавливаем обработчики
+                this.setupClickHandlers();
+                
+                // Восстанавливаем состояние просмотренных заявок
+                this.viewedRequests = currentViewed;
+                this.saveViewedRequestsToStorage();
+                
+                // Проверяем новые заявки и показываем уведомления
+                this.checkForNewRequests(newIds);
+                
+                // Подсвечиваем непросмотренные заявки
+                this.highlightUnviewedRequests();
+                
+                this.lastRequestIds = newIds;
+                this.updateUnviewedCount();
+            } else {
+                console.log('✅ Изменений нет');
+            }
+            
+        } catch (error) {
+            console.error('❌ Ошибка автообновления:', error);
+        } finally {
+            this.isUpdating = false;
+            this.loadingSpinner.classList.add("hidden");
+        }
+    }
+
+    startAutoRefresh() {
+        console.log('🔄 Запуск автообновления каждые 15 секунд');
+        
+        // Обновляем сразу при загрузке
+        setTimeout(() => this.loadRequests(), 3000);
+        
+        // Затем каждые 15 секунд
+        setInterval(() => {
+            this.loadRequests();
+        }, 15000);
+        
+        // Обновляем при возвращении на вкладку
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                console.log('👀 Вкладка активна, обновляем...');
+                this.loadRequests();
+            }
+        });
+    }
+
+    showNotification(count) {
+        console.log('🔔 Показываем уведомление:', count);
+        this.newCount.textContent = count;
+        this.alertBox.classList.remove("hidden");
+        
+        // Автоскрытие через 5 секунд
+        setTimeout(() => {
+            this.alertBox.classList.add("hidden");
+        }, 5000);
+        
+        // Также показываем глобальное уведомление (один раз)
+        if (window.globalNotifications && !this.globalNotificationShown) {
+            window.globalNotifications.showAlert(count);
+            this.globalNotificationShown = true;
+            
+            // Сбрасываем флаг через 1 минуту
+            setTimeout(() => {
+                this.globalNotificationShown = false;
+            }, 60000);
+        }
+    }
+
+    showTemporaryMessage(message, type = 'info') {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg ${
+            type === 'success' ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'
+        }`;
+        messageDiv.textContent = message;
+        document.body.appendChild(messageDiv);
+        
+        setTimeout(() => {
+            document.body.removeChild(messageDiv);
+        }, 3000);
+    }
+}
+
+// Глобальные функции
+async function markAllAsViewed() {
+    if (window.requestManager) {
+        await window.requestManager.markAllRequestsAsViewed();
+    } else {
+        console.error('❌ RequestManager не инициализирован');
+    }
+}
+
+// Инициализация при загрузке
+document.addEventListener("DOMContentLoaded", function() {
+    console.log('🚀 Инициализация системы заявок...');
+    window.requestManager = new RequestManager();
+});
+</script>
+
+<style>
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes borderGlow {
+    0%, 100% { border-left-color: #10b981; }
+    50% { border-left-color: #34d399; }
+}
+
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 5px rgba(34, 197, 94, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.8); }
+    100% { box-shadow: 0 0 5px rgba(34, 197, 94, 0.5); }
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Подсветка непросмотренных заявок */
+.new-request-highlight {
+    border-left: 4px solid #10b981 !important;
+    background: linear-gradient(90deg, #f0fdf4 0%, #ffffff 30%) !important;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15) !important;
+    animation: borderGlow 2s ease-in-out infinite;
+}
+
+.pulse-animation {
+    animation: pulseGlow 2s ease-in-out 3;
+}
+
+.new-badge {
+    animation: pulse 1s ease-in-out infinite;
+    z-index: 10;
+}
+
+.request-item {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+#loading-spinner {
+    transition: opacity 0.3s ease;
+}
+
+#new-alert {
+    animation: fadeIn 0.5s ease-out;
+}
+</style>
+{% endblock %}

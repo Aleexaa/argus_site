@@ -1,3 +1,6 @@
+# crm/admin.py
 from django.contrib import admin
 
-# Register your models here.
+admin.site.site_header = "CRM Аргус"
+admin.site.site_title = "CRM Аргус"
+admin.site.index_title = "Панель управления"
