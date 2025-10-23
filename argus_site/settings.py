@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'please-set-DJANGO_SECRET_KEY-in-env')
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = ['alexaaaf.pythonanywhere.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['honest-transformation.up.railway.app', '.railway.app', '127.0.0.1', 'localhost']
 
 # === ПРИЛОЖЕНИЯ ===
 INSTALLED_APPS = [
