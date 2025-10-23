@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'please-set-DJANGO_SECRET_KEY-in-env')
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = [h.strip() for h in os.getenv('DJANGO_ALLOWED_HOSTS','argus.pythonanywhere.com', '127.0.0.1,localhost').split(',')]
+ALLOWED_HOSTS = ['alexaaaf.pythonanywhere.com', '127.0.0.1', 'localhost']
 
 # === ПРИЛОЖЕНИЯ ===
 INSTALLED_APPS = [
