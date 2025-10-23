@@ -61,18 +61,27 @@ TEMPLATES = [
 WSGI_APPLICATION = 'argus_site.wsgi.application'
 
 # === БАЗА ДАННЫХ ===
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('POSTGRES_DB', 'argus_db'),
+#         'USER': os.getenv('POSTGRES_USER', 'argus_user'),
+#         'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'strong_password'),
+#         'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
+#         'PORT': os.getenv('POSTGRES_PORT', '5432'),
+#         'OPTIONS': {'client_encoding': 'UTF8'},
+#     }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'argus_db'),
-        'USER': os.getenv('POSTGRES_USER', 'argus_user'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'strong_password'),
-        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
-        'PORT': os.getenv('POSTGRES_PORT', '5432'),
-        'OPTIONS': {'client_encoding': 'UTF8'},
+        'NAME': os.getenv('railway'),
+        'USER': os.getenv('postgres'),
+        'PASSWORD': os.getenv('zCYJKRFJtVDCRMskGOitxEobjaBMGqFd'),
+        'HOST': os.getenv('postgres.railway.internal'),
+        'PORT': os.getenv('5432'),
     }
-}
-
+    }
 # === ВАЛИДАЦИЯ ПАРОЛЕЙ ===
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
