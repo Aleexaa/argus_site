@@ -76,11 +76,14 @@ WSGI_APPLICATION = 'argus_site.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('railway'),
-        'USER': os.getenv('postgres'), 
-        'PASSWORD': os.getenv('zCYJKRFJtVDCRMskGOitxEobjaBMGqFd'),
+        'NAME': os.getenv('PGDATABASE'),
+        'USER': os.getenv('PGUSER'),
+        'PASSWORD': os.getenv('PGPASSWORD'),
         'HOST': 'postgres.railway.internal',
-        'PORT': os.getenv('5432'),
+        'PORT': os.getenv('PGPORT'),
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     }
 }
 
