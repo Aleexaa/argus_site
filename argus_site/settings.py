@@ -8,7 +8,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'please-set-DJANGO_SECRET_KEY-in-env')
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = ['honest-transformation.up.railway.app', '.railway.app', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = [
+    '127.0.0.1', 
+    'localhost',
+    '192.168.3.5',    # ваш текущий IP
+    '192.168.3.*',    # все устройства в вашей сети
+]
 
 # === ПРИЛОЖЕНИЯ ===
 INSTALLED_APPS = [
@@ -61,31 +66,31 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'argus_site.wsgi.application'
 
-# === БАЗА ДАННЫХ ===
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.getenv('POSTGRES_DB', 'argus_db'),
-#         'USER': os.getenv('POSTGRES_USER', 'argus_user'),
-#         'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'strong_password'),
-#         'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
-#         'PORT': os.getenv('POSTGRES_PORT', '5432'),
-#         'OPTIONS': {'client_encoding': 'UTF8'},
-#     }
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DJANGO_DB_ENGINE', 'django.db.backends.postgresql'),
-        'NAME': os.getenv('DJANGO_DB_NAME'),
-        'USER': os.getenv('DJANGO_DB_USER'),
-        'PASSWORD': os.getenv('DJANGO_DB_PASSWORD'),
-        'HOST': os.getenv('DJANGO_DB_HOST', 'postgres.railway.internal'),
-        'PORT': os.getenv('DJANGO_DB_PORT'),
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'argus_db'),
+        'USER': os.getenv('POSTGRES_USER', 'argus_user'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'strong_password'),
+        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
+        'PORT': os.getenv('POSTGRES_PORT', '5432'),
+        'OPTIONS': {'client_encoding': 'UTF8'},
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': os.getenv('DJANGO_DB_ENGINE', 'django.db.backends.postgresql'),
+#         'NAME': os.getenv('DJANGO_DB_NAME'),
+#         'USER': os.getenv('DJANGO_DB_USER'),
+#         'PASSWORD': os.getenv('DJANGO_DB_PASSWORD'),
+#         'HOST': os.getenv('DJANGO_DB_HOST', 'postgres.railway.internal'),
+#         'PORT': os.getenv('DJANGO_DB_PORT'),
+#         'OPTIONS': {
+#             'sslmode': 'require',
+#         },
+#     }
+# }
 # === ВАЛИДАЦИЯ ПАРОЛЕЙ ===
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
