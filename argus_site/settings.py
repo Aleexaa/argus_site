@@ -75,18 +75,17 @@ WSGI_APPLICATION = 'argus_site.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('PGDATABASE'),
-        'USER': os.getenv('PGUSER'),
-        'PASSWORD': os.getenv('PGPASSWORD'),
-        'HOST': 'postgres.railway.internal',
-        'PORT': os.getenv('PGPORT'),
+        'ENGINE': os.getenv('DJANGO_DB_ENGINE', 'django.db.backends.postgresql'),
+        'NAME': os.getenv('DJANGO_DB_NAME'),
+        'USER': os.getenv('DJANGO_DB_USER'),
+        'PASSWORD': os.getenv('DJANGO_DB_PASSWORD'),
+        'HOST': os.getenv('DJANGO_DB_HOST', 'postgres.railway.internal'),
+        'PORT': os.getenv('DJANGO_DB_PORT'),
         'OPTIONS': {
             'sslmode': 'require',
         },
     }
 }
-
 # === ВАЛИДАЦИЯ ПАРОЛЕЙ ===
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
