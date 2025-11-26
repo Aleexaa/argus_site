@@ -33,16 +33,8 @@ def home(request):
     return render(request, 'main/home.html', context)
 
 def partners(request):
-    try:
-        partners_list = [
-            {'name': 'ТехноПрофи', 'description': 'Официальный партнер'},
-            {'name': 'СтройГарант', 'description': 'Надежный поставщик'},
-            {'name': 'ЭнергоСервис', 'description': 'Технологический партнер'},
-            {'name': 'Безопасность+', 'description': 'Эксперты в СОУЭ'},
-        ]
-        return render(request, 'main/partners.html', {'partners': partners_list})
-    except Exception as e:
-        return HttpResponse(f"Partners page error: {str(e)}")
+    """Страница партнеров"""
+    return render(request, 'main/partners.html')
 
 def about(request):
     stats = [
