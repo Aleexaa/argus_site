@@ -33,8 +33,8 @@ def home(request):
     return render(request, 'main/home.html', context)
 
 def partners(request):
-    """Страница партнеров"""
-    return render(request, 'main/partners.html')
+    """Максимально простая версия для диагностики"""
+    return HttpResponse("TEST: Partners page is working!")
 
 def about(request):
     stats = [
