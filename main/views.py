@@ -92,14 +92,7 @@ def projects(request):
         'object_types': object_types
     })
 
-def contacts(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        contact = request.POST.get('contact')
-        message = request.POST.get('message')
-        messages.success(request, 'Сообщение отправлено! Мы свяжемся с вами в ближайшее время.')
-        return redirect('contacts')
-    return render(request, 'main/contacts.html')
+
 
 def order_kp(request):
     """
