@@ -10,6 +10,7 @@ from crm.models import Vacancy, Candidate
 from .forms import CandidateForm
 from django.utils import timezone
 from django.views.generic import TemplateView
+from django.http import HttpResponse, HttpResponseRedirect
 
 def home(request):
     services = Service.objects.all()[:8]
