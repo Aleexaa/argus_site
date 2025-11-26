@@ -1,0 +1,302 @@
+{% extends "crm/base_crm.html" %}
+{% load static %}
+
+{% block title %}{{ client.company_name }} - Детали клиента{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <!-- Заголовок и кнопки -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">{{ client.company_name }}</h1>
+            <p class="text-gray-600 mt-2">Детальная информация о клиенте</p>
+        </div>
+        <div class="flex gap-3">
+            <a href="{% url 'crm_clients' %}" class="btn-outline px-6 py-3 rounded-lg font-medium flex items-center gap-2">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                Назад к списку
+            </a>
+            {% if is_owner %}
+            <button data-edit-client="{{ client.id }}" 
+                    class="btn-gold px-6 py-3 rounded-lg font-medium flex items-center gap-2">
+                <i data-lucide="edit" class="w-5 h-5"></i>
+                Редактировать
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Основная информация -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-soft p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Контактная информация</h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">Компания</label>
+                        <p class="text-gray-900 font-medium">{{ client.company_name }}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">Контактное лицо</label>
+                        <p class="text-gray-900">{{ client.contact_person|default:"Не указано" }}</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">Телефон</label>
+                        <div class="flex items-center gap-2 text-gray-900">
+                            <i data-lucide="phone" class="w-4 h-4 text-gray-400"></i>
+                            {{ client.phone|default:"Не указан" }}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">Email</label>
+                        <div class="flex items-center gap-2 text-gray-900">
+                            <i data-lucide="mail" class="w-4 h-4 text-gray-400"></i>
+                            {{ client.email|default:"Не указан" }}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">Дата регистрации</label>
+                        <p class="text-gray-900">{{ client.created_at|date:"d.m.Y H:i" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Заявки клиента -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-soft p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800">Заявки клиента</h2>
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                        {{ requests.count }} заявок
+                    </span>
+                </div>
+
+                {% if requests %}
+                <div class="overflow-hidden">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-200">
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">ID</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Тема</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Статус</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Менеджер</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Дата</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            {% for req in requests %}
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="py-3 px-4 text-sm text-gray-900">#{{ req.id }}</td>
+                                <td class="py-3 px-4">
+                                    <div class="font-medium text-gray-900">{{ req.subject }}</div>
+                                </td>
+                                <td class="py-3 px-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                        {% if req.status == 'new' %}bg-blue-100 text-blue-800
+                                        {% elif req.status == 'in_progress' %}bg-yellow-100 text-yellow-800
+                                        {% elif req.status == 'completed' %}bg-green-100 text-green-800
+                                        {% elif req.status == 'cancelled' %}bg-red-100 text-red-800
+                                        {% endif %}">
+                                        {{ req.get_status_display }}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 text-sm text-gray-900">
+                                    {% if req.responsible_manager and req.responsible_manager.user %}
+                                        {{ req.responsible_manager.user.get_full_name|default:req.responsible_manager.user.username }}
+                                    {% else %}
+                                        Не назначен
+                                    {% endif %}
+                                </td>
+                                <td class="py-3 px-4 text-sm text-gray-500">
+                                    {{ req.created_at|date:"d.m.Y" }}
+                                </td>
+                                <td class="py-3 px-4">
+                                    {% if req.id %}
+                                    <a href="{% url 'crm_request_detail' req.id %}" 
+                                       class="btn-outline px-3 py-1 text-sm flex items-center gap-1 hover:bg-gray-50">
+                                        <i data-lucide="eye" class="w-4 h-4"></i>
+                                        Просмотр
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-8">
+                    <i data-lucide="file-text" class="w-12 h-12 text-gray-300 mx-auto mb-3"></i>
+                    <p class="text-gray-500">У этого клиента пока нет заявок</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Функции для редактирования клиента
+    function editClient(clientId) {
+        // Получаем текущие данные клиента из данных на странице
+        const companyName = "{{ client.company_name|escapejs }}";
+        const contactPerson = "{{ client.contact_person|escapejs }}";
+        const phone = "{{ client.phone|escapejs }}";
+        const email = "{{ client.email|escapejs }}";
+        
+        // Создаем форму редактирования
+        const editForm = `
+            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-edit-modal>
+                <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">Редактировать клиента</h3>
+                        <button type="button" data-close-edit class="text-gray-500 hover:text-gray-700">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    
+                    <form id="edit-client-form" data-client-id="${clientId}">
+                        {% csrf_token %}
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Название компании *
+                                </label>
+                                <input type="text" 
+                                       name="company_name" 
+                                       value="${companyName}"
+                                       required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Контактное лицо
+                                </label>
+                                <input type="text" 
+                                       name="contact_person" 
+                                       value="${contactPerson}"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Телефон *
+                                </label>
+                                <input type="tel" 
+                                       name="phone" 
+                                       value="${phone}"
+                                       required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Email
+                                </label>
+                                <input type="email" 
+                                       name="email" 
+                                       value="${email}"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent">
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3 mt-6">
+                            <button type="submit" 
+                                    class="flex-1 bg-gold text-white py-2 rounded-lg font-medium hover:bg-yellow-600 transition-colors">
+                                Сохранить
+                            </button>
+                            <button type="button" 
+                                    data-close-edit
+                                    class="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-400 transition-colors">
+                                Отмена
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', editForm);
+        lucide.createIcons();
+        
+        // Добавляем обработчики событий для модального окна
+        const modal = document.querySelector('[data-edit-modal]');
+        const closeBtn = modal.querySelector('[data-close-edit]');
+        const form = modal.querySelector('#edit-client-form');
+        
+        closeBtn.addEventListener('click', closeEditForm);
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveClientChanges(clientId);
+        });
+        
+        // Закрытие по клику вне модального окна
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeEditForm();
+            }
+        });
+    }
+
+    function closeEditForm() {
+        const form = document.querySelector('[data-edit-modal]');
+        if (form) {
+            form.remove();
+        }
+    }
+
+    function saveClientChanges(clientId) {
+        const form = document.getElementById('edit-client-form');
+        const formData = new FormData(form);
+        
+        fetch(`/crm/clients/${clientId}/update/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Обновляем страницу чтобы показать изменения
+                window.location.reload();
+            } else {
+                alert('Ошибка при обновлении: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ошибка при обновлении клиента');
+        });
+    }
+
+    function showNotification(message, type = 'info') {
+        // Простая реализация уведомления
+        alert(message);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        
+        // Обработчик кнопки редактирования
+        const editBtn = document.querySelector('[data-edit-client]');
+        if (editBtn) {
+            editBtn.addEventListener('click', function() {
+                const clientId = parseInt(this.getAttribute('data-edit-client'));
+                editClient(clientId);
+            });
+        }
+    });
+</script>
+{% endblock %}

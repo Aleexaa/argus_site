@@ -17,10 +17,48 @@
     <div class="grid md:grid-cols-2 gap-6">
         <div>
             <p><span class="font-semibold text-gray-700">Адрес:</span> {{ req.object_address|default:"—" }}</p>
-            <p><span class="font-semibold text-gray-700">Тип объекта:</span> {{ req.object_type }}</p>
-            <p><span class="font-semibold text-gray-700">Дата создания:</span> {{ req.created_at|date:"d.m.Y H:i" }}</p>
-            <p><span class="font-semibold text-gray-700">Клиент:</span> {{ req.client.contact_person|default:"—" }} ({{ req.client.email|default:"—" }})</p>
             
+            <!-- Тип объекта с переводом -->
+            <p><span class="font-semibold text-gray-700">Тип объекта:</span> 
+                {% if req.object_type == 'office' %}
+                    🏢 Офис
+                {% elif req.object_type == 'apartment' %}
+                    🏠 Квартира
+                {% elif req.object_type == 'house' %}
+                    🏡 Частный дом
+                {% elif req.object_type == 'commercial' %}
+                    🏪 Коммерческое помещение
+                {% elif req.object_type == 'industrial' %}
+                    🏭 Промышленный объект
+                {% elif req.object_type == 'other' %}
+                    📍 Другой тип
+                {% else %}
+                    {{ req.object_type|default:"—" }}
+                {% endif %}
+            </p>
+            
+            <p><span class="font-semibold text-gray-700">Дата создания:</span> {{ req.created_at|date:"d.m.Y H:i" }}</p>
+            
+            <!-- Контактное лицо с телефоном -->
+            <p><span class="font-semibold text-gray-700">Клиент:</span> 
+                {{ req.client.contact_person|default:"—" }}
+                {% if req.client.phone %}
+                    • {{ req.client.phone }}
+                {% endif %}
+            </p>
+            
+            <p><span class="font-semibold text-gray-700">Email:</span> {{ req.client.email|default:"—" }}</p>
+            
+            <!-- Площадь, если указана -->
+            {% if req.area %}
+            <p><span class="font-semibold text-gray-700">Площадь:</span> {{ req.area }} м²</p>
+            {% endif %}
+            
+            <!-- Организация, если указана -->
+            {% if req.client.organization %}
+            <p><span class="font-semibold text-gray-700">Организация:</span> {{ req.client.organization }}</p>
+            {% endif %}
+
             <!-- Информация о менеджере -->
             <div class="mt-4">
                 <p class="font-semibold text-gray-700">Ответственный менеджер:</p>

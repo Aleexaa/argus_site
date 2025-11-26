@@ -5,43 +5,43 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="relative py-12 bg-dark-blue">
-    <div class="container mx-auto px-6 text-center text-white">
-        <h1 class="text-4xl md:text-5xl mb-4 font-bold animate-slide-up">Наши услуги</h1>
-        <p class="text-xl text-white/90 max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.1s">
+<section class="relative py-8 md:py-12 bg-dark-blue">
+    <div class="container mx-auto px-4 md:px-6 text-center text-white">
+        <h1 class="text-3xl md:text-5xl mb-4 font-bold animate-slide-up">Наши услуги</h1>
+        <p class="text-lg md:text-xl text-white/90 max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.1s">
             Комплексные решения в области пожарной безопасности и строительства
         </p>
     </div>
 </section>
 
 <!-- Main Content -->
-<section class="py-12 bg-white">
-    <div class="container mx-auto px-6 max-w-6xl">
+<section class="py-8 md:py-12 bg-white">
+    <div class="container mx-auto px-4 md:px-6 max-w-6xl">
         <!-- Section 1: Монтаж, проектирование и обслуживание -->
-        <div class="mb-16">
-            <h2 class="text-3xl md:text-4xl text-dark-blue mb-8 text-center font-bold scroll-animate">
+        <div class="mb-12 md:mb-16">
+            <h2 class="text-2xl md:text-4xl text-dark-blue mb-6 md:mb-8 text-center font-bold scroll-animate">
                 Монтаж, проектирование и обслуживание
             </h2>
-            <div class="space-y-4">
+            <div class="space-y-3 md:space-y-4">
                 {% for service in section1_services %}
-                <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl scroll-animate">
-                    <button class="accordion-btn w-full px-6 py-6 hover:bg-gray-50 transition-all duration-300 text-left flex items-center justify-between group"
+                <div class="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl scroll-animate">
+                    <button class="accordion-btn w-full px-4 md:px-6 py-4 md:py-6 hover:bg-gray-50 transition-all duration-300 text-left flex items-center justify-between group"
                             onclick="toggleAccordion('section1-{{ forloop.counter }}')">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-dark-blue text-gold flex items-center justify-center rounded-lg flex-shrink-0">
-                                <span class="text-lg font-semibold">{{ service.id }}</span>
+                        <div class="flex items-center gap-3 md:gap-4">
+                            <div class="w-10 h-10 md:w-12 md:h-12 bg-dark-blue text-gold flex items-center justify-center rounded-lg md:rounded-lg flex-shrink-0">
+                                <span class="text-base md:text-lg font-semibold">{{ service.id }}</span>
                             </div>
-                            <span class="text-xl text-dark-blue font-semibold">
+                            <span class="text-base md:text-xl text-dark-blue font-semibold pr-2 md:pr-0">
                                 {{ service.title }}
                             </span>
                         </div>
-                        <svg class="w-6 h-6 text-gray-400 transition-transform duration-300 group-[.active]:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 text-gray-400 transition-transform duration-300 group-[.active]:rotate-180 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </button>
-                    <div id="section1-{{ forloop.counter }}" class="accordion-content hidden px-6 pb-6">
-                        <div class="border-t border-gray-200 pt-6">
-                            <p class="text-gray-700 leading-relaxed text-lg">
+                    <div id="section1-{{ forloop.counter }}" class="accordion-content hidden px-4 md:px-6 pb-4 md:pb-6">
+                        <div class="border-t border-gray-200 pt-4 md:pt-6">
+                            <p class="text-gray-700 leading-relaxed text-base md:text-lg text-justify md:text-left">
                                 {{ service.description }}
                             </p>
                         </div>
@@ -52,33 +52,33 @@
         </div>
 
         <!-- Section 2: Проектирование и безопасность -->
-        <div class="mb-16">
-            <h2 class="text-3xl md:text-4xl text-dark-blue mb-8 text-center font-bold scroll-animate">
+        <div class="mb-12 md:mb-16">
+            <h2 class="text-2xl md:text-4xl text-dark-blue mb-6 md:mb-8 text-center font-bold scroll-animate">
                 Проектирование и безопасность
             </h2>
-            <div class="space-y-4">
+            <div class="space-y-3 md:space-y-4">
                 {% for service in section2_services %}
-                <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl scroll-animate">
-                    <button class="accordion-btn w-full px-6 py-6 hover:bg-gray-50 transition-all duration-300 text-left flex items-center justify-between group"
+                <div class="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl scroll-animate">
+                    <button class="accordion-btn w-full px-4 md:px-6 py-4 md:py-6 hover:bg-gray-50 transition-all duration-300 text-left flex items-center justify-between group"
                             onclick="toggleAccordion('section2-{{ forloop.counter }}')">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-dark-blue text-gold flex items-center justify-center rounded-lg flex-shrink-0">
-                                <span class="text-lg font-semibold">{{ service.id }}</span>
+                        <div class="flex items-center gap-3 md:gap-4">
+                            <div class="w-10 h-10 md:w-12 md:h-12 bg-dark-blue text-gold flex items-center justify-center rounded-lg md:rounded-lg flex-shrink-0">
+                                <span class="text-base md:text-lg font-semibold">{{ service.id }}</span>
                             </div>
-                            <span class="text-xl text-dark-blue font-semibold">
+                            <span class="text-base md:text-xl text-dark-blue font-semibold pr-2 md:pr-0">
                                 {{ service.title }}
                             </span>
                         </div>
-                        <svg class="w-6 h-6 text-gray-400 transition-transform duration-300 group-[.active]:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 text-gray-400 transition-transform duration-300 group-[.active]:rotate-180 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </button>
-                    <div id="section2-{{ forloop.counter }}" class="accordion-content hidden px-6 pb-6">
-                        <div class="border-t border-gray-200 pt-6">
-                            <p class="text-gray-700 leading-relaxed text-lg mb-6">
+                    <div id="section2-{{ forloop.counter }}" class="accordion-content hidden px-4 md:px-6 pb-4 md:pb-6">
+                        <div class="border-t border-gray-200 pt-4 md:pt-6">
+                            <p class="text-gray-700 leading-relaxed text-base md:text-lg text-justify md:text-left mb-4 md:mb-6">
                                 {{ service.description }}
                             </p>
-                            <a href="{% url 'order_kp' %}" class="inline-block bg-gold hover:bg-amber-700 text-white px-6 py-3 rounded-lg transition-all duration-300 font-medium shadow-lg hover:scale-105">
+                            <a href="{% url 'order_kp' %}" class="inline-block bg-gold hover:bg-amber-700 text-white px-5 py-2.5 md:px-6 md:py-3 rounded-lg transition-all duration-300 font-medium shadow-lg hover:scale-105 text-sm md:text-base">
                                 Заказать КП
                             </a>
                         </div>
@@ -89,33 +89,45 @@
         </div>
 
         <!-- Section 3: Специальные технические условия -->
-        <div class="mb-16">
-            <h2 class="text-3xl md:text-4xl text-dark-blue mb-8 text-center font-bold scroll-animate">
+        <div class="mb-12 md:mb-16">
+            <h2 class="text-2xl md:text-4xl text-dark-blue mb-6 md:mb-8 text-center font-bold scroll-animate">
                 Специальные технические условия
             </h2>
-            <div class="bg-white rounded-xl shadow-lg border-l-4 border-gold transition-all duration-400 hover:shadow-xl scroll-animate">
-                <div class="p-8">
-                    <div class="flex items-start gap-6">
-                        <div class="w-16 h-16 bg-dark-blue text-gold flex items-center justify-center rounded-xl flex-shrink-0">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
+            <div class="bg-white rounded-xl md:rounded-2xl shadow-lg border-l-4 border-gold transition-all duration-400 hover:shadow-xl scroll-animate">
+                <div class="p-5 md:p-8">
+                    <div class="flex flex-col md:flex-row items-start gap-4 md:gap-6">
+                        <!-- Иконка для мобильных - центрированная -->
+                        <div class="flex justify-center md:justify-start w-full md:w-auto">
+                            <div class="w-14 h-14 md:w-16 md:h-16 bg-dark-blue text-gold flex items-center justify-center rounded-xl flex-shrink-0">
+                                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                            </div>
                         </div>
-                        <div class="flex-1">
-                            <h3 class="text-2xl text-dark-blue mb-4 font-semibold">
+                        
+                        <div class="flex-1 text-center md:text-left">
+                            <h3 class="text-xl md:text-2xl text-dark-blue mb-3 md:mb-4 font-semibold">
                                 Разработка и согласование СТУ
                             </h3>
-                            <p class="text-gray-700 leading-relaxed text-lg mb-6">
-                                Разработка специальных технических условий для объектов,
-                                проектные решения которых не соответствуют требованиям
-                                технических регламентов. Полное сопровождение процесса
-                                согласования в МЧС России. Разработка альтернативных решений по
-                                обеспечению пожарной безопасности объектов. Подготовка
-                                обоснований и расчетов пожарных рисков.
-                            </p>
-                            <a href="{% url 'order_kp' %}" class="inline-block bg-gold hover:bg-amber-700 text-white px-8 py-4 rounded-lg transition-all duration-300 font-medium shadow-lg hover:scale-105">
-                                Заказать КП
-                            </a>
+                            <div class="text-gray-700 leading-relaxed text-base md:text-lg space-y-3 md:space-y-4 mb-4 md:mb-6">
+                                <p class="text-balance md:text-left leading-normal">
+                                    Разработка специальных технических условий для объектов, проектные решения которых не соответствуют требованиям технических регламентов.
+                                </p>
+                                <p class="text-balance md:text-left leading-normal">
+                                    Полное сопровождение процесса согласования в МЧС России. Разработка альтернативных решений по обеспечению пожарной безопасности объектов.
+                                </p>
+                                <p class="text-balance md:text-left leading-normal">
+                                    Подготовка обоснований и расчетов пожарных рисков.
+                                </p>
+                            </div>
+                            <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+                                <a href="{% url 'order_kp' %}" class="bg-gold hover:bg-amber-700 text-white px-6 py-3 md:px-8 md:py-4 rounded-lg transition-all duration-300 font-medium shadow-lg hover:scale-105 text-center text-sm md:text-base">
+                                    Заказать КП
+                                </a>
+                                <a href="{% url 'contacts' %}" class="border border-gold text-gold hover:bg-gold hover:text-white px-6 py-3 md:px-8 md:py-4 rounded-lg transition-all duration-300 font-medium hover:scale-105 text-center text-sm md:text-base">
+                                    Консультация
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -123,18 +135,18 @@
         </div>
 
         <!-- CTA Section -->
-        <div class="bg-dark-blue text-white rounded-xl p-8 md:p-12 text-center transition-all duration-400 hover:shadow-2xl scroll-animate">
-            <h2 class="text-3xl md:text-4xl mb-6 font-bold">
+        <div class="bg-dark-blue text-white rounded-xl md:rounded-2xl p-6 md:p-12 text-center transition-all duration-400 hover:shadow-2xl scroll-animate">
+            <h2 class="text-2xl md:text-4xl mb-4 md:mb-6 font-bold">
                 Нужна индивидуальная консультация?
             </h2>
-            <p class="text-xl text-white/80 mb-8 max-w-2xl mx-auto leading-relaxed">
+            <p class="text-lg md:text-xl text-white/80 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed text-balance">
                 Свяжитесь с нами, и мы подберем оптимальное решение для вашего проекта
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{% url 'order_kp' %}" class="bg-gold hover:bg-amber-700 text-white px-8 py-4 rounded-lg transition-all duration-300 font-medium shadow-lg hover:scale-105">
+            <div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
+                <a href="{% url 'order_kp' %}" class="bg-gold hover:bg-amber-700 text-white px-6 py-3 md:px-8 md:py-4 rounded-lg transition-all duration-300 font-medium shadow-lg hover:scale-105 text-sm md:text-base">
                     Заказать КП
                 </a>
-                <a href="{% url 'contacts' %}" class="border-2 border-white text-white hover:bg-white hover:text-dark-blue px-8 py-4 rounded-lg transition-all duration-300 font-medium hover:scale-105">
+                <a href="{% url 'contacts' %}" class="border-2 border-white text-white hover:bg-white hover:text-dark-blue px-6 py-3 md:px-8 md:py-4 rounded-lg transition-all duration-300 font-medium hover:scale-105 text-sm md:text-base">
                     Связаться с нами
                 </a>
             </div>
@@ -146,7 +158,6 @@
     function toggleAccordion(id) {
         const content = document.getElementById(id);
         const button = content.previousElementSibling;
-        const icon = button.querySelector('svg');
         
         // Toggle content with smooth animation
         if (content.classList.contains('hidden')) {
@@ -165,12 +176,42 @@
         }
     }
 
-    // Initialize accordion heights
+    // Initialize accordion heights and add touch improvements
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.accordion-content').forEach(content => {
             content.style.transition = 'max-height 0.3s ease-in-out';
             content.style.overflow = 'hidden';
         });
+
+        // Улучшение для тач-устройств
+        if ('ontouchstart' in window) {
+            document.querySelectorAll('.accordion-btn').forEach(btn => {
+                btn.addEventListener('touchstart', function(e) {
+                    this.style.backgroundColor = '#f9fafb';
+                });
+                
+                btn.addEventListener('touchend', function() {
+                    setTimeout(() => {
+                        this.style.backgroundColor = '';
+                    }, 150);
+                });
+            });
+        }
+    });
+
+    // Закрытие аккордеонов при клике вне области
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.accordion-btn')) {
+            document.querySelectorAll('.accordion-content').forEach(content => {
+                if (!content.classList.contains('hidden')) {
+                    content.style.maxHeight = '0px';
+                    setTimeout(() => {
+                        content.classList.add('hidden');
+                    }, 300);
+                    content.previousElementSibling.classList.remove('active');
+                }
+            });
+        }
     });
 </script>
 
@@ -178,6 +219,58 @@
     .accordion-content {
         transition: max-height 0.3s ease-in-out;
         overflow: hidden;
+    }
+    
+    /* Улучшенное выравнивание текста */
+    .text-justify {
+        text-align: justify;
+        text-justify: inter-word;
+        word-spacing: -0.05em;
+        letter-spacing: -0.01em;
+    }
+    
+    .text-balance {
+        text-wrap: balance;
+        word-spacing: normal;
+        letter-spacing: normal;
+        line-height: 1.6;
+    }
+    
+    /* Улучшения для мобильных устройств */
+    @media (max-width: 768px) {
+        .accordion-btn {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Плавная прокрутка для iOS */
+        .accordion-content {
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Оптимизация выравнивания для мобильных */
+        .text-justify {
+            text-align: left;
+            text-justify: auto;
+            word-spacing: normal;
+            letter-spacing: normal;
+            hyphens: auto;
+        }
+    }
+    
+    /* Анимация появления для улучшения UX на мобильных */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .scroll-animate {
+        animation: fadeInUp 0.6s ease-out;
     }
 </style>
 {% endblock %}

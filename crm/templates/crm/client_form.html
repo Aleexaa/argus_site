@@ -1,0 +1,121 @@
+{% extends "crm/base_crm.html" %}
+{% load static %}
+
+{% block title %}{{ title }} - CRM Аргус{% endblock %}
+
+{% block content %}
+<div class="mb-8 max-w-2xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">{{ title }}</h1>
+        <a href="{% url 'crm_clients' %}" class="btn-outline px-6 py-3 rounded-lg font-medium flex items-center gap-2">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            Назад к списку
+        </a>
+    </div>
+
+    <!-- Отображение сообщений -->
+    {% if messages %}
+    <div class="mb-6">
+        {% for message in messages %}
+        <div class="p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="bg-white rounded-xl shadow-soft p-6">
+        <form method="POST" id="client-form">
+            {% csrf_token %}
+            
+            <div class="space-y-6">
+                {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ field.label }}
+                        {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <div class="mt-1 text-sm text-red-600">
+                        {% for error in field.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if field.help_text %}
+                    <p class="mt-1 text-sm text-gray-500">{{ field.help_text }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="flex gap-3 mt-8">
+                <button type="submit" class="btn-gold px-6 py-3 rounded-lg font-medium flex items-center gap-2">
+                    <i data-lucide="save" class="w-5 h-5"></i>
+                    Сохранить
+                </button>
+                <a href="{% url 'crm_clients' %}" class="btn-outline px-6 py-3 rounded-lg font-medium">
+                    Отмена
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Информация о требованиях -->
+    <div class="mt-6 bg-blue-50 rounded-lg p-4">
+        <h3 class="font-semibold text-blue-800 mb-2">Требования к данным клиента:</h3>
+        <ul class="text-sm text-blue-700 space-y-1">
+            <li>• Название компании должно быть уникальным</li>
+            <li>• Телефон должен быть уникальным</li>
+            <li>• Email должен быть уникальным (если указан)</li>
+            <li>• Поля с * обязательны для заполнения</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        
+        // Автоматическое форматирование телефона
+        const phoneInput = document.querySelector('input[name="phone"]');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.startsWith('7') || value.startsWith('8')) {
+                    value = value.substring(1);
+                }
+                if (value.length > 0) {
+                    value = '+7 (' + value;
+                    if (value.length > 7) value = value.substring(0, 7) + ') ' + value.substring(7);
+                    if (value.length > 12) value = value.substring(0, 12) + '-' + value.substring(12);
+                    if (value.length > 15) value = value.substring(0, 15) + '-' + value.substring(15);
+                }
+                e.target.value = value;
+            });
+        }
+        
+        // Проверка формы перед отправкой
+        const form = document.getElementById('client-form');
+        form.addEventListener('submit', function(e) {
+            const companyName = document.querySelector('input[name="company_name"]').value.trim();
+            const phone = document.querySelector('input[name="phone"]').value.trim();
+            
+            if (!companyName) {
+                e.preventDefault();
+                alert('Пожалуйста, введите название компании');
+                return;
+            }
+            
+            if (!phone) {
+                e.preventDefault();
+                alert('Пожалуйста, введите телефон');
+                return;
+            }
+        });
+    });
+</script>
+{% endblock %}

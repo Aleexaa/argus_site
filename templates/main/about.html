@@ -4,148 +4,169 @@
 {% block title %}Компания Аргус - О компании{% endblock %}
 
 {% block content %}
+<style>
+    .btn-gold {
+        background: #C9A96A;
+        transition: all 0.4s ease;
+    }
+    .btn-gold:hover {
+        background: #B89A5F;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(201, 169, 106, 0.3);
+    }
+    .border-gold {
+        border-color: #C9A96A;
+    }
+    .text-gold {
+        color: #C9A96A;
+    }
+    .bg-gold {
+        background: #C9A96A;
+    }
+</style>
+
 <!-- Hero Section -->
-<section class="relative h-[350px] flex items-center justify-center overflow-hidden bg-gradient-to-r from-dark-blue to-blue-900">
+<section class="relative h-[380px] flex items-center justify-center overflow-hidden bg-dark-blue">
     <div class="absolute inset-0">
-        <img src="{% static 'images/ЖК Домашний ГП-11.jpeg' %}" alt="Компания Аргус" class="w-full h-full object-cover transition-transform duration-800 hover:scale-105">
-        <div class="absolute inset-0 bg-dark-blue/80 transition-all duration-500"></div>
+        <img src="{% static 'images/ЖК Домашний ГП-11.jpeg' %}" alt="Компания Аргус" class="w-full h-full object-cover opacity-40">
+        <div class="absolute inset-0 bg-dark-blue/80"></div>
     </div>
     <div class="relative z-10 container mx-auto px-6 text-center text-white">
-        <h1 class="text-4xl md:text-5xl mb-4 font-bold animate-slide-up">О компании</h1>
-        <p class="text-xl text-white/90 max-w-2xl mx-auto animate-slide-up" style="animation-delay: 0.1s">
-            Компания Аргус — эксперт в области строительства и пожарной безопасности с 2004 года
-        </p>
-    </div>
-</section>
-
-<!-- Stats Section -->
-<section class="py-12 bg-white">
-    <div class="container mx-auto px-6">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="text-center scroll-animate">
-                <div class="text-4xl md:text-5xl font-bold text-gold mb-2 transition-all duration-400">20+</div>
-                <div class="text-base text-gray-600 font-medium">лет опыта</div>
-            </div>
-            <div class="text-center scroll-animate" style="animation-delay: 0.05s">
-                <div class="text-4xl md:text-5xl font-bold text-gold mb-2 transition-all duration-400">500+</div>
-                <div class="text-base text-gray-600 font-medium">проектов</div>
-            </div>
-            <div class="text-center scroll-animate" style="animation-delay: 0.1s">
-                <div class="text-4xl md:text-5xl font-bold text-gold mb-2 transition-all duration-400">100+</div>
-                <div class="text-base text-gray-600 font-medium">специалистов</div>
-            </div>
-            <div class="text-center scroll-animate" style="animation-delay: 0.15s">
-                <div class="text-4xl md:text-5xl font-bold text-gold mb-2 transition-all duration-400">98%</div>
-                <div class="text-base text-gray-600 font-medium">довольных клиентов</div>
-            </div>
+        <div class="max-w-3xl mx-auto">
+            <h1 class="text-4xl md:text-5xl mb-6 font-light tracking-tight">О компании</h1>
+            <div class="w-16 h-0.5 bg-[#C9A96A] mx-auto mb-6"></div>
+            <p class="text-lg text-white/90 max-w-2xl mx-auto leading-relaxed">
+                Компания Аргус — эксперт в области строительства и пожарной безопасности с 2004 года
+            </p>
         </div>
     </div>
 </section>
 
-
 <!-- About Section -->
-<section class="py-12 bg-white">
+<section class="py-16 bg-white">
     <div class="container mx-auto px-6">
         <div class="max-w-4xl mx-auto">
-            <h2 class="text-3xl md:text-4xl text-dark-blue mb-6 text-center font-bold scroll-animate">Наша история</h2>
-            <div class="space-y-4 text-lg text-gray-700 leading-relaxed">
-                <p class="scroll-animate" style="animation-delay: 0.1s">
-                    Компания Аргус начала свою деятельность в 2004 году как небольшая команда специалистов 
-                    в области пожарной безопасности. За более чем 20 лет работы мы выросли в крупную компанию, 
-                    предоставляющую комплексные решения в сфере строительства и инженерных систем.
+            <!-- Company Info -->
+            <div class="space-y-6 text-gray-700 leading-relaxed text-lg mb-12">
+                <p class="text-justify">
+                    Компания Аргус осуществляет деятельность в сфере строительства с 2004 года.
+                    За это время мы собрали команду профессионалов, создали обширную материально-
+                    техническую базу и накопили большой опыт.
                 </p>
-                <p class="scroll-animate" style="animation-delay: 0.2s">
-                    Сегодня Компания Аргус — это команда из более чем 100 квалифицированных специалистов, 
-                    современное оборудование и собственная производственная база. Мы реализовали сотни 
-                    проектов различной сложности, от небольших офисных помещений до крупных торговых центров 
-                    и промышленных объектов.
+                <p class="text-justify">
+                    Опираясь на сильный руководящий состав компании, который имеет опыт более 20 лет
+                    службы в органах государственного противопожарного надзора, мы успешно реализуем
+                    самые сложные и нестандартные проекты.
                 </p>
-                <p class="scroll-animate" style="animation-delay: 0.3s">
-                    Наши клиенты — это крупные девелоперы, федеральные и региональные ритейлеры, 
-                    промышленные предприятия и государственные учреждения. Мы гордимся доверием наших 
-                    заказчиков и стремимся поддерживать высочайшие стандарты качества во всех проектах.
+                <p class="text-justify">
+                    Наша команда объединяет опытных специалистов, которые работают по принципу полного
+                    цикла: от разработки проектной документации и подбора оборудования — до ввода объектов в
+                    эксплуатацию и последующего технического обслуживания. Такой подход обеспечивает высокое
+                    качество, комфорт, надежность и точное соответствие нормативным требованиям.
                 </p>
+                <p class="text-justify">
+                    В списке завершенных: социально-значимые объекты, офисные здания, торговые центры,
+                    жилые комплексы и др.
+                </p>
+            </div>
+
+            <!-- Founder Section -->
+            <div class="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                <div class="flex flex-col lg:flex-row gap-8 items-start">
+                    <!-- Photo -->
+                    <div class="lg:w-1/3">
+                        <div class="w-full aspect-square rounded-xl overflow-hidden shadow-lg">
+                            <img src="{% static 'images/Фото Петра Николаевича.jpeg' %}" alt="Лейба Петр Николаевич" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="lg:w-2/3">
+                        <div class="mb-6">
+                            <div class="w-12 h-0.5 bg-[#C9A96A] mb-3"></div>
+                            <h3 class="text-lg text-gray-600 mb-1 font-normal">Основатель компании</h3>
+                            <h2 class="text-2xl text-dark-blue font-light">Лейба Петр Николаевич</h2>
+                        </div>
+                        
+                        <!-- Mission -->
+                        <div class="mb-6 p-4 bg-[#C9A96A]/10 rounded-lg border-l-4 border-[#C9A96A]">
+                            <p class="text-sm text-[#C9A96A] mb-2 font-medium">Миссия компании</p>
+                            <p class="text-xl text-dark-blue font-serif italic">
+                                создание комфортного и безопасного пространства в жизни людей
+                            </p>
+                        </div>
+                        
+                        <!-- Info -->
+                        <div class="space-y-4 text-gray-700">
+                            <p class="text-justify">
+                                Петр Николаевич принадлежит к категории бизнесменов, которые берутся за самые
+                                непростые задачи и доводят их до нужного результата.
+                            </p>
+                            <p class="text-justify">
+                                Петр Николаевич имеет высшее инженерное образование, в 1989 году закончил
+                                Тюменский Индустриальный Институт. С 1983 по 2004г. проходил службу в
+                                Государственной противопожарной службе в г. Тюмени, от инспектора ГНП до
+                                руководителя подразделения. В этот же период успешно окончил факультет
+                                Государственного муниципального управления в академии противопожарной службы г.
+                                Москва.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Advantages Section -->
-<section class="py-12 bg-light-gray">
+<section class="py-16 bg-gray-50">
     <div class="container mx-auto px-6">
-        <h2 class="text-3xl md:text-4xl text-dark-blue mb-8 text-center font-bold scroll-animate">Наши преимущества</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-6xl mx-auto">
-            <div class="bg-white rounded-xl shadow-lg border-t-4 border-gold transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate">
-                <div class="p-6">
-                    <div class="inline-flex items-center justify-center w-14 h-14 bg-dark-blue text-gold mb-4 rounded-lg transition-all duration-400 hover:scale-110">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl text-dark-blue mb-4 font-light">Наши преимущества</h2>
+                <div class="w-16 h-0.5 bg-[#C9A96A] mx-auto"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+                    <div class="inline-flex items-center justify-center w-12 h-12 bg-dark-blue text-[#C9A96A] mb-4 rounded-lg">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
-                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">Опыт и экспертиза</h3>
-                    <p class="text-gray-700 leading-relaxed">Более 20 лет успешной работы в сфере строительства и пожарной безопасности</p>
+                    <h3 class="text-lg text-dark-blue mb-3 font-normal">Опыт и экспертиза</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">Более 20 лет успешной работы в сфере строительства и пожарной безопасности</p>
                 </div>
-            </div>
-            <div class="bg-white rounded-xl shadow-lg border-t-4 border-gold transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate" style="animation-delay: 0.1s">
-                <div class="p-6">
-                    <div class="inline-flex items-center justify-center w-14 h-14 bg-dark-blue text-gold mb-4 rounded-lg transition-all duration-400 hover:scale-110">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+                    <div class="inline-flex items-center justify-center w-12 h-12 bg-dark-blue text-[#C9A96A] mb-4 rounded-lg">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                         </svg>
                     </div>
-                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">Качество и надежность</h3>
-                    <p class="text-gray-700 leading-relaxed">Гарантия качества на все виды работ и используемые материалы</p>
+                    <h3 class="text-lg text-dark-blue mb-3 font-normal">Качество и надежность</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">Гарантия качества на все виды работ и используемые материалы</p>
                 </div>
-            </div>
-            <div class="bg-white rounded-xl shadow-lg border-t-4 border-gold transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate" style="animation-delay: 0.2s">
-                <div class="p-6">
-                    <div class="inline-flex items-center justify-center w-14 h-14 bg-dark-blue text-gold mb-4 rounded-lg transition-all duration-400 hover:scale-110">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+                    <div class="inline-flex items-center justify-center w-12 h-12 bg-dark-blue text-[#C9A96A] mb-4 rounded-lg">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
                         </svg>
                     </div>
-                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">Команда профессионалов</h3>
-                    <p class="text-gray-700 leading-relaxed">Квалифицированные специалисты с многолетним опытом работы</p>
+                    <h3 class="text-lg text-dark-blue mb-3 font-normal">Команда профессионалов</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">Квалифицированные специалисты с многолетним опытом работы</p>
                 </div>
-            </div>
-            <div class="bg-white rounded-xl shadow-lg border-t-4 border-gold transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate" style="animation-delay: 0.3s">
-                <div class="p-6">
-                    <div class="inline-flex items-center justify-center w-14 h-14 bg-dark-blue text-gold mb-4 rounded-lg transition-all duration-400 hover:scale-110">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+                    <div class="inline-flex items-center justify-center w-12 h-12 bg-dark-blue text-[#C9A96A] mb-4 rounded-lg">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
                     </div>
-                    <h3 class="text-xl text-dark-blue mb-3 font-semibold">Комплексный подход</h3>
-                    <p class="text-gray-700 leading-relaxed">Полный цикл услуг от проектирования до сдачи объекта</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Mission Section -->
-<section class="py-12 bg-white">
-    <div class="container mx-auto px-6">
-        <div class="max-w-4xl mx-auto text-center">
-            <h2 class="text-3xl md:text-4xl text-dark-blue mb-6 font-bold scroll-animate">Наша миссия</h2>
-            <p class="text-xl text-gray-700 leading-relaxed mb-6 scroll-animate" style="animation-delay: 0.1s">
-                Обеспечивать безопасность людей и сохранность имущества наших клиентов через предоставление 
-                качественных услуг в области пожарной безопасности и строительства. Мы стремимся быть надежным 
-                партнером и экспертом, на которого можно положиться.
-            </p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-                <div class="bg-dark-blue text-white rounded-xl p-4 transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate">
-                    <h3 class="text-lg text-gold mb-2 font-semibold">Качество</h3>
-                    <p class="text-white/80 text-sm">Высокие стандарты на всех этапах работы</p>
-                </div>
-                <div class="bg-dark-blue text-white rounded-xl p-4 transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate" style="animation-delay: 0.1s">
-                    <h3 class="text-lg text-gold mb-2 font-semibold">Ответственность</h3>
-                    <p class="text-white/80 text-sm">Гарантируем выполнение обязательств</p>
-                </div>
-                <div class="bg-dark-blue text-white rounded-xl p-4 transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate" style="animation-delay: 0.2s">
-                    <h3 class="text-lg text-gold mb-2 font-semibold">Развитие</h3>
-                    <p class="text-white/80 text-sm">Постоянное совершенствование процессов</p>
+                    <h3 class="text-lg text-dark-blue mb-3 font-normal">Комплексный подход</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">Полный цикл услуг от проектирования до сдачи объекта</p>
                 </div>
             </div>
         </div>
@@ -153,19 +174,22 @@
 </section>
 
 <!-- CTA Section -->
-<section class="py-12 bg-dark-blue text-white">
+<section class="py-16 bg-dark-blue text-white">
     <div class="container mx-auto px-6 text-center">
-        <h2 class="text-3xl md:text-4xl mb-4 font-bold scroll-animate">Станьте нашим партнером</h2>
-        <p class="text-lg text-white/80 mb-6 max-w-2xl mx-auto scroll-animate" style="animation-delay: 0.1s">
-            Мы всегда открыты для новых проектов и с удовольствием обсудим возможности сотрудничества
-        </p>
-        <div class="flex flex-col sm:flex-row gap-3 justify-center scroll-animate" style="animation-delay: 0.2s">
-            <a href="{% url 'order_kp' %}" class="bg-gold hover:bg-amber-700 text-white px-6 py-3 rounded-lg transition-all duration-400 font-medium shadow-lg hover:scale-105">
-                Заказать КП
-            </a>
-            <a href="{% url 'contacts' %}" class="border-2 border-white text-white hover:bg-white hover:text-dark-blue px-6 py-3 rounded-lg transition-all duration-400 font-medium hover:scale-105">
-                Связаться с нами
-            </a>
+        <div class="max-w-2xl mx-auto">
+            <h2 class="text-3xl mb-4 font-light">Станьте нашим партнером</h2>
+            <div class="w-16 h-0.5 bg-[#C9A96A] mx-auto mb-6"></div>
+            <p class="text-gray-300 mb-8 leading-relaxed">
+                Мы всегда открыты для новых проектов и с удовольствием обсудим возможности сотрудничества
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'order_kp' %}" class="btn-gold text-white px-8 py-4 rounded-lg font-semibold shadow-lg">
+                    Заказать КП
+                </a>
+                <a href="{% url 'contacts' %}" class="border border-[#C9A96A] text-[#C9A96A] px-8 py-4 rounded-lg font-normal hover:bg-[#C9A96A] hover:text-white transition-all duration-300">
+                    Связаться с нами
+                </a>
+            </div>
         </div>
     </div>
 </section>

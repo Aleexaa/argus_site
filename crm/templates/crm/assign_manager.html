@@ -1,0 +1,86 @@
+{% extends "crm/base_crm.html" %}
+{% load static %}
+
+{% block title %}Назначить менеджера - CRM Аргус{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center gap-3 mb-6">
+            <a href="{% url 'crm_my_requests' %}" class="text-gray-500 hover:text-gray-700">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <h1 class="text-2xl font-bold text-gray-800">Назначить менеджера</h1>
+        </div>
+
+        <!-- Информация о заявке -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+            <h3 class="font-semibold text-gray-800 mb-2">Информация о заявке:</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                <p><strong>Компания:</strong> {{ req.client.company_name }}</p>
+                <p><strong>Тип объекта:</strong> {{ req.object_type }}</p>
+                <p><strong>Адрес:</strong> {{ req.object_address|default:"Не указан" }}</p>
+                <p><strong>Площадь:</strong> {{ req.area|default:"Не указана" }} м²</p>
+                <p><strong>Статус:</strong> {{ req.get_status_display }}</p>
+                <p><strong>Контакт:</strong> {{ req.client.contact_person }}</p>
+            </div>
+        </div>
+
+        <!-- Форма назначения -->
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Выберите менеджера *
+                </label>
+                <select name="manager_id" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">-- Выберите менеджера --</option>
+                    {% for manager in managers %}
+                    <option value="{{ manager.id }}">
+                        {{ manager.user.get_full_name|default:manager.user.username }} 
+                        ({{ manager.corporate_email }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <div class="flex items-start gap-3">
+                    <div class="text-blue-600 mt-1">
+                        <i data-lucide="info" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-blue-800 mb-1">Внимание!</h4>
+                        <p class="text-blue-700 text-sm">
+                            После назначения менеджера статус заявки автоматически изменится на "В работе", 
+                            и менеджер получит уведомление на email.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <a href="{% url 'crm_my_requests' %}" 
+                   class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-center font-medium">
+                    Отмена
+                </a>
+                <button type="submit" 
+                        class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium flex items-center justify-center gap-2">
+                    <i data-lucide="user-check" class="w-4 h-4"></i>
+                    Назначить менеджера
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+    });
+</script>
+{% endblock %}

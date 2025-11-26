@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Компания Аргус - Партнеры{% endblock %}
+{% block title %}Компания Аргус - Партнеры и Заказчики{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
 <section class="relative py-12 bg-dark-blue">
     <div class="container mx-auto px-6 text-center text-white">
-        <h1 class="text-4xl md:text-5xl mb-4 font-bold animate-slide-up">Наши партнеры</h1>
+        <h1 class="text-4xl md:text-5xl mb-4 font-bold animate-slide-up">Наши заказчики и партнеры</h1>
         <p class="text-xl text-white/90 max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.1s">
             Сотрудничаем с ведущими компаниями в сфере строительства и пожарной безопасности
         </p>
@@ -17,93 +17,144 @@
 <!-- Main Content -->
 <section class="py-12 bg-white">
     <div class="container mx-auto px-6 max-w-7xl">
-        <!-- Partners Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-16">
-            {% for partner in partners %}
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32 scroll-animate">
-                {% if partner.logo and partner.logo.url %}
-                    {# Для объектов модели Partner с логотипом #}
-                    <img src="{{ partner.logo.url }}" alt="{{ partner.name }}" class="max-h-16 object-contain">
-                {% elif partner.name %}
-                    {# Для статических данных и объектов без логотипа #}
-                    <div class="text-center text-gray-600">
-                        <div class="text-2xl mb-2">
-                            {% cycle '🏢' '🏭' '🔧' '⚡' '🔒' '🏗️' '🚒' '🛡️' %}
+        <!-- Заказчики Section -->
+        <div class="mb-16">
+            <h2 class="text-3xl md:text-4xl text-dark-blue mb-8 text-center font-bold">Наши заказчики</h2>
+            <div class="relative">
+                <!-- Карусель заказчиков -->
+                <div class="custom-carousel" id="customers-carousel">
+                    <div class="carousel-container flex space-x-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+                        <!-- Реальные заказчики -->
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Заказчики/B72.png' %}" alt="B72" class="max-h-16 max-w-full object-contain">
+                            </div>
                         </div>
-                        <p class="text-sm font-medium">{{ partner.name }}</p>
-                        {% if partner.description %}
-                        <p class="text-xs text-gray-500 mt-1">{{ partner.description }}</p>
-                        {% endif %}
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Заказчики/Арсиб.png' %}" alt="Арсиб" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Заказчики/Меридиан.jpeg' %}" alt="Меридиан" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Заказчики/Мидгард.png' %}" alt="Мидгард" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Заказчики/Навигатор.jpeg' %}" alt="Навигатор" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Заказчики/Партнер.jpg' %}" alt="Партнер" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Заказчики/Страна.png' %}" alt="Страна" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Заказчики/СтройМир.jpeg' %}" alt="СтройМир" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Заказчики/ТИС.jpeg' %}" alt="ТИС" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Заказчики/УЛЕЙ.png' %}" alt="УЛЕЙ" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Заказчики/ЭНКО.png' %}" alt="ЭНКО" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Заказчики/ПИК.jpg' %}" alt="ПИК" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
                     </div>
-                {% else %}
-                    {# Заглушка #}
-                    <div class="text-center text-gray-400">
-                        <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                        </svg>
-                        <p class="text-sm">Партнер {{ forloop.counter }}</p>
+                </div>
+                
+                <!-- Кнопки навигации -->
+                <button class="carousel-prev absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:shadow-xl transition-all z-10">
+                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <button class="carousel-next absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:shadow-xl transition-all z-10">
+                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Партнеры Section -->
+        <div class="mb-16">
+            <h2 class="text-3xl md:text-4xl text-dark-blue mb-8 text-center font-bold">Наши партнеры</h2>
+            <div class="relative">
+                <!-- Карусель партнеров -->
+                <div class="custom-carousel" id="partners-carousel">
+                    <div class="carousel-container flex space-x-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+                        <!-- Реальные партнеры -->
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Партнеры/NEVATOM.png' %}" alt="NEVATOM" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Партнеры/VKT.jpg' %}" alt="VKT" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Партнеры/Веза.png' %}" alt="Веза" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Партнеры/рубеж.jpg' %}" alt="Рубеж" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Партнеры/Север.jpeg' %}" alt="Север" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
+                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
+                                <img src="{% static 'images/Партнеры/ЦСБ.jpeg' %}" alt="ЦСБ" class="max-h-16 max-w-full object-contain">
+                            </div>
+                        </div>
                     </div>
-                {% endif %}
-            </div>
-            {% empty %}
-            <!-- Заглушки для партнеров -->
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32 scroll-animate">
-                <div class="text-center">
-                    <div class="text-2xl mb-2">🏢</div>
-                    <div class="text-sm text-gray-600 font-medium">ТехноПрофи</div>
-                    <div class="text-xs text-gray-500 mt-1">Официальный партнер</div>
                 </div>
+                
+                <!-- Кнопки навигации -->
+                <button class="carousel-prev absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:shadow-xl transition-all z-10">
+                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <button class="carousel-next absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:shadow-xl transition-all z-10">
+                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
             </div>
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32 scroll-animate" style="animation-delay: 0.1s">
-                <div class="text-center">
-                    <div class="text-2xl mb-2">🏭</div>
-                    <div class="text-sm text-gray-600 font-medium">СтройГарант</div>
-                    <div class="text-xs text-gray-500 mt-1">Надежный поставщик</div>
-                </div>
-            </div>
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32 scroll-animate" style="animation-delay: 0.2s">
-                <div class="text-center">
-                    <div class="text-2xl mb-2">🔧</div>
-                    <div class="text-sm text-gray-600 font-medium">ЭнергоСервис</div>
-                    <div class="text-xs text-gray-500 mt-1">Технологический партнер</div>
-                </div>
-            </div>
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32 scroll-animate" style="animation-delay: 0.3s">
-                <div class="text-center">
-                    <div class="text-2xl mb-2">⚡</div>
-                    <div class="text-sm text-gray-600 font-medium">Безопасность+</div>
-                    <div class="text-xs text-gray-500 mt-1">Эксперты в СОУЭ</div>
-                </div>
-            </div>
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32 scroll-animate" style="animation-delay: 0.4s">
-                <div class="text-center">
-                    <div class="text-2xl mb-2">🔒</div>
-                    <div class="text-sm text-gray-600 font-medium">МонтажСтрой</div>
-                    <div class="text-xs text-gray-500 mt-1">Партнер по монтажу</div>
-                </div>
-            </div>
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32 scroll-animate" style="animation-delay: 0.5s">
-                <div class="text-center">
-                    <div class="text-2xl mb-2">🏗️</div>
-                    <div class="text-sm text-gray-600 font-medium">ПроектГрупп</div>
-                    <div class="text-xs text-gray-500 mt-1">Проектные решения</div>
-                </div>
-            </div>
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32 scroll-animate" style="animation-delay: 0.6s">
-                <div class="text-center">
-                    <div class="text-2xl mb-2">🚒</div>
-                    <div class="text-sm text-gray-600 font-medium">Огнезащита</div>
-                    <div class="text-xs text-gray-500 mt-1">Специалисты</div>
-                </div>
-            </div>
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32 scroll-animate" style="animation-delay: 0.7s">
-                <div class="text-center">
-                    <div class="text-2xl mb-2">🛡️</div>
-                    <div class="text-sm text-gray-600 font-medium">ТехКонтроль</div>
-                    <div class="text-xs text-gray-500 mt-1">Технический надзор</div>
-                </div>
-            </div>
-            {% endfor %}
         </div>
 
         <!-- Partners Description -->
@@ -166,7 +217,7 @@
                             <svg class="w-6 h-6 text-gold mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                            <span>Техническая поддержка 24/7</span>
+                            <span>Оперативные поставки</span>
                         </li>
                         <li class="flex items-start gap-4">
                             <svg class="w-6 h-6 text-gold mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,26 +233,6 @@
                         </li>
                     </ul>
                 </div>
-            </div>
-        </div>
-
-        <!-- Stats Section -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6 text-center transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate">
-                <div class="text-3xl md:text-4xl font-bold text-gold mb-2">50+</div>
-                <div class="text-gray-600 font-medium">Партнеров</div>
-            </div>
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6 text-center transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate" style="animation-delay: 0.1s">
-                <div class="text-3xl md:text-4xl font-bold text-gold mb-2">15+</div>
-                <div class="text-gray-600 font-medium">Лет сотрудничества</div>
-            </div>
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6 text-center transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate" style="animation-delay: 0.2s">
-                <div class="text-3xl md:text-4xl font-bold text-gold mb-2">100%</div>
-                <div class="text-gray-600 font-medium">Качество</div>
-            </div>
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6 text-center transition-all duration-400 hover:shadow-xl hover:scale-105 scroll-animate" style="animation-delay: 0.3s">
-                <div class="text-3xl md:text-4xl font-bold text-gold mb-2">24/7</div>
-                <div class="text-gray-600 font-medium">Поддержка</div>
             </div>
         </div>
 
@@ -222,4 +253,97 @@
         </div>
     </div>
 </section>
+
+<style>
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.carousel-container {
+    scroll-behavior: smooth;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Инициализация каруселей
+    initCarousel('customers-carousel');
+    initCarousel('partners-carousel');
+    
+    function initCarousel(carouselId) {
+        const carousel = document.getElementById(carouselId);
+        const container = carousel.querySelector('.carousel-container');
+        const prevBtn = carousel.parentElement.querySelector('.carousel-prev');
+        const nextBtn = carousel.parentElement.querySelector('.carousel-next');
+        const slides = carousel.querySelectorAll('.carousel-slide');
+        
+        const slideWidth = slides[0].offsetWidth + 24; // width + gap
+        const visibleSlides = Math.floor(container.offsetWidth / slideWidth);
+        
+        let currentPosition = 0;
+        const maxPosition = slides.length - visibleSlides;
+        
+        // Функция для обновления позиции
+        function updatePosition() {
+            container.scrollTo({
+                left: currentPosition * slideWidth,
+                behavior: 'smooth'
+            });
+            updateButtons();
+        }
+        
+        // Функция для обновления состояния кнопок
+        function updateButtons() {
+            prevBtn.style.opacity = currentPosition === 0 ? '0.5' : '1';
+            nextBtn.style.opacity = currentPosition >= maxPosition ? '0.5' : '1';
+        }
+        
+        // Обработчики для кнопок
+        prevBtn.addEventListener('click', () => {
+            if (currentPosition > 0) {
+                currentPosition--;
+                updatePosition();
+            }
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            if (currentPosition < maxPosition) {
+                currentPosition++;
+                updatePosition();
+            }
+        });
+        
+        // Обработчик для свайпа на мобильных
+        let startX = 0;
+        let scrollLeft = 0;
+        
+        container.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].pageX - container.offsetLeft;
+            scrollLeft = container.scrollLeft;
+        });
+        
+        container.addEventListener('touchmove', (e) => {
+            if (!startX) return;
+            const x = e.touches[0].pageX - container.offsetLeft;
+            const walk = (x - startX) * 2;
+            container.scrollLeft = scrollLeft - walk;
+        });
+        
+        // Инициализация
+        updateButtons();
+        
+        // Обновление при изменении размера окна
+        window.addEventListener('resize', () => {
+            const newVisibleSlides = Math.floor(container.offsetWidth / slideWidth);
+            if (newVisibleSlides !== visibleSlides) {
+                currentPosition = Math.min(currentPosition, slides.length - newVisibleSlides);
+                updatePosition();
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

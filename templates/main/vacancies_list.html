@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-dark-blue text-white py-16">
+    <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl font-bold mb-6">Карьера в компании Аргус</h1>
+            <p class="text-xl text-gray-300 mb-8">
+                Присоединяйтесь к команде профессионалов в области пожарной безопасности
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Vacancies Section -->
+<section class="py-16 bg-light-gray">
+    <div class="container mx-auto px-6">
+        <div class="max-w-6xl mx-auto">
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
+                    <div class="text-3xl font-bold text-gold mb-2">{{ vacancies|length }}</div>
+                    <div class="text-dark-blue font-semibold">Открытых вакансий</div>
+                </div>
+                <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
+                    <div class="text-3xl font-bold text-gold mb-2">20+</div>
+                    <div class="text-dark-blue font-semibold">Лет на рынке</div>
+                </div>
+            </div>
+
+            <!-- Vacancies Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {% for vacancy in vacancies %}
+                <div class="bg-white rounded-lg border border-gray-200 p-6 h-full flex flex-col">
+                    <!-- Заголовок и ЗП -->
+                    <div class="flex justify-between items-start mb-4 flex-shrink-0">
+                        <h3 class="text-xl font-bold text-dark-blue">
+                            {{ vacancy.title }}
+                        </h3>
+                        {% if vacancy.salary %}
+                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap ml-4">
+                            {{ vacancy.salary }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Краткое описание - фиксированная высота -->
+                    <div class="prose prose-sm max-w-none mb-4 text-gray-600 flex-grow">
+                        {% with desc=vacancy.description|striptags|truncatewords:30 %}
+                            {{ desc }}
+                        {% endwith %}
+                    </div>
+                    
+                    <!-- Детали вакансии -->
+                    <div class="flex flex-wrap gap-2 text-sm text-gray-500 mb-4 flex-shrink-0">
+                        {% if vacancy.employment_type %}
+                        <div class="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            {{ vacancy.employment_type }}
+                        </div>
+                        {% endif %}
+                        
+                        {% if vacancy.experience %}
+                        <div class="flex items-center gap-2 bg-purple-50 text-purple-700 px-3 py-1 rounded-full border border-purple-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                            {{ vacancy.experience }}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="flex items-center gap-2 bg-gray-100 text-gray-700 px-3 py-1 rounded-full border border-gray-300">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            {{ vacancy.updated_at|date:"d.m.Y" }}
+                        </div>
+                    </div>
+                    
+                    <!-- Кнопка -->
+                    <div class="flex-shrink-0">
+                        <a href="{% url 'vacancy_detail' vacancy.id %}" 
+                           class="w-full bg-gold hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-semibold text-sm inline-flex items-center justify-center gap-2 transition-colors duration-200">
+                            Подробнее
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <!-- Empty State -->
+                <div class="col-span-2 text-center py-16">
+                    <div class="bg-white rounded-lg border border-gray-200 p-12 max-w-2xl mx-auto">
+                        <div class="w-20 h-20 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-10 h-10 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-dark-blue mb-4">Сейчас нет открытых вакансий</h3>
+                        <p class="text-gray-600 text-lg">
+                            Следите за обновлениями - новые вакансии появляются регулярно!
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Benefits Section -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto text-center mb-12">
+            <h2 class="text-3xl font-bold text-dark-blue mb-6">Почему выбирают нас</h2>
+            <p class="text-lg text-gray-600">Мы создаём условия для профессионального роста и развития</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-light-gray rounded-lg border border-gray-200 p-6 text-center">
+                <div class="w-14 h-14 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-dark-blue mb-2">Карьерный рост</h3>
+                <p class="text-gray-600 text-sm">Возможности для профессионального развития</p>
+            </div>
+            
+            <div class="bg-light-gray rounded-lg border border-gray-200 p-6 text-center">
+                <div class="w-14 h-14 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-dark-blue mb-2">Достойная оплата</h3>
+                <p class="text-gray-600 text-sm">Конкурентная заработная плата</p>
+            </div>
+            
+            <div class="bg-light-gray rounded-lg border border-gray-200 p-6 text-center">
+                <div class="w-14 h-14 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-dark-blue mb-2">Дружная команда</h3>
+                <p class="text-gray-600 text-sm">Профессиональный коллектив</p>
+            </div>
+            
+            <div class="bg-light-gray rounded-lg border border-gray-200 p-6 text-center">
+                <div class="w-14 h-14 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-dark-blue mb-2">Стабильность</h3>
+                <p class="text-gray-600 text-sm">20-летний опыт на рынке</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

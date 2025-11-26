@@ -1,18 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
-
-class Client(models.Model):
-    company_name = models.CharField(max_length=255, verbose_name="Название компании")
-    contact_person = models.CharField(max_length=255, blank=True, null=True, verbose_name="Контактное лицо")
-    phone = models.CharField(max_length=50, verbose_name="Телефон")
-    email = models.EmailField(blank=True, null=True, verbose_name="Email")
-    telegram_id = models.BigIntegerField(blank=True, null=True, verbose_name="Telegram ID")
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.company_name
-
+from django.utils import timezone 
 
 class Service(models.Model):
     name = models.CharField(max_length=255, verbose_name="Услуга")
@@ -24,7 +12,6 @@ class Service(models.Model):
     def __str__(self):
         return self.name
 
-
 class Request(models.Model):
     STATUS_CHOICES = [
         ('new', 'Новая'),
@@ -33,22 +20,25 @@ class Request(models.Model):
         ('closed', 'Закрыта'),
     ]
 
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='requests', verbose_name="Клиент")
+    # ✅ Связь с crm.Client
+    client = models.ForeignKey('crm.Client', on_delete=models.CASCADE, related_name='requests', verbose_name="Клиент")
     object_type = models.CharField(max_length=100, verbose_name="Тип объекта")
     object_address = models.TextField(blank=True, null=True, verbose_name="Адрес объекта")
     area = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True, verbose_name="Площадь, м²")
-    
-    description = models.TextField(blank=True, null=True, verbose_name="Описание клиента")  # 💬 новое поле
+    description = models.TextField(blank=True, null=True, verbose_name="Описание клиента")
     
     services = models.ManyToManyField(Service, through='RequestService', verbose_name="Услуги")
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='new', verbose_name="Статус")
+    
+    # ✅ Связь с crm.ManagerProfile
     responsible_manager = models.ForeignKey(
-        'crm.ManagerProfile',  # ИЗМЕНИТЕ НА ManagerProfile
+        'crm.ManagerProfile',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         verbose_name="Менеджер"
     )
+    
     attached_file = models.FileField(
         upload_to='kp_files/',
         blank=True,
@@ -58,9 +48,21 @@ class Request(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # ✅ ПОЛЯ ДЛЯ 152-ФЗ ПЕРЕНЕСЕНЫ В ЗАЯВКУ
+    pd_agreed = models.BooleanField(default=False, verbose_name="Согласие на обработку ПД")
+    consent_date = models.DateTimeField(null=True, blank=True, verbose_name="Дата согласия")
+    ip_address = models.GenericIPAddressField(null=True, blank=True, verbose_name="IP-адрес")
+    policy_version = models.CharField(max_length=20, default='1.0', verbose_name="Версия политики")
+    user_agent = models.TextField(blank=True, null=True, verbose_name="User Agent")
+
     def __str__(self):
         return f"Заявка #{self.id} от {self.client.company_name}"
 
+    def save(self, *args, **kwargs):
+        # Автоматически устанавливаем дату согласия при согласии
+        if self.pd_agreed and not self.consent_date:
+            self.consent_date = timezone.now()
+        super().save(*args, **kwargs)
 
 class RequestService(models.Model):
     request = models.ForeignKey(Request, on_delete=models.CASCADE)
@@ -68,7 +70,6 @@ class RequestService(models.Model):
 
     class Meta:
         unique_together = ('request', 'service')
-
 
 class ManagerComment(models.Model):
     request = models.ForeignKey(Request, on_delete=models.CASCADE, related_name='comments')
@@ -79,14 +80,14 @@ class ManagerComment(models.Model):
     def __str__(self):
         return f"Комментарий {self.manager_user} к заявке {self.request_id}"
 
-
 class Notification(models.Model):
     CHANNEL_CHOICES = [
         ('telegram', 'Telegram'),
         ('email', 'Email'),
     ]
 
-    client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
+    # ✅ Связь с crm.Client
+    client = models.ForeignKey('crm.Client', on_delete=models.SET_NULL, null=True, blank=True)
     request = models.ForeignKey(Request, on_delete=models.SET_NULL, null=True, blank=True)
     channel = models.CharField(max_length=50, choices=CHANNEL_CHOICES)
     message = models.TextField()
@@ -98,16 +99,13 @@ class Notification(models.Model):
 
 class Project(models.Model):
     OBJECT_TYPES = [
-        ('residential', 'Жилые'),
-        ('commercial', 'Коммерческие'),
-        ('industrial', 'Промышленные'),
-        ('medical', 'Медицинские'),
-        ('sports', 'Спортивные'),
-        ('other', 'Прочие'),
+        ('residential', 'Жилые комплексы'),
+        ('commercial', 'Торговые центры и офисные здания'),
+        ('social', 'Социально-значимые объекты'),
+        ('other', 'Без категории'),
     ]
 
     title = models.CharField(max_length=255, verbose_name="Название проекта")
-    description = models.TextField(verbose_name="Описание")
     object_type = models.CharField(max_length=50, choices=OBJECT_TYPES, default='other', verbose_name="Тип объекта")
     address = models.CharField(max_length=255, blank=True, null=True, verbose_name="Адрес")
     image = models.ImageField(upload_to='projects/', blank=True, null=True, verbose_name="Изображение проекта")
@@ -115,3 +113,5 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
+    
+

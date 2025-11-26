@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Пользовательское соглашение{% endblock %}
+
+{% block content %}
+<div class="min-h-screen py-12 bg-white">
+  <div class="container mx-auto px-4 max-w-4xl">
+    <h1 class="text-3xl md:text-4xl font-bold text-dark-blue mb-8">Пользовательское соглашение</h1>
+    
+    <div class="prose prose-lg max-w-none">
+      <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+        <p class="text-blue-700"><strong>Дата вступления в силу:</strong> {{ current_date }}</p>
+      </div>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-dark-blue mb-4">1. Общие положения</h2>
+        <p class="mb-4">Настоящее Пользовательское соглашение регулирует отношения между вами и нашей компанией.</p>
+        <p>Используя наш сайт и отправляя заявки, вы соглашаетесь с условиями данного соглашения.</p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-dark-blue mb-4">2. Условия использования</h2>
+        <ul class="list-disc list-inside space-y-2">
+          <li>Вы обязуетесь предоставлять достоверную информацию</li>
+          <li>Запрещается использовать сайт для незаконных целей</li>
+          <li>Мы оставляем за собой право отказать в обслуживании</li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-dark-blue mb-4">3. Порядок обработки заявок</h2>
+        <p>Заявки обрабатываются в порядке их поступления в рабочее время.</p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-dark-blue mb-4">4. Интеллектуальная собственность</h2>
+        <p>Все материалы сайта защищены авторским правом.</p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-dark-blue mb-4">5. Ограничение ответственности</h2>
+        <p>Мы не несем ответственности за временную недоступность сайта.</p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-dark-blue mb-4">6. Изменения в соглашении</h2>
+        <p>Мы можем вносить изменения в настоящее соглашение. Актуальная версия всегда доступна на этой странице.</p>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}

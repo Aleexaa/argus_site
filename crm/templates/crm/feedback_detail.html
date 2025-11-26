@@ -1,0 +1,227 @@
+{% extends 'crm/base_crm.html' %}
+{% load static %}
+
+{% block title %}CRM Аргус - Сообщение от {{ feedback.name }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 max-w-4xl">
+    <!-- 🔹 Заголовок и навигация -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+        <div class="flex items-center gap-4 mb-4 md:mb-0">
+            <a href="{% url 'crm_feedback' %}" 
+               class="text-gold hover:text-amber-600 transition-colors flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Назад к списку
+            </a>
+            <h1 class="text-xl font-bold text-dark-blue">Сообщение обратной связи</h1>
+        </div>
+        
+        <div class="flex gap-2">
+            {% if is_owner %}
+            <button id="delete-feedback-btn" 
+                    data-feedback-id="{{ feedback.id }}"
+                    data-feedback-name="{{ feedback.name }}"
+                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+                Удалить
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 🔹 Основная информация -->
+    <div class="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Информация об отправителе -->
+            <div>
+                <h2 class="text-lg font-semibold text-dark-blue mb-4">Информация об отправителе</h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span class="text-gray-600 font-medium">Имя:</span>
+                        <span class="text-dark-blue">{{ feedback.name }}</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span class="text-gray-600 font-medium">Контакт:</span>
+                        <span class="text-dark-blue">{{ feedback.contact }}</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span class="text-gray-600 font-medium">Дата отправки:</span>
+                        <span class="text-dark-blue">{{ feedback.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2">
+                        <span class="text-gray-600 font-medium">Статус просмотра:</span>
+                        {% if feedback.is_viewed %}
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Просмотрено</span>
+                        {% else %}
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Новое</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Статус сообщения -->
+            <div>
+                <h2 class="text-lg font-semibold text-dark-blue mb-4">Статус сообщения</h2>
+                <form method="post" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Статус обработки</label>
+                        <select name="status" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold bg-white">
+                            <option value="new" {% if feedback.status == 'new' %}selected{% endif %}>Новое</option>
+                            <option value="processed" {% if feedback.status == 'processed' %}selected{% endif %}>Обработано</option>
+                            <option value="spam" {% if feedback.status == 'spam' %}selected{% endif %}>Спам</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" 
+                            class="w-full bg-gold hover:bg-amber-600 text-white py-2 rounded-lg transition-colors font-medium">
+                        Сохранить изменения
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Сообщение -->
+        <div>
+            <h2 class="text-lg font-semibold text-dark-blue mb-3">Сообщение</h2>
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <p class="text-gray-700 whitespace-pre-line text-sm">{{ feedback.message }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔹 Быстрые действия -->
+    <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <h2 class="text-lg font-semibold text-dark-blue mb-4">Быстрые действия</h2>
+        <div class="flex flex-wrap gap-3">
+            {% if "@" in feedback.contact %}
+            <a href="mailto:{{ feedback.contact }}" 
+               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                Ответить по email
+            </a>
+            {% endif %}
+            
+            {% if feedback.contact|slice:":1" == '+' or feedback.contact|length == 11 %}
+            <a href="tel:{{ feedback.contact }}" 
+               class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                </svg>
+                Позвонить
+            </a>
+            {% endif %}
+            
+            <button id="copy-contact-btn" 
+                    data-contact="{{ feedback.contact }}"
+                    class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+                Скопировать контакт
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeDetailHandlers();
+    });
+
+    function initializeDetailHandlers() {
+        // Обработчик копирования контакта
+        document.getElementById('copy-contact-btn').addEventListener('click', function() {
+            const contact = this.getAttribute('data-contact');
+            copyToClipboard(contact);
+        });
+
+        // Обработчик удаления
+        const deleteBtn = document.getElementById('delete-feedback-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function() {
+                const feedbackId = this.getAttribute('data-feedback-id');
+                const feedbackName = this.getAttribute('data-feedback-name');
+                deleteFeedback(feedbackId, feedbackName);
+            });
+        }
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function() {
+            showNotification('Контакт скопирован: ' + text, 'success');
+        }, function(err) {
+            console.error('Ошибка копирования: ', err);
+            showNotification('Ошибка копирования', 'error');
+        });
+    }
+    
+    async function deleteFeedback(feedbackId, feedbackName) {
+        if (!confirm(`Удалить сообщение от "${feedbackName}"?`)) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/crm/feedback/${feedbackId}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                showNotification(data.message, 'success');
+                setTimeout(() => {
+                    window.location.href = "{% url 'crm_feedback' %}";
+                }, 1000);
+            } else {
+                showNotification('Ошибка: ' + data.error, 'error');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            showNotification('Ошибка сети', 'error');
+        }
+    }
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium ${
+            type === 'success' ? 'bg-green-500' : 
+            type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+        }`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+</script>
+{% endblock %}

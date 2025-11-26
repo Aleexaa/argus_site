@@ -18,7 +18,7 @@
 
     <!-- Форма -->
     <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
-      <form id="kpForm" method="post" enctype="multipart/form-data" novalidate class="space-y-6">
+      <form id="kpForm" method="post" action="{% url 'order_kp' %}" enctype="multipart/form-data" novalidate class="space-y-6">
         {% csrf_token %}
 
         <!-- Название компании -->
@@ -27,8 +27,8 @@
             Название компании <span class="text-red-500">*</span>
           </label>
           <input type="text" id="company_name" name="company_name" placeholder="ООО Пример"
-                 class="form-input" required>
-          <p class="error-text hidden">Введите название компании</p>
+                 class="form-input" required minlength="2" maxlength="100" value="{{ form.company_name.value|default:'' }}">
+          <p class="error-text hidden" id="company_name_error">Введите название компании (минимум 2 символа)</p>
         </div>
 
         <!-- Контактное лицо -->
@@ -37,8 +37,8 @@
             Контактное лицо <span class="text-red-500">*</span>
           </label>
           <input type="text" id="contact_person" name="contact_person" placeholder="Иван Иванов"
-                 class="form-input" required>
-          <p class="error-text hidden">Введите контактное лицо</p>
+                 class="form-input" required minlength="2" maxlength="100" value="{{ form.contact_person.value|default:'' }}">
+          <p class="error-text hidden" id="contact_person_error">Введите контактное лицо (минимум 2 символа)</p>
         </div>
 
         <!-- Телефон и Email -->
@@ -48,8 +48,8 @@
               Телефон <span class="text-red-500">*</span>
             </label>
             <input type="tel" id="phone" name="phone" placeholder="+7 (999) 123-45-67"
-                   class="form-input" required pattern="^(\+7|8)\s?\(?\d{3}\)?\s?\d{3}[- ]?\d{2}[- ]?\d{2}$">
-            <p class="error-text hidden">Введите корректный номер телефона</p>
+                   class="form-input" required value="{{ form.phone.value|default:'' }}">
+            <p class="error-text hidden" id="phone_error">Введите корректный номер телефона</p>
           </div>
 
           <div>
@@ -57,8 +57,8 @@
               Email <span class="text-red-500">*</span>
             </label>
             <input type="email" id="email" name="email" placeholder="example@company.ru"
-                   class="form-input" required>
-            <p class="error-text hidden">Введите корректный Email</p>
+                   class="form-input" required value="{{ form.email.value|default:'' }}">
+            <p class="error-text hidden" id="email_error">Введите корректный Email</p>
           </div>
         </div>
 
@@ -69,13 +69,14 @@
           </label>
           <select id="object_type" name="object_type" class="form-input" required>
             <option value="">Выберите тип объекта</option>
-            <option value="residential">Жилое здание</option>
-            <option value="industrial">Промышленный объект</option>
-            <option value="commercial">Торговый центр</option>
-            <option value="office">Офис</option>
-            <option value="government">Гос. учреждение</option>
+            <option value="residential" {% if form.object_type.value == 'residential' %}selected{% endif %}>Жилое здание</option>
+            <option value="industrial" {% if form.object_type.value == 'industrial' %}selected{% endif %}>Промышленный объект</option>
+            <option value="commercial" {% if form.object_type.value == 'commercial' %}selected{% endif %}>Торговый центр</option>
+            <option value="office" {% if form.object_type.value == 'office' %}selected{% endif %}>Офис</option>
+            <option value="government" {% if form.object_type.value == 'government' %}selected{% endif %}>Гос. учреждение</option>
+            <option value="other" {% if form.object_type.value == 'other' %}selected{% endif %}>Другое</option>
           </select>
-          <p class="error-text hidden">Выберите тип объекта</p>
+          <p class="error-text hidden" id="object_type_error">Выберите тип объекта</p>
         </div>
 
         <!-- Адрес -->
@@ -85,7 +86,10 @@
           </label>
           <textarea id="object_address" name="object_address" rows="2"
                     placeholder="г. Казань, ул. Ленина, д. 10"
-                    class="form-input"></textarea>
+                    class="form-input" maxlength="200">{{ form.object_address.value|default:'' }}</textarea>
+          <div class="text-right text-sm text-gray-500 mt-1">
+            <span id="address_counter">0</span>/200 символов
+          </div>
         </div>
 
         <!-- Описание -->
@@ -95,40 +99,136 @@
           </label>
           <textarea id="description" name="description" rows="4"
                     placeholder="Опишите объект, особенности, пожелания..."
-                    class="form-input"></textarea>
+                    class="form-input" maxlength="1000">{{ form.description.value|default:'' }}</textarea>
+          <div class="text-right text-sm text-gray-500 mt-1">
+            <span id="description_counter">0</span>/1000 символов
+          </div>
         </div>
 
         <!-- Услуги -->
         <div>
           <label class="block text-dark-blue mb-3 font-medium">Выберите услуги <span class="text-red-500">*</span></label>
-          <div class="space-y-2">
+          <div class="space-y-2" id="services_container">
             {% for service in services %}
-              <label class="flex items-center space-x-3">
+              <label class="flex items-center space-x-3 p-2 rounded hover:bg-gray-50 transition-colors">
                 <input type="checkbox" name="services" value="{{ service.id }}"
-                       class="rounded border-gray-300 text-gold focus:ring-gold">
+                       class="rounded border-gray-300 text-gold focus:ring-gold service-checkbox"
+                       {% if service.id in selected_services %}checked{% endif %}>
                 <span class="text-gray-700">{{ service.name }}</span>
               </label>
+            {% empty %}
+              <p class="text-gray-500">Нет доступных услуг</p>
             {% endfor %}
           </div>
-          <p class="error-text hidden">Выберите хотя бы одну услугу</p>
+          <p class="error-text hidden" id="services_error">Выберите хотя бы одну услугу</p>
         </div>
 
         <!-- Файл -->
         <div>
           <label class="block text-dark-blue mb-2 font-medium">Прикрепить документ</label>
           <div id="file-drop" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-gold transition">
-            <input type="file" id="fileInput" name="attached_file" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx">
-            <p id="fileLabel" class="text-gray-500">Нажмите для выбора или перетащите файл сюда</p>
-            <p id="fileName" class="text-gray-700 mt-2 font-medium hidden"></p>
-            <button type="button" id="removeFileBtn" class="text-red-500 mt-2 hidden hover:underline text-sm">Удалить файл</button>
+            <input type="file" id="fileInput" name="attached_file" class="hidden" 
+                   accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.zip,.rar" 
+                   data-max-size="10485760">
+            <div id="fileContent">
+              <svg class="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+              </svg>
+              <p id="fileLabel" class="text-gray-500 mb-1">Нажмите для выбора или перетащите файл сюда</p>
+              <p class="text-xs text-gray-400">PDF, DOC, XLS, JPG, PNG до 10MB</p>
+            </div>
+            <div id="filePreview" class="hidden">
+              <div class="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+                <div class="flex items-center space-x-3">
+                  <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                  <div>
+                    <p id="fileName" class="text-gray-700 font-medium text-sm"></p>
+                    <p id="fileSize" class="text-gray-500 text-xs"></p>
+                  </div>
+                </div>
+                <button type="button" id="removeFileBtn" class="text-red-500 hover:text-red-700 transition-colors">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <p class="error-text hidden" id="file_error"></p>
+        </div>
+
+        <!-- ✅ БЛОК СОГЛАСИЯ НА ОБРАБОТКУ ПЕРСОНАЛЬНЫХ ДАННЫХ -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div class="flex items-start space-x-3">
+            <input type="checkbox" id="pd_agreed" name="pd_agreed" required
+                   class="mt-1 rounded border-gray-300 text-gold focus:ring-gold"
+                   {% if form.pd_agreed.value %}checked{% endif %}>
+            <div>
+              <label for="pd_agreed" class="block text-dark-blue font-medium mb-1">
+                Согласие на обработку персональных данных <span class="text-red-500">*</span>
+              </label>
+              <p class="text-sm text-gray-600">
+                Я даю согласие на обработку моих персональных данных в соответствии с 
+                <a href="{% url 'privacy_policy' %}" target="_blank" class="text-gold hover:text-amber-600 underline">
+                  Политикой конфиденциальности
+                </a> 
+                и принимаю 
+                <a href="{% url 'terms' %}" target="_blank" class="text-gold hover:text-amber-600 underline">
+                  Пользовательское соглашение
+                </a>.
+                Согласие может быть отозвано мной в любой момент путем письменного уведомления.
+              </p>
+            </div>
+          </div>
+          <p class="error-text hidden mt-2" id="pd_agreed_error">
+            Необходимо дать согласие на обработку персональных данных
+          </p>
+        </div>
+
+        <!-- Прогресс заполнения -->
+        <div class="bg-gray-50 rounded-lg p-4">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm font-medium text-dark-blue">Заполнено формы:</span>
+            <span id="progressPercent" class="text-sm font-bold text-gold">0%</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2">
+            <div id="progressBar" class="bg-gold h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
           </div>
         </div>
 
+        <!-- Сообщения об ошибках Django -->
+        {% if messages %}
+        <div class="mb-6">
+          {% for message in messages %}
+            <div class="p-4 rounded-lg {% if message.tags == 'error' %}bg-red-50 text-red-700 border border-red-200{% else %}bg-green-50 text-green-700 border border-green-200{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
         <!-- Отправить -->
-        <button type="submit"
-                class="w-full bg-gold hover:bg-amber-600 text-white py-4 rounded-lg transition-colors font-medium text-lg">
-          Отправить заявку
+        <button type="submit" id="submitBtn"
+                class="w-full bg-gold hover:bg-amber-600 text-white py-4 rounded-lg transition-all duration-300 font-medium text-lg disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2">
+          <span>Отправить заявку</span>
+          <svg id="submitSpinner" class="w-5 h-5 hidden animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
         </button>
+
+        <!-- Сообщение об успехе -->
+        <div id="successMessage" class="hidden bg-green-50 border border-green-200 rounded-lg p-4 text-green-700">
+          <div class="flex items-center space-x-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span class="font-medium">Заявка успешно отправлена!</span>
+          </div>
+          <p class="text-sm mt-1">Мы свяжемся с вами в ближайшее время.</p>
+        </div>
       </form>
     </div>
   </div>
@@ -148,89 +248,460 @@
   border-color: #C9A96A;
   box-shadow: 0 0 0 3px rgba(201,169,106,0.2);
 }
+.form-input.error {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220,38,38,0.1);
+}
 .error-text {
   font-size: 0.875rem;
   color: #dc2626;
+  margin-top: 0.25rem;
 }
-input.error, select.error, textarea.error {
-  border-color: #dc2626 !important;
+#file-drop.dragover {
+  border-color: #C9A96A;
+  background-color: rgba(201,169,106,0.05);
+}
+#file-drop.error {
+  border-color: #dc2626;
+}
+.progress-complete {
+  background-color: #10b981 !important;
 }
 </style>
 
-<!-- ===== JS валидация ===== -->
+<!-- ===== JS валидация и автоматизация ===== -->
 <script>
-document.getElementById('kpForm').addEventListener('submit', function(e) {
-  let valid = true;
-  document.querySelectorAll('.error-text').forEach(el => el.classList.add('hidden'));
-  document.querySelectorAll('.form-input').forEach(el => el.classList.remove('error'));
+document.addEventListener('DOMContentLoaded', function() {
+  // Основные элементы
+  const form = document.getElementById('kpForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const submitSpinner = document.getElementById('submitSpinner');
+  const successMessage = document.getElementById('successMessage');
+  const progressBar = document.getElementById('progressBar');
+  const progressPercent = document.getElementById('progressPercent');
 
-  // Проверяем обязательные поля
-  ['company_name', 'contact_person', 'phone', 'email', 'object_type'].forEach(id => {
-    const field = document.getElementById(id);
-    if (!field.value.trim()) {
-      showError(field, "Заполните это поле");
-      valid = false;
+  // Если форма не найдена, выходим
+  if (!form) return;
+
+  // Простая функция для получения элементов ошибок
+  function getErrorElement(fieldName) {
+    return document.getElementById(fieldName + '_error');
+  }
+
+  // Переменные для маски телефона
+  let lastPhoneValue = '';
+
+  // Инициализация
+  initForm();
+
+  function initForm() {
+    // Инициализация счетчиков
+    updateCounter('object_address');
+    updateCounter('description');
+
+    // Обработчики событий
+    setupEventListeners();
+    setupFileUpload();
+    calculateProgress();
+
+    // Валидация телефона с умной маской
+    initPhoneMask();
+  }
+
+  function setupEventListeners() {
+    // Обработчики для текстовых полей
+    const textFields = ['company_name', 'contact_person', 'phone', 'email', 'object_type', 'object_address', 'description'];
+    textFields.forEach(fieldName => {
+      const field = document.getElementById(fieldName);
+      if (field) {
+        field.addEventListener('input', () => {
+          validateField(fieldName);
+          calculateProgress();
+          if (fieldName === 'object_address' || fieldName === 'description') {
+            updateCounter(fieldName);
+          }
+        });
+        field.addEventListener('blur', () => validateField(fieldName));
+      }
+    });
+
+    // Обработчики для чекбоксов услуг
+    const serviceCheckboxes = document.querySelectorAll('.service-checkbox');
+    serviceCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        validateField('services');
+        calculateProgress();
+      });
+    });
+
+    // Обработчик для согласия
+    const pdAgreed = document.getElementById('pd_agreed');
+    if (pdAgreed) {
+      pdAgreed.addEventListener('change', () => {
+        validateField('pd_agreed');
+        calculateProgress();
+      });
     }
-  });
 
-  // Проверка телефона
-  const phone = document.getElementById('phone');
-  const phonePattern = /^(\+7|8)\s?\(?\d{3}\)?\s?\d{3}[- ]?\d{2}[- ]?\d{2}$/;
-  if (phone.value && !phonePattern.test(phone.value)) {
-    showError(phone, "Введите корректный номер телефона");
-    valid = false;
+    // Отправка формы
+    form.addEventListener('submit', handleFormSubmit);
   }
 
-  // Проверка email
-  const email = document.getElementById('email');
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (email.value && !emailPattern.test(email.value)) {
-    showError(email, "Введите корректный Email");
-    valid = false;
+  function setupFileUpload() {
+    const fileDrop = document.getElementById('file-drop');
+    const fileInput = document.getElementById('fileInput');
+    const fileContent = document.getElementById('fileContent');
+    const filePreview = document.getElementById('filePreview');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const removeFileBtn = document.getElementById('removeFileBtn');
+
+    if (!fileDrop || !fileInput) return;
+
+    fileDrop.addEventListener('click', () => fileInput.click());
+
+    // Drag & Drop
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      fileDrop.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      fileDrop.addEventListener(eventName, () => fileDrop.classList.add('dragover'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      fileDrop.addEventListener(eventName, () => fileDrop.classList.remove('dragover'), false);
+    });
+
+    fileDrop.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+      const files = e.dataTransfer.files;
+      if (files.length) handleFiles(files[0]);
+    }
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length) handleFiles(fileInput.files[0]);
+    });
+
+    if (removeFileBtn) {
+      removeFileBtn.addEventListener('click', resetFileInput);
+    }
+
+    function handleFiles(file) {
+      const maxSize = 10485760; // 10MB
+      
+      if (file.size > maxSize) {
+        showFileError(`Файл слишком большой. Максимальный размер: ${formatFileSize(maxSize)}`);
+        return;
+      }
+
+      const acceptedTypes = ['.pdf','.doc','.docx','.xls','.xlsx','.jpg','.jpeg','.png','.zip','.rar'];
+      const isValidType = acceptedTypes.some(type => file.name.toLowerCase().endsWith(type));
+      
+      if (!isValidType) {
+        showFileError('Недопустимый тип файла');
+        return;
+      }
+
+      hideFileError();
+      if (fileName) fileName.textContent = file.name;
+      if (fileSize) fileSize.textContent = formatFileSize(file.size);
+      if (fileContent) fileContent.classList.add('hidden');
+      if (filePreview) filePreview.classList.remove('hidden');
+      calculateProgress();
+    }
+
+    function resetFileInput() {
+      if (fileInput) fileInput.value = '';
+      if (fileContent) fileContent.classList.remove('hidden');
+      if (filePreview) filePreview.classList.add('hidden');
+      hideFileError();
+      calculateProgress();
+    }
+
+    function showFileError(message) {
+      const errorElement = getErrorElement('file');
+      if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.classList.remove('hidden');
+        fileDrop.classList.add('error');
+      }
+    }
+
+    function hideFileError() {
+      const errorElement = getErrorElement('file');
+      if (errorElement) {
+        errorElement.classList.add('hidden');
+        fileDrop.classList.remove('error');
+      }
+    }
   }
 
-  // Проверка выбора услуги
-  const checkedServices = document.querySelectorAll('input[name="services"]:checked');
-  if (checkedServices.length === 0) {
-    const serviceError = document.querySelector('p.error-text:last-of-type');
-    serviceError.classList.remove('hidden');
-    valid = false;
+  function initPhoneMask() {
+    const phoneInput = document.getElementById('phone');
+    if (!phoneInput) return;
+    
+    phoneInput.addEventListener('input', function(e) {
+      const input = e.target;
+      const originalValue = input.value.replace(/\D/g, '');
+      
+      const isDeletion = input.value.length < lastPhoneValue.length;
+      const cursorPosition = input.selectionStart;
+      
+      let formattedValue = '';
+      
+      if (originalValue === '' || originalValue === '7' || originalValue === '8') {
+        formattedValue = '+7';
+      } else if (originalValue.length <= 1) {
+        formattedValue = `+7 (${originalValue}`;
+      } else if (originalValue.length <= 4) {
+        formattedValue = `+7 (${originalValue.substring(1, 4)}`;
+      } else if (originalValue.length <= 7) {
+        formattedValue = `+7 (${originalValue.substring(1, 4)}) ${originalValue.substring(4, 7)}`;
+      } else if (originalValue.length <= 9) {
+        formattedValue = `+7 (${originalValue.substring(1, 4)}) ${originalValue.substring(4, 7)}-${originalValue.substring(7, 9)}`;
+      } else {
+        formattedValue = `+7 (${originalValue.substring(1, 4)}) ${originalValue.substring(4, 7)}-${originalValue.substring(7, 9)}-${originalValue.substring(9, 11)}`;
+      }
+      
+      input.value = formattedValue;
+      lastPhoneValue = formattedValue;
+      
+      if (isDeletion) {
+        let newCursorPosition = cursorPosition;
+        if (cursorPosition > 0 && [' ', '(', ')', '-'].includes(lastPhoneValue.charAt(cursorPosition - 1))) {
+          newCursorPosition = cursorPosition - 1;
+        }
+        input.setSelectionRange(newCursorPosition, newCursorPosition);
+      }
+    });
   }
 
-  if (!valid) e.preventDefault();
+  function validateField(fieldName) {
+    const field = document.getElementById(fieldName);
+    const errorElement = getErrorElement(fieldName);
+    
+    if (!field || !errorElement) return true;
+
+    let isValid = true;
+    let errorMessage = '';
+
+    switch (fieldName) {
+      case 'company_name':
+      case 'contact_person':
+        isValid = field.value.trim().length >= 2;
+        errorMessage = `Введите ${fieldName === 'company_name' ? 'название компании' : 'контактное лицо'} (минимум 2 символа)`;
+        break;
+      
+      case 'phone':
+        const phoneValue = field.value.replace(/\D/g, '');
+        isValid = phoneValue.length === 11 && (phoneValue.startsWith('7') || phoneValue.startsWith('8'));
+        errorMessage = 'Введите корректный номер телефона';
+        break;
+      
+      case 'email':
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        isValid = emailPattern.test(field.value.trim());
+        errorMessage = 'Введите корректный Email';
+        break;
+      
+      case 'object_type':
+        isValid = field.value !== '';
+        errorMessage = 'Выберите тип объекта';
+        break;
+      
+      case 'services':
+        const checkedServices = document.querySelectorAll('.service-checkbox:checked');
+        isValid = checkedServices.length > 0;
+        errorMessage = 'Выберите хотя бы одну услугу';
+        break;
+      
+      case 'pd_agreed':
+        isValid = field.checked;
+        errorMessage = 'Необходимо дать согласие на обработку персональных данных';
+        break;
+    }
+
+    // Упрощенная обработка ошибок
+    if (!isValid) {
+      field.classList.add('error');
+      errorElement.textContent = errorMessage;
+      errorElement.classList.remove('hidden');
+    } else {
+      field.classList.remove('error');
+      errorElement.classList.add('hidden');
+    }
+
+    return isValid;
+  }
+
+  function validateAllFields() {
+    const requiredFields = ['company_name', 'contact_person', 'phone', 'email', 'object_type', 'services', 'pd_agreed'];
+    let allValid = true;
+
+    requiredFields.forEach(fieldName => {
+      if (!validateField(fieldName)) {
+        allValid = false;
+      }
+    });
+
+    return allValid;
+  }
+
+  function calculateProgress() {
+    const requiredFields = ['company_name', 'contact_person', 'phone', 'email', 'object_type', 'services', 'pd_agreed'];
+    let completed = 0;
+
+    requiredFields.forEach(fieldName => {
+      const field = document.getElementById(fieldName);
+      if (!field) return;
+
+      if (fieldName === 'services') {
+        const checkedServices = document.querySelectorAll('.service-checkbox:checked');
+        if (checkedServices.length > 0) completed++;
+      } else if (fieldName === 'pd_agreed') {
+        if (field.checked) completed++;
+      } else if (field.value.trim() !== '') {
+        completed++;
+      }
+    });
+
+    // Опциональные поля
+    const optionalFields = ['object_address', 'description'];
+    optionalFields.forEach(fieldName => {
+      const field = document.getElementById(fieldName);
+      if (field && field.value.trim() !== '') {
+        completed += 0.5;
+      }
+    });
+
+    // Файл
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput && fileInput.files.length > 0) {
+      completed += 0.5;
+    }
+
+    const total = requiredFields.length + (optionalFields.length * 0.5) + 0.5;
+    const progress = Math.round((completed / total) * 100);
+
+    if (progressBar) progressBar.style.width = `${progress}%`;
+    if (progressPercent) progressPercent.textContent = `${progress}%`;
+
+    if (progress === 100 && progressBar) {
+      progressBar.classList.add('progress-complete');
+    } else if (progressBar) {
+      progressBar.classList.remove('progress-complete');
+    }
+  }
+
+  function updateCounter(fieldName) {
+    const field = document.getElementById(fieldName);
+    const counter = document.getElementById(fieldName + '_counter');
+    
+    if (field && counter) {
+      counter.textContent = field.value.length;
+    }
+  }
+
+  async function handleFormSubmit(e) {
+    e.preventDefault();
+    
+    if (!validateAllFields()) {
+      showNotification('Заполните все обязательные поля правильно', 'error');
+      return;
+    }
+
+    // Показ загрузки
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      const span = submitBtn.querySelector('span');
+      if (span) span.textContent = 'Отправка...';
+    }
+    if (submitSpinner) submitSpinner.classList.remove('hidden');
+
+    try {
+      const formData = new FormData(form);
+      
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+
+      if (response.ok) {
+        if (successMessage) successMessage.classList.remove('hidden');
+        form.reset();
+        resetFileInput();
+        calculateProgress();
+        showNotification('Заявка успешно отправлена!', 'success');
+        
+        if (successMessage) successMessage.scrollIntoView({ behavior: 'smooth' });
+        
+        setTimeout(() => {
+          window.location.href = "{% url 'order_success' %}";
+        }, 2000);
+      } else {
+        throw new Error('Ошибка сервера');
+      }
+      
+    } catch (error) {
+      showNotification('Ошибка при отправке. Попробуйте еще раз.', 'error');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        const span = submitBtn.querySelector('span');
+        if (span) span.textContent = 'Отправить заявку';
+      }
+      if (submitSpinner) submitSpinner.classList.add('hidden');
+    }
+  }
+
+  // Вспомогательные функции
+  function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg text-white font-medium ${
+      type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    }`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 5000);
+  }
+
+  function resetFileInput() {
+    const fileInput = document.getElementById('fileInput');
+    const fileContent = document.getElementById('fileContent');
+    const filePreview = document.getElementById('filePreview');
+    
+    if (fileInput) fileInput.value = '';
+    if (fileContent) fileContent.classList.remove('hidden');
+    if (filePreview) filePreview.classList.add('hidden');
+    
+    const errorElement = getErrorElement('file');
+    if (errorElement) errorElement.classList.add('hidden');
+    
+    const fileDrop = document.getElementById('file-drop');
+    if (fileDrop) fileDrop.classList.remove('error');
+  }
 });
-
-function showError(field, message) {
-  field.classList.add('error');
-  const errorText = field.parentElement.querySelector('.error-text');
-  if (errorText) {
-    errorText.textContent = "⚠ " + message;
-    errorText.classList.remove('hidden');
-  }
-}
-
-// Файл
-const drop = document.getElementById('file-drop');
-const input = document.getElementById('fileInput');
-const fileName = document.getElementById('fileName');
-const removeBtn = document.getElementById('removeFileBtn');
-const label = document.getElementById('fileLabel');
-
-drop.addEventListener('click', () => input.click());
-input.addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (file) {
-    fileName.textContent = `📎 ${file.name}`;
-    fileName.classList.remove('hidden');
-    removeBtn.classList.remove('hidden');
-    label.classList.add('hidden');
-  }
-});
-removeBtn.addEventListener('click', () => {
-  input.value = '';
-  fileName.classList.add('hidden');
-  removeBtn.classList.add('hidden');
-  label.classList.remove('hidden');
-});
-</script>
+</script>   
 {% endblock %}

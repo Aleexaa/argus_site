@@ -1,0 +1,61 @@
+{% extends 'crm/base_crm.html' %}
+
+{% block title %}Удаление кандидата | CRM Аргус{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-xl shadow-soft p-8">
+        <!-- Заголовок -->
+        <div class="flex items-center gap-3 mb-8">
+            <a href="{% url 'crm_candidates_list' %}" class="text-gray-500 hover:text-gold transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <h1 class="text-2xl font-bold text-gray-900">Удаление кандидата</h1>
+        </div>
+
+        <!-- Предупреждение -->
+        <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+            <div class="flex items-center gap-3 mb-4">
+                <i data-lucide="alert-triangle" class="w-6 h-6 text-red-600"></i>
+                <h2 class="text-lg font-semibold text-red-800">Внимание!</h2>
+            </div>
+            <p class="text-red-700 mb-4">
+                Вы собираетесь удалить кандидата <strong>"{{ candidate.name }}"</strong>.
+            </p>
+            <p class="text-red-600 text-sm">
+                ❗ Это действие нельзя отменить. Все данные кандидата будут безвозвратно удалены.
+            </p>
+        </div>
+
+        <!-- Информация о кандидате -->
+        <div class="bg-gray-50 rounded-lg p-6 mb-6">
+            <h3 class="font-semibold text-gray-900 mb-3">Информация о кандидате:</h3>
+            <div class="space-y-2 text-sm text-gray-700">
+                <p><strong>Имя:</strong> {{ candidate.name }}</p>
+                <p><strong>Телефон:</strong> {{ candidate.phone_number }}</p>
+                <p><strong>Вакансия:</strong> {{ candidate.vacancy.title }}</p>
+                <p><strong>Дата отклика:</strong> {{ candidate.applied_at|date:"d.m.Y H:i" }}</p>
+                {% if candidate.comment %}
+                <p><strong>Комментарий:</strong> {{ candidate.comment|truncatewords:10 }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Форма удаления -->
+        <form method="post">
+            {% csrf_token %}
+            <div class="flex gap-3 pt-6 border-t border-gray-200">
+                <button type="submit" 
+                        class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center gap-2">
+                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                    Удалить кандидата
+                </button>
+                <a href="{% url 'crm_candidates_list' %}" 
+                   class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                    Отмена
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

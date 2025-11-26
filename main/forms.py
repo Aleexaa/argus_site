@@ -1,6 +1,7 @@
 from django import forms
-from .models import Request, Service, Client
-
+from .models import Request, Service
+from crm.models import Candidate, Vacancy
+from crm.models import Client 
 
 class RequestForm(forms.ModelForm):
     company_name = forms.CharField(
@@ -111,4 +112,15 @@ class RequestForm(forms.ModelForm):
             if data.get('services'):
                 request.services.set(data['services'])
 
+
         return request
+class CandidateForm(forms.ModelForm):
+    pd_agreed = forms.BooleanField(
+        required=True,
+        label="Согласие на обработку персональных данных",
+        error_messages={'required': 'Необходимо дать согласие на обработку персональных данных'}
+    )
+    
+    class Meta:
+        model = Candidate
+        fields = ['name', 'phone_number', 'comment', 'pd_agreed']

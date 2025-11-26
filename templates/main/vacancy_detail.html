@@ -1,0 +1,448 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-dark-blue text-white py-8">
+    <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto">
+            <!-- Back Button -->
+            <a href="{% url 'vacancies_list' %}" 
+               class="inline-flex items-center text-gold hover:text-amber-200 mb-6 transition-colors duration-200"
+               aria-label="Вернуться к списку вакансий">
+                <svg class="w-4 h-4 mr-2" 
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Назад к вакансиям
+            </a>
+
+            <!-- Header with Logo and Vacancy Info -->
+            <div class="flex flex-col md:flex-row gap-6 items-start">
+    <!-- Logo -->
+    <div class="flex-shrink-0">
+        <a href="{% url 'home' %}" class="flex items-center gap-3 group" aria-label="На главную страницу">
+            <img src="{% static 'images/logo.jpeg' %}" alt="Компания Аргус" 
+                 class="h-20 w-auto rounded-lg">
+        </a>
+    </div>
+    
+    <!-- Vacancy Info -->
+    <div class="flex-1">
+        <h1 class="text-2xl font-bold mb-2">{{ vacancy.title }}</h1>
+        
+        <!-- Salary - Large and prominent -->
+        {% if vacancy.salary %}
+        <div class="mb-4">
+            <span class="text-3xl font-bold text-gold">
+                {{ vacancy.salary }}
+            </span>
+        </div>
+        {% endif %}
+        
+        <!-- Experience and Employment Type Badges -->
+        <div class="flex flex-wrap gap-2 mb-4">
+            {% if vacancy.is_active %}
+            <span class="bg-gold text-dark-blue px-3 py-1 rounded-full text-sm font-medium">
+                🔥 Активная вакансия
+            </span>
+            {% endif %}
+            
+            {% if vacancy.experience and vacancy.experience != "не указан" %}
+            <span class="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-medium">
+                🎯 {{ vacancy.experience }}
+            </span>
+            {% endif %}
+            
+            {% if vacancy.employment_type and vacancy.employment_type != "не указан" %}
+            <span class="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-medium">
+                💼 {{ vacancy.employment_type }}
+            </span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- Content Section -->
+<section class="py-8 bg-light-gray">
+    <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto">
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Left Column - Response Button and Company Info -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- Response Button -->
+                    <div class="bg-white rounded-lg border border-gray-200 p-4 text-center">
+                        <button id="show-form-btn" 
+                                class="w-full bg-gold hover:bg-amber-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 text-base mb-2"
+                                aria-expanded="false"
+                                aria-controls="response-form">
+                            Откликнуться
+                        </button>
+                        <p class="text-gray-600 text-sm">Нажмите чтобы отправить заявку</p>
+                    </div>
+
+                    <!-- Vacancy Details Card - Fixed width -->
+                    <div class="bg-white rounded-lg border border-gray-200 p-6 w-full">
+    <h3 class="font-bold text-dark-blue mb-6 text-lg">Детали о вакансии</h3>
+    <div class="space-y-4 text-base">
+        <!-- Salary -->
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="text-gray-600">💰</span>
+                <span class="text-gray-600">Зарплата</span>
+            </div>
+            <div>
+                <span class="font-semibold text-dark-blue text-lg">
+                    {{ vacancy.salary|default:"не указана" }}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Experience -->
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="text-gray-600">🎯</span>
+                <span class="text-gray-600">Опыт работы</span>
+            </div>
+            <div>
+                <span class="font-semibold text-dark-blue">
+                    {{ vacancy.experience|default:"не указан" }}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Employment Type -->
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="text-gray-600">💼</span>
+                <span class="text-gray-600">Тип занятости</span>
+            </div>
+            <div>
+                <span class="font-semibold text-dark-blue">
+                    {{ vacancy.employment_type|default:"не указан" }}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Publication Date -->
+        <div class="pt-3 border-t border-gray-100">
+            <div class="flex items-center gap-2 mb-1">
+                <span class="text-gray-600">📅</span>
+                <span class="text-gray-600">Опубликована</span>
+            </div>
+            <div>
+                <span class="font-semibold text-dark-blue">{{ vacancy.created_at|date:"d.m.Y" }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+                    <!-- Company Info -->
+                    <div class="bg-white rounded-lg border border-gray-200 p-6">
+                        <h3 class="font-bold text-dark-blue mb-4 text-lg">О компании</h3>
+                        <div class="text-gray-700 text-base space-y-4">
+                            <p><strong>Компания Аргус</strong> начала свою деятельность в 2004 году как небольшая команда специалистов в области пожарной безопасности.</p>
+                            <p>За более чем 20 лет работы мы выросли в крупную компанию, реализовав сотни проектов различной сложности - от небольших офисных помещений до крупных торговых центров и промышленных объектов.</p>
+                            <p class="text-gold font-medium">Мы ценим профессиональный рост наших сотрудников и создаем комфортные условия для работы.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Vacancy Details -->
+                <div class="lg:col-span-2">
+                    <!-- Response Form -->
+                    <div id="response-form" 
+                         class="hidden bg-white rounded-lg border border-gray-200 mb-6"
+                         role="dialog"
+                         aria-labelledby="form-title"
+                         aria-hidden="true">
+                        
+                        <!-- Form Header -->
+                        <div class="bg-gold text-white p-6 rounded-t-lg">
+                            <h3 id="form-title" class="text-xl font-bold mb-2">Откликнуться на вакансию</h3>
+                            <p class="text-amber-100 text-base">Заполните форму и мы свяжемся с вами</p>
+                        </div>
+                        
+                        <!-- Form Body -->
+                        <div class="p-6">
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg mb-4 text-base" role="alert">
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 mr-2 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <div>
+                                                <p class="font-semibold">Успешно отправлено!</p>
+                                                <p class="text-green-600 mt-1">{{ message }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            
+                            <form method="post" class="space-y-4" aria-labelledby="form-title">
+                                {% csrf_token %}
+                                
+                                <div class="space-y-2">
+                                    <label for="name-input" class="block text-dark-blue text-base font-semibold">
+                                        Ваше имя *
+                                    </label>
+                                    <input type="text" 
+                                           id="name-input"
+                                           name="{{ form.name.name }}" 
+                                           value="{{ form.name.value|default:'' }}"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-1 focus:ring-gold focus:border-gold transition-colors duration-200 bg-white text-base"
+                                           placeholder="Введите ваше имя"
+                                           required
+                                           aria-required="true">
+                                    {% if form.name.errors %}
+                                        <div class="text-red-500 text-sm mt-1" role="alert">
+                                            {{ form.name.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <label for="phone-input" class="block text-dark-blue text-base font-semibold">
+                                        Телефон *
+                                    </label>
+                                    <input type="tel" 
+                                           id="phone-input"
+                                           name="{{ form.phone_number.name }}" 
+                                           value="{{ form.phone_number.value|default:'' }}"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-1 focus:ring-gold focus:border-gold transition-colors duration-200 bg-white text-base"
+                                           placeholder="+7 (999) 999-99-99"
+                                           required
+                                           aria-required="true">
+                                    {% if form.phone_number.errors %}
+                                        <div class="text-red-500 text-sm mt-1" role="alert">
+                                            {{ form.phone_number.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <label for="comment-input" class="block text-dark-blue text-base font-semibold">
+                                        Ваше сообщение
+                                    </label>
+                                    <textarea id="comment-input"
+                                              name="{{ form.comment.name }}" 
+                                              class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-1 focus:ring-gold focus:border-gold transition-colors duration-200 bg-white text-base resize-none"
+                                              placeholder="Расскажите о своём опыте..."
+                                              rows="4"
+                                              aria-describedby="comment-hint">{{ form.comment.value|default:'' }}</textarea>
+                                    <p id="comment-hint" class="text-gray-500 text-sm mt-1">
+                                        Необязательное поле
+                                    </p>
+                                    {% if form.comment.errors %}
+                                        <div class="text-red-500 text-sm mt-1" role="alert">{{ form.comment.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- ✅ БЛОК СОГЛАСИЯ НА ОБРАБОТКУ ПЕРСОНАЛЬНЫХ ДАННЫХ -->
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                                    <div class="flex items-start space-x-3">
+                                        <input type="checkbox" id="pd_agreed" name="pd_agreed" required
+                                               class="mt-1 rounded border-gray-300 text-gold focus:ring-gold"
+                                               {% if form.pd_agreed.value %}checked{% endif %}>
+                                        <div>
+                                            <label for="pd_agreed" class="block text-dark-blue font-medium mb-1">
+                                                Согласие на обработку персональных данных <span class="text-red-500">*</span>
+                                            </label>
+                                            <p class="text-sm text-gray-600">
+                                                Я даю согласие на обработку моих персональных данных в соответствии с 
+                                                <a href="{% url 'privacy_policy' %}" target="_blank" class="text-gold hover:text-amber-600 underline">
+                                                    Политикой конфиденциальности
+                                                </a> 
+                                                и принимаю 
+                                                <a href="{% url 'terms' %}" target="_blank" class="text-gold hover:text-amber-600 underline">
+                                                    Пользовательское соглашение
+                                                </a>.
+                                                Согласие может быть отозвано мной в любой момент путем письменного уведомления.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {% if form.pd_agreed.errors %}
+                                        <div class="text-red-500 text-sm mt-2" role="alert">
+                                            {{ form.pd_agreed.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="flex gap-3 pt-2">
+                                    <button type="submit" 
+                                            class="flex-1 bg-gold hover:bg-amber-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 text-base">
+                                        Отправить отклик
+                                    </button>
+                                    <button type="button" 
+                                            id="hide-form-btn"
+                                            class="px-6 py-3 border border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 rounded-lg transition-colors duration-200 font-medium text-base">
+                                        Отмена
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Vacancy Description and Benefits Container -->
+                    <div class="space-y-6">
+                        <!-- Detailed Vacancy Information -->
+                        <div class="bg-white rounded-lg border border-gray-200 p-6">
+                            <h2 class="text-xl font-bold text-dark-blue mb-6">Подробности вакансии</h2>
+                            
+                            <div class="space-y-6">
+                                {% if vacancy.responsibilities %}
+                                <div>
+                                    <h3 class="text-lg font-semibold text-dark-blue mb-3 flex items-center gap-2">
+                                        <span class="w-2 h-2 bg-gold rounded-full"></span>
+                                        Обязанности
+                                    </h3>
+                                    <div class="text-gray-700 text-base leading-relaxed">
+                                        {{ vacancy.responsibilities|linebreaks }}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if vacancy.requirements %}
+                                <div>
+                                    <h3 class="text-lg font-semibold text-dark-blue mb-3 flex items-center gap-2">
+                                        <span class="w-2 h-2 bg-gold rounded-full"></span>
+                                        Требования
+                                    </h3>
+                                    <div class="text-gray-700 text-base leading-relaxed">
+                                        {{ vacancy.requirements|linebreaks }}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if vacancy.conditions %}
+                                <div>
+                                    <h3 class="text-lg font-semibold text-dark-blue mb-3 flex items-center gap-2">
+                                        <span class="w-2 h-2 bg-gold rounded-full"></span>
+                                        Условия
+                                    </h3>
+                                    <div class="text-gray-700 text-base leading-relaxed">
+                                        {{ vacancy.conditions|linebreaks }}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Fallback to description if no separate fields -->
+                                {% if not vacancy.responsibilities and not vacancy.requirements and not vacancy.conditions %}
+                                <div class="text-gray-700 text-base leading-relaxed">
+                                    {{ vacancy.description|linebreaks }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Benefits Section -->
+                        <div class="bg-white rounded-lg border border-gray-200 p-6">
+                            <h2 class="text-xl font-bold text-dark-blue mb-4">Мы предлагаем</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="flex items-center gap-3 p-3 bg-white border border-gold/20 rounded-lg">
+                                    <div class="w-10 h-10 bg-gold/10 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-gold text-base">💰</span>
+                                    </div>
+                                    <span class="text-dark-blue text-base font-medium">Конкурентная зарплата</span>
+                                </div>
+                                <div class="flex items-center gap-3 p-3 bg-white border border-gold/20 rounded-lg">
+                                    <div class="w-10 h-10 bg-gold/10 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-gold text-base">📚</span>
+                                    </div>
+                                    <span class="text-dark-blue text-base font-medium">Обучение и развитие</span>
+                                </div>
+                                <div class="flex items-center gap-3 p-3 bg-white border border-gold/20 rounded-lg">
+                                    <div class="w-10 h-10 bg-gold/10 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-gold text-base">🎯</span>
+                                    </div>
+                                    <span class="text-dark-blue text-base font-medium">Стабильная работа</span>
+                                </div>
+                                <div class="flex items-center gap-3 p-3 bg-white border border-gold/20 rounded-lg">
+                                    <div class="w-10 h-10 bg-gold/10 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-gold text-base">🏥</span>
+                                    </div>
+                                    <span class="text-dark-blue text-base font-medium">Медстрахование</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const showFormBtn = document.getElementById('show-form-btn');
+    const hideFormBtn = document.getElementById('hide-form-btn');
+    const responseForm = document.getElementById('response-form');
+    
+    const hasSuccessMessages = document.querySelector('.bg-green-50') !== null;
+    
+    function showForm() {
+        if (!responseForm) return;
+        
+        responseForm.classList.remove('hidden');
+        responseForm.setAttribute('aria-hidden', 'false');
+        
+        if (showFormBtn) {
+            showFormBtn.classList.add('hidden');
+            showFormBtn.setAttribute('aria-expanded', 'true');
+        }
+        
+        responseForm.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
+    }
+    
+    function hideForm() {
+        if (!responseForm) return;
+        
+        responseForm.classList.add('hidden');
+        responseForm.setAttribute('aria-hidden', 'true');
+        
+        if (showFormBtn) {
+            showFormBtn.classList.remove('hidden');
+            showFormBtn.setAttribute('aria-expanded', 'false');
+        }
+    }
+    
+    if (hasSuccessMessages) {
+        showForm();
+    }
+    
+    if (showFormBtn) {
+        showFormBtn.addEventListener('click', showForm);
+    }
+    
+    if (hideFormBtn) {
+        hideFormBtn.addEventListener('click', hideForm);
+    }
+    
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && !responseForm.classList.contains('hidden')) {
+            hideForm();
+        }
+    });
+
+    // Валидация формы перед отправкой
+    const form = responseForm ? responseForm.querySelector('form') : null;
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const pdAgreed = document.getElementById('pd_agreed');
+            if (pdAgreed && !pdAgreed.checked) {
+                e.preventDefault();
+                alert('Пожалуйста, дайте согласие на обработку персональных данных');
+                pdAgreed.focus();
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

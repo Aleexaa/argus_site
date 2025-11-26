@@ -1,0 +1,372 @@
+{% extends "crm/base_crm.html" %}
+{% load static %}
+
+{% block title %}Все клиенты - CRM Аргус{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Все клиенты</h1>
+        
+        <!-- Кнопка создания клиента для владельца -->
+        {% if is_owner %}
+        <a href="{% url 'crm_create_client' %}" class="btn-gold px-6 py-3 rounded-lg font-medium flex items-center gap-2">
+            <i data-lucide="plus" class="w-5 h-5"></i>
+            Добавить клиента
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- 🔍 Поиск и фильтры -->
+    <div class="bg-white rounded-xl shadow-soft p-6 mb-6">
+        <form method="GET" action="{% url 'crm_clients' %}" id="search-form">
+            <div class="flex gap-4">
+                <div class="flex-1">
+                    <input type="text" 
+                           name="search" 
+                           value="{{ search_query }}"
+                           placeholder="Поиск по названию компании, контактному лицу, email или телефону..."
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent">
+                </div>
+                <button type="submit" class="btn-gold px-6 py-3 rounded-lg font-medium flex items-center gap-2">
+                    <i data-lucide="search" class="w-5 h-5"></i>
+                    Найти
+                </button>
+                {% if search_query %}
+                <a href="{% url 'crm_clients' %}" class="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                    Сбросить
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- 📋 Таблица клиентов -->
+    <div class="bg-white rounded-xl shadow-soft overflow-hidden">
+        <div id="clients-container">
+            {% include 'crm/partials/clients_table.html' %}
+        </div>
+    </div>
+
+    <!-- 📄 Пагинация -->
+    {% if is_paginated %}
+    <div class="mt-6 flex justify-center">
+        <nav class="flex items-center gap-2">
+            {% if page_obj.has_previous %}
+            <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}" 
+               class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                Первая
+            </a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+               class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                Назад
+            </a>
+            {% endif %}
+
+            <span class="px-4 py-2 text-gray-700">
+                Страница {{ page_obj.number }} из {{ paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+               class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                Вперед
+            </a>
+            <a href="?page={{ paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+               class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                Последняя
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Функция удаления клиента
+    function deleteClient(clientId) {
+        if (!confirm('Вы уверены, что хотите удалить этого клиента? Все связанные заявки также будут удалены.')) {
+            return;
+        }
+
+        fetch(`/crm/clients/${clientId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Удаляем строку из таблицы
+                const row = document.querySelector(`[data-client-id="${clientId}"]`);
+                if (row) {
+                    row.remove();
+                }
+                showNotification('Клиент успешно удален', 'success');
+                // Обновляем список, если это была последняя запись на странице
+                refreshClientsList();
+            } else {
+                showNotification('Ошибка при удалении: ' + data.error, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Ошибка при удалении клиента', 'error');
+        });
+    }
+
+    // Функция редактирования клиента
+    function editClient(clientId) {
+        const row = document.querySelector(`[data-client-id="${clientId}"]`);
+        if (!row) {
+            showNotification('Ошибка: клиент не найден', 'error');
+            return;
+        }
+        
+        // Получаем текущие значения
+        const companyName = row.querySelector('.client-company-name').textContent.trim();
+        const contactPerson = row.querySelector('.client-contact-person').textContent.trim();
+        const phone = row.querySelector('.client-phone').textContent.replace('📞', '').replace('Не указан', '').trim();
+        const email = row.querySelector('.client-email').textContent.replace('✉️', '').replace('Не указан', '').trim();
+        
+        // Создаем форму редактирования
+        const editForm = `
+            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-edit-modal>
+                <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">Редактировать клиента</h3>
+                        <button type="button" data-close-edit class="text-gray-500 hover:text-gray-700">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    
+                    <form id="edit-client-form" data-client-id="${clientId}">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Название компании *
+                                </label>
+                                <input type="text" 
+                                       name="company_name" 
+                                       value="${companyName}"
+                                       required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Контактное лицо
+                                </label>
+                                <input type="text" 
+                                       name="contact_person" 
+                                       value="${contactPerson}"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Телефон *
+                                </label>
+                                <input type="tel" 
+                                       name="phone" 
+                                       value="${phone}"
+                                       required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Email
+                                </label>
+                                <input type="email" 
+                                       name="email" 
+                                       value="${email}"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent">
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3 mt-6">
+                            <button type="submit" 
+                                    class="flex-1 bg-gold text-white py-2 rounded-lg font-medium hover:bg-yellow-600 transition-colors">
+                                Сохранить
+                            </button>
+                            <button type="button" 
+                                    data-close-edit
+                                    class="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-400 transition-colors">
+                                Отмена
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+        
+        // Добавляем форму в DOM
+        document.body.insertAdjacentHTML('beforeend', editForm);
+        lucide.createIcons();
+    }
+
+    function closeEditForm() {
+        const form = document.querySelector('[data-edit-modal]');
+        if (form) {
+            form.remove();
+        }
+    }
+
+    function saveClientChanges(clientId) {
+        const form = document.getElementById('edit-client-form');
+        const formData = new FormData(form);
+        
+        fetch(`/crm/clients/${clientId}/update/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Обновляем данные в таблице
+                updateClientRow(clientId, data.client);
+                closeEditForm();
+                showNotification('Данные клиента успешно обновлены', 'success');
+            } else {
+                showNotification('Ошибка при обновлении: ' + data.error, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Ошибка при обновлении клиента', 'error');
+        });
+    }
+
+    function updateClientRow(clientId, clientData) {
+        const row = document.querySelector(`[data-client-id="${clientId}"]`);
+        if (row && clientData) {
+            // Обновляем данные в строке таблицы
+            row.querySelector('.client-company-name').textContent = clientData.company_name;
+            row.querySelector('.client-contact-person').textContent = clientData.contact_person || 'Не указано';
+            
+            const phoneElement = row.querySelector('.client-phone');
+            phoneElement.innerHTML = clientData.phone ? 
+                `<i data-lucide="phone" class="w-4 h-4 text-gray-400"></i> ${clientData.phone}` :
+                '<span class="text-gray-500">Не указан</span>';
+            
+            const emailElement = row.querySelector('.client-email');
+            emailElement.innerHTML = clientData.email ? 
+                `<i data-lucide="mail" class="w-4 h-4 text-gray-400"></i> ${clientData.email}` :
+                '<span class="text-gray-500">Не указан</span>';
+            
+            lucide.createIcons();
+        }
+    }
+
+    function getCSRFToken() {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+        return cookieValue || '';
+    }
+
+    function showNotification(message, type = 'info') {
+        // Создаем уведомление
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg text-white ${
+            type === 'success' ? 'bg-green-500' : 
+            type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+        }`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        // Автоматически скрываем через 5 секунд
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    }
+
+    // Обработчики событий
+    function initEventHandlers() {
+        // Обработчик кнопок редактирования клиента
+        document.addEventListener('click', function(e) {
+            const editBtn = e.target.closest('[data-edit-client]');
+            if (editBtn) {
+                const clientId = parseInt(editBtn.getAttribute('data-edit-client'));
+                editClient(clientId);
+                return;
+            }
+            
+            // Обработчик кнопок удаления
+            const deleteBtn = e.target.closest('[data-delete-client]');
+            if (deleteBtn) {
+                const clientId = parseInt(deleteBtn.getAttribute('data-delete-client'));
+                deleteClient(clientId);
+                return;
+            }
+            
+            // Обработчик закрытия формы
+            if (e.target.closest('[data-close-edit]')) {
+                closeEditForm();
+                return;
+            }
+        });
+        
+        // Обработчик отправки формы
+        document.addEventListener('submit', function(e) {
+            if (e.target.id === 'edit-client-form') {
+                e.preventDefault();
+                const clientId = parseInt(e.target.getAttribute('data-client-id'));
+                saveClientChanges(clientId);
+            }
+        });
+    }
+
+    // Автообновление списка клиентов
+    function refreshClientsList() {
+        const searchForm = document.getElementById('search-form');
+        const formData = new FormData(searchForm);
+        const searchParams = new URLSearchParams(formData);
+        
+        fetch(`{% url 'crm_clients' %}?${searchParams.toString()}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('clients-container').innerHTML = html;
+            lucide.createIcons();
+        })
+        .catch(error => console.error('Error refreshing clients:', error));
+    }
+
+    // Поиск с задержкой
+    let searchTimeout;
+    const searchInput = document.querySelector('input[name="search"]');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                refreshClientsList();
+            }, 500);
+        });
+    }
+
+    // Автообновление каждые 30 секунд
+    setInterval(refreshClientsList, 30000);
+
+    // Инициализация при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        initEventHandlers();
+        lucide.createIcons();
+    });
+</script>
+{% endblock %}
