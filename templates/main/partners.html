@@ -7,343 +7,53 @@
 <!-- Hero Section -->
 <section class="relative py-12 bg-dark-blue">
     <div class="container mx-auto px-6 text-center text-white">
-        <h1 class="text-4xl md:text-5xl mb-4 font-bold animate-slide-up">Наши заказчики и партнеры</h1>
-        <p class="text-xl text-white/90 max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.1s">
+        <h1 class="text-4xl md:text-5xl mb-4 font-bold">Наши заказчики и партнеры</h1>
+        <p class="text-xl text-white/90 max-w-3xl mx-auto">
             Сотрудничаем с ведущими компаниями в сфере строительства и пожарной безопасности
         </p>
     </div>
 </section>
 
-<!-- Main Content -->
+<!-- Простая версия без карусели -->
 <section class="py-12 bg-white">
     <div class="container mx-auto px-6 max-w-7xl">
-        <!-- Заказчики Section -->
+        <!-- Заказчики -->
         <div class="mb-16">
             <h2 class="text-3xl md:text-4xl text-dark-blue mb-8 text-center font-bold">Наши заказчики</h2>
-            <div class="relative">
-                <!-- Карусель заказчиков -->
-                <div class="custom-carousel" id="customers-carousel">
-                    <div class="carousel-container flex space-x-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-                        <!-- Реальные заказчики -->
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Заказчики/B72.png' %}" alt="B72" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Заказчики/Арсиб.png' %}" alt="Арсиб" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Заказчики/Меридиан.jpeg' %}" alt="Меридиан" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Заказчики/Мидгард.png' %}" alt="Мидгард" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Заказчики/Навигатор.jpeg' %}" alt="Навигатор" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Заказчики/Партнер.jpg' %}" alt="Партнер" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Заказчики/Страна.png' %}" alt="Страна" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Заказчики/СтройМир.jpeg' %}" alt="СтройМир" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Заказчики/ТИС.jpeg' %}" alt="ТИС" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Заказчики/УЛЕЙ.png' %}" alt="УЛЕЙ" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Заказчики/ЭНКО.png' %}" alt="ЭНКО" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Заказчики/ПИК.jpg' %}" alt="ПИК" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {% with 'B72.png Арсиб.png Меридиан.jpeg Мидгард.png Навигатор.jpeg Партнер.jpg Страна.png СтройМир.jpeg ТИС.jpeg УЛЕЙ.png ЭНКО.png ПИК.jpg' as customer_images %}
+                    {% for image in customer_images.split %}
+                    <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 flex items-center justify-center h-32">
+                        <img src="{% static 'images/Заказчики/'|add:image %}" alt="{{ image|slice:':-4' }}" 
+                             class="max-h-16 max-w-full object-contain"
+                             onerror="this.style.display='none'">
                     </div>
-                </div>
-                
-                <!-- Кнопки навигации -->
-                <button class="carousel-prev absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:shadow-xl transition-all z-10">
-                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </button>
-                <button class="carousel-next absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:shadow-xl transition-all z-10">
-                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </button>
+                    {% endfor %}
+                {% endwith %}
             </div>
         </div>
 
-        <!-- Партнеры Section -->
+        <!-- Партнеры -->
         <div class="mb-16">
             <h2 class="text-3xl md:text-4xl text-dark-blue mb-8 text-center font-bold">Наши партнеры</h2>
-            <div class="relative">
-                <!-- Карусель партнеров -->
-                <div class="custom-carousel" id="partners-carousel">
-                    <div class="carousel-container flex space-x-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-                        <!-- Реальные партнеры -->
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Партнеры/NEVATOM.png' %}" alt="NEVATOM" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Партнеры/VKT.jpg' %}" alt="VKT" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Партнеры/Веза.png' %}" alt="Веза" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Партнеры/рубеж.jpg' %}" alt="Рубеж" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Партнеры/Север.jpeg' %}" alt="Север" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
-                        <div class="carousel-slide flex-shrink-0 w-48 md:w-56 snap-start">
-                            <div class="bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-400 hover:shadow-xl hover:scale-105 p-6 flex items-center justify-center h-32">
-                                <img src="{% static 'images/Партнеры/ЦСБ.jpeg' %}" alt="ЦСБ" class="max-h-16 max-w-full object-contain">
-                            </div>
-                        </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                {% with 'NEVATOM.png VKT.jpg Веза.png рубеж.jpg Север.jpeg ЦСБ.jpeg' as partner_images %}
+                    {% for image in partner_images.split %}
+                    <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 flex items-center justify-center h-32">
+                        <img src="{% static 'images/Партнеры/'|add:image %}" alt="{{ image|slice:':-4' }}" 
+                             class="max-h-16 max-w-full object-contain"
+                             onerror="this.style.display='none'">
                     </div>
-                </div>
-                
-                <!-- Кнопки навигации -->
-                <button class="carousel-prev absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:shadow-xl transition-all z-10">
-                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </button>
-                <button class="carousel-next absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:shadow-xl transition-all z-10">
-                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </button>
+                    {% endfor %}
+                {% endwith %}
             </div>
         </div>
 
-        <!-- Partners Description -->
-        <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-8 mb-16 transition-all duration-400 hover:shadow-xl scroll-animate">
+        <!-- Остальной контент без JavaScript -->
+        <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-8 mb-16">
             <h2 class="text-3xl md:text-4xl text-dark-blue mb-8 text-center font-bold">Наше сотрудничество</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                    <h3 class="text-2xl text-dark-blue mb-6 font-semibold flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gold text-white rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                            </svg>
-                        </div>
-                        Почему выбирают нас
-                    </h3>
-                    <ul class="space-y-4 text-lg text-gray-700">
-                        <li class="flex items-start gap-4">
-                            <svg class="w-6 h-6 text-gold mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>Проверенные поставщики оборудования</span>
-                        </li>
-                        <li class="flex items-start gap-4">
-                            <svg class="w-6 h-6 text-gold mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>Сертифицированные материалы</span>
-                        </li>
-                        <li class="flex items-start gap-4">
-                            <svg class="w-6 h-6 text-gold mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>Прямые контракты с производителями</span>
-                        </li>
-                        <li class="flex items-start gap-4">
-                            <svg class="w-6 h-6 text-gold mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>Гарантия на все виды работ</span>
-                        </li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-2xl text-dark-blue mb-6 font-semibold flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gold text-white rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/>
-                            </svg>
-                        </div>
-                        Преимущества партнерства
-                    </h3>
-                    <ul class="space-y-4 text-lg text-gray-700">
-                        <li class="flex items-start gap-4">
-                            <svg class="w-6 h-6 text-gold mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>Конкурентные цены</span>
-                        </li>
-                        <li class="flex items-start gap-4">
-                            <svg class="w-6 h-6 text-gold mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>Оперативные поставки</span>
-                        </li>
-                        <li class="flex items-start gap-4">
-                            <svg class="w-6 h-6 text-gold mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>Гарантийное обслуживание</span>
-                        </li>
-                        <li class="flex items-start gap-4">
-                            <svg class="w-6 h-6 text-gold mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>Индивидуальный подход к каждому клиенту</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- CTA Section -->
-        <div class="bg-dark-blue text-white rounded-xl p-8 md:p-12 text-center transition-all duration-400 hover:shadow-2xl scroll-animate">
-            <h2 class="text-3xl md:text-4xl mb-6 font-bold">Станьте нашим партнером</h2>
-            <p class="text-xl text-white/80 mb-8 max-w-2xl mx-auto leading-relaxed">
-                Мы всегда открыты для новых партнерских отношений и взаимовыгодного сотрудничества
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{% url 'contacts' %}" class="bg-gold hover:bg-amber-700 text-white px-8 py-4 rounded-lg transition-all duration-300 font-medium shadow-lg hover:scale-105">
-                    Связаться с нами
-                </a>
-                <a href="{% url 'order_kp' %}" class="border-2 border-white text-white hover:bg-white hover:text-dark-blue px-8 py-4 rounded-lg transition-all duration-300 font-medium hover:scale-105">
-                    Стать партнером
-                </a>
-            </div>
+            <!-- ... остальной HTML контент ... -->
         </div>
     </div>
 </section>
-
-<style>
-.scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
-}
-.carousel-container {
-    scroll-behavior: smooth;
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Инициализация каруселей
-    initCarousel('customers-carousel');
-    initCarousel('partners-carousel');
-    
-    function initCarousel(carouselId) {
-        const carousel = document.getElementById(carouselId);
-        const container = carousel.querySelector('.carousel-container');
-        const prevBtn = carousel.parentElement.querySelector('.carousel-prev');
-        const nextBtn = carousel.parentElement.querySelector('.carousel-next');
-        const slides = carousel.querySelectorAll('.carousel-slide');
-        
-        const slideWidth = slides[0].offsetWidth + 24; // width + gap
-        const visibleSlides = Math.floor(container.offsetWidth / slideWidth);
-        
-        let currentPosition = 0;
-        const maxPosition = slides.length - visibleSlides;
-        
-        // Функция для обновления позиции
-        function updatePosition() {
-            container.scrollTo({
-                left: currentPosition * slideWidth,
-                behavior: 'smooth'
-            });
-            updateButtons();
-        }
-        
-        // Функция для обновления состояния кнопок
-        function updateButtons() {
-            prevBtn.style.opacity = currentPosition === 0 ? '0.5' : '1';
-            nextBtn.style.opacity = currentPosition >= maxPosition ? '0.5' : '1';
-        }
-        
-        // Обработчики для кнопок
-        prevBtn.addEventListener('click', () => {
-            if (currentPosition > 0) {
-                currentPosition--;
-                updatePosition();
-            }
-        });
-        
-        nextBtn.addEventListener('click', () => {
-            if (currentPosition < maxPosition) {
-                currentPosition++;
-                updatePosition();
-            }
-        });
-        
-        // Обработчик для свайпа на мобильных
-        let startX = 0;
-        let scrollLeft = 0;
-        
-        container.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].pageX - container.offsetLeft;
-            scrollLeft = container.scrollLeft;
-        });
-        
-        container.addEventListener('touchmove', (e) => {
-            if (!startX) return;
-            const x = e.touches[0].pageX - container.offsetLeft;
-            const walk = (x - startX) * 2;
-            container.scrollLeft = scrollLeft - walk;
-        });
-        
-        // Инициализация
-        updateButtons();
-        
-        // Обновление при изменении размера окна
-        window.addEventListener('resize', () => {
-            const newVisibleSlides = Math.floor(container.offsetWidth / slideWidth);
-            if (newVisibleSlides !== visibleSlides) {
-                currentPosition = Math.min(currentPosition, slides.length - newVisibleSlides);
-                updatePosition();
-            }
-        });
-    }
-});
-</script>
 {% endblock %}
