@@ -63,7 +63,7 @@ WSGI_APPLICATION = 'argus_site.wsgi.application'
 # База данных для Render.com
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://argus_user:strong_password@localhost/argus_db',
+        default='sqlite:///db.sqlite3',  # Только для разработки
         conn_max_age=600,
         conn_health_checks=True,
     )
