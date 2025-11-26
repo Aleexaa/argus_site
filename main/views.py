@@ -34,34 +34,8 @@ def home(request):
     return render(request, 'main/home.html', context)
 
 def partners(request):
-    """Диагностическая версия partners"""
-    try:
-        # 1. Проверяем базовый рендеринг
-        print("=== PARTNERS VIEW START ===")
-        
-        # 2. Проверяем что шаблон существует
-        from django.template.loader import get_template
-        template = get_template('main/partners.html')
-        print("✅ Template found")
-        
-        # 3. Пробуем простой рендер без контекста
-        from django.template import RequestContext
-        context = {}
-        html_content = template.render(context, request)
-        print("✅ Template rendered successfully")
-        
-        return HttpResponse(html_content)
-        
-    except Exception as e:
-        import traceback
-        error_details = f"""
-        ERROR in partners view:
-        Message: {str(e)}
-        Type: {type(e).__name__}
-        Traceback: {traceback.format_exc()}
-        """
-        print(error_details)
-        return HttpResponse(f"View Error: {str(e)}")
+    """Страница партнеров"""
+    return render(request, 'main/partners.html')
 
 def about(request):
     stats = [
