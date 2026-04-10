@@ -98,6 +98,11 @@ urlpatterns = [
     path('promo-blocks/<int:pk>/toggle-active/', views.promo_block_toggle_active, name='crm_promo_block_toggle_active'),
     path('promo-blocks/<int:pk>/duplicate/', views.duplicate_promo_block, name='crm_promo_block_duplicate'),
     path('promo-blocks/<int:pk>/preview/', views.promo_block_preview, name='crm_promo_block_preview'),
+    path('services/', views.services_list, name='crm_services'),
+    path('services/create/', views.service_create, name='crm_service_create'),
+    path('services/<int:pk>/edit/', views.service_edit, name='crm_service_edit'),
+    path('services/<int:pk>/delete/', views.service_delete, name='crm_service_delete'),
+    path('services/<int:pk>/toggle-kp/', views.service_toggle_kp, name='crm_service_toggle_kp'),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,144 @@
+{% extends 'crm/base_crm.html' %}
+{% load static %}
+
+{% block title %}Услуги - CRM Аргус{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Управление услугами</h1>
+        <a href="{% url 'crm_service_create' %}" 
+           class="bg-gold hover:bg-amber-600 text-white px-4 py-2 rounded-lg transition flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Добавить услугу
+        </a>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Название</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">В КП</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Дата создания</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Действия</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                {% for service in services %}
+                <tr class="hover:bg-gray-50 transition" data-service-id="{{ service.id }}" data-service-name="{{ service.name|escapejs }}">
+                    <td class="px-6 py-4 text-sm text-gray-500">{{ service.id }}</td>
+                    <td class="px-6 py-4">
+                        <span class="service-name text-gray-900 font-medium">{{ service.name }}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer has-kp-toggle" 
+                                   data-id="{{ service.id }}" {% if service.has_kp %}checked{% endif %}>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-gold transition"></div>
+                            <span class="ml-3 text-sm text-gray-600 kp-status">
+                                {% if service.has_kp %}Включена{% else %}Выключена{% endif %}
+                            </span>
+                        </label>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">{{ service.created_at|date:"d.m.Y H:i" }}</td>
+                    <td class="px-6 py-4 text-right space-x-2">
+                        <a href="{% url 'crm_service_edit' service.id %}" 
+                           class="text-blue-600 hover:text-blue-800 transition">
+                            <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                        </a>
+                        <button class="delete-service-btn text-red-600 hover:text-red-800 transition"
+                                data-id="{{ service.id }}"
+                                data-name="{{ service.name|escapejs }}">
+                            <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                        Нет услуг. Нажмите "Добавить услугу"
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+// Удаление услуги через data-атрибуты
+document.querySelectorAll('.delete-service-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const id = this.dataset.id;
+        const name = this.dataset.name;
+        
+        if (!confirm(`Удалить услугу "${name}"?`)) return;
+        
+        fetch(`/crm/services/${id}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert('Ошибка: ' + data.error);
+            }
+        });
+    });
+});
+
+// Переключение has_kp
+document.querySelectorAll('.has-kp-toggle').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        const id = this.dataset.id;
+        const isChecked = this.checked;
+        const statusSpan = this.closest('td').querySelector('.kp-status');
+        
+        fetch(`/crm/services/${id}/toggle-kp/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                statusSpan.textContent = data.has_kp ? 'Включена' : 'Выключена';
+            } else {
+                this.checked = !isChecked;
+                alert('Ошибка: ' + data.error);
+            }
+        });
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

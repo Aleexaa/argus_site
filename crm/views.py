@@ -2706,7 +2706,114 @@ def promo_block_apply_template(request, pk):
             messages.error(request, f'❌ Ошибка применения шаблона: {str(e)}')
     
     return redirect('crm_promo_block_edit', pk=pk)
+# ============================================================
+# 🛠️ УПРАВЛЕНИЕ УСЛУГАМИ (только для владельца)
+# ============================================================
 
+@login_required
+@user_passes_test(is_owner)
+def services_list(request):
+    """Список всех услуг для управления"""
+    services = Service.objects.all().order_by('id')
+    
+    context = {
+        'services': services,
+        'user': request.user,
+        'profile': request.user.managerprofile,
+        'active_tab': 'services'
+    }
+    
+    return render(request, 'crm/services_list.html', context)
+
+
+@login_required
+@user_passes_test(is_owner)
+def service_create(request):
+    """Создание новой услуги"""
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        has_kp = request.POST.get('has_kp') == 'on'
+        
+        if not name:
+            messages.error(request, '❌ Введите название услуги')
+            return redirect('crm_services')
+        
+        try:
+            service = Service.objects.create(
+                name=name,
+                has_kp=has_kp
+            )
+            messages.success(request, f'✅ Услуга "{service.name}" создана')
+            return redirect('crm_services')
+        except Exception as e:
+            messages.error(request, f'❌ Ошибка: {str(e)}')
+    
+    return render(request, 'crm/service_form.html', {
+        'title': 'Создание услуги',
+        'user': request.user,
+        'profile': request.user.managerprofile,
+    })
+
+
+@login_required
+@user_passes_test(is_owner)
+def service_edit(request, pk):
+    """Редактирование услуги"""
+    service = get_object_or_404(Service, pk=pk)
+    
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        has_kp = request.POST.get('has_kp') == 'on'
+        
+        if not name:
+            messages.error(request, '❌ Введите название услуги')
+            return redirect('crm_services')
+        
+        try:
+            service.name = name
+            service.has_kp = has_kp
+            service.save()
+            messages.success(request, f'✅ Услуга "{service.name}" обновлена')
+            return redirect('crm_services')
+        except Exception as e:
+            messages.error(request, f'❌ Ошибка: {str(e)}')
+    
+    return render(request, 'crm/service_form.html', {
+        'service': service,
+        'title': 'Редактирование услуги',
+        'user': request.user,
+        'profile': request.user.managerprofile,
+    })
+
+
+@login_required
+@user_passes_test(is_owner)
+def service_delete(request, pk):
+    """Удаление услуги (AJAX)"""
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        service = get_object_or_404(Service, pk=pk)
+        name = service.name
+        service.delete()
+        return JsonResponse({'status': 'success', 'message': f'Услуга "{name}" удалена'})
+    
+    return JsonResponse({'status': 'error', 'error': 'Неверный запрос'}, status=400)
+
+
+@login_required
+@user_passes_test(is_owner)
+def service_toggle_kp(request, pk):
+    """Переключение флага has_kp (AJAX)"""
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        service = get_object_or_404(Service, pk=pk)
+        service.has_kp = not service.has_kp
+        service.save()
+        return JsonResponse({
+            'status': 'success',
+            'has_kp': service.has_kp,
+            'message': f'Услуга {"включена" if service.has_kp else "выключена"} в КП'
+        })
+    
+    return JsonResponse({'status': 'error', 'error': 'Неверный запрос'}, status=400)
 @login_required
 @user_passes_test(is_owner)
 def promo_block_reset_image(request, pk):
