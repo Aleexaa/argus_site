@@ -143,3 +143,23 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # DEFAULT AUTO FIELD
 # =========================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# =========================
+# CSRF И БЕЗОПАСНОСТЬ ДЛЯ РАЗРАБОТКИ
+# =========================
+CSRF_TRUSTED_ORIGINS = [
+    'http://72.56.249.96:8000',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://argus.ru:8000',
+]
+
+# Отключаем строгую защиту для разработки
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False
+SESSION_COOKIE_SECURE = False
+
+# Убедимся, что медиафайлы работают
+if DEBUG:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
