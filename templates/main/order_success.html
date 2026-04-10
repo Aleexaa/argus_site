@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Компания Аргус - Заявка отправлена{% endblock %}
+
+{% block content %}
+<div class="min-h-screen py-12 md:py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white rounded-xl shadow-lg border-2 border-gold">
+                <div class="p-8 md:p-12 text-center">
+                    <div class="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-green-100 text-green-600 mb-6 rounded-full">
+                        <i data-lucide="check-circle" class="w-8 h-8 md:w-12 md:h-12"></i>
+                    </div>
+                    <h1 class="text-2xl md:text-4xl text-dark-blue mb-4 font-bold">Спасибо за вашу заявку!</h1>
+                    <p class="text-lg text-gray-700 mb-6 md:mb-8 leading-relaxed">
+                        Мы получили вашу заявку и свяжемся с вами в ближайшее время для обсуждения деталей проекта. 
+                        Наш менеджер подготовит коммерческое предложение в течение 24 часов.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="{% url 'order_kp' %}" class="bg-gold hover:bg-amber-600 text-white px-6 py-3 rounded-lg transition-colors font-medium">
+                            Отправить еще одну заявку
+                        </a>
+                        <a href="{% url 'home' %}" class="border-2 border-dark-blue text-dark-blue hover:bg-dark-blue hover:text-white px-6 py-3 rounded-lg transition-colors font-medium">
+                            На главную
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

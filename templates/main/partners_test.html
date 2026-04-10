@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Партнеры - Тест</title>
+</head>
+<body>
+    <h1>Тестовая страница партнеров</h1>
+    <p>Если это работает, то проблема в base.html</p>
+    {% for partner in partners %}
+    <div>
+        <h3>{{ partner.name }}</h3>
+        <p>{{ partner.description }}</p>
+    </div>
+    {% endfor %}
+</body>
+</html>

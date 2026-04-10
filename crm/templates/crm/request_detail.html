@@ -1,0 +1,374 @@
+{% extends 'crm/base_crm.html' %}
+{% load static %}
+
+{% block title %}Заявка #{{ req.id }}{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-2xl p-6 shadow-soft">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-semibold text-gray-800">
+            Заявка #{{ req.id }} от {{ req.client.company_name }}
+        </h2>
+        <span id="update-alert" class="hidden text-sm bg-green-500/20 text-green-600 px-3 py-2 rounded-lg border border-green-500/30 shadow-sm">
+            🔔 Данные обновлены!
+        </span>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+        <div>
+            <p><span class="font-semibold text-gray-700">Адрес:</span> {{ req.object_address|default:"—" }}</p>
+            
+            <!-- Тип объекта с переводом -->
+            <p><span class="font-semibold text-gray-700">Тип объекта:</span> 
+                {% if req.object_type == 'office' %}
+                    🏢 Офис
+                {% elif req.object_type == 'apartment' %}
+                    🏠 Квартира
+                {% elif req.object_type == 'house' %}
+                    🏡 Частный дом
+                {% elif req.object_type == 'commercial' %}
+                    🏪 Коммерческое помещение
+                {% elif req.object_type == 'industrial' %}
+                    🏭 Промышленный объект
+                {% elif req.object_type == 'other' %}
+                    📍 Другой тип
+                {% else %}
+                    {{ req.object_type|default:"—" }}
+                {% endif %}
+            </p>
+            
+            <p><span class="font-semibold text-gray-700">Дата создания:</span> {{ req.created_at|date:"d.m.Y H:i" }}</p>
+            
+            <!-- Контактное лицо с телефоном -->
+            <p><span class="font-semibold text-gray-700">Клиент:</span> 
+                {{ req.client.contact_person|default:"—" }}
+                {% if req.client.phone %}
+                    • {{ req.client.phone }}
+                {% endif %}
+            </p>
+            
+            <p><span class="font-semibold text-gray-700">Email:</span> {{ req.client.email|default:"—" }}</p>
+            
+            <!-- Площадь, если указана -->
+            {% if req.area %}
+            <p><span class="font-semibold text-gray-700">Площадь:</span> {{ req.area }} м²</p>
+            {% endif %}
+            
+            <!-- Организация, если указана -->
+            {% if req.client.organization %}
+            <p><span class="font-semibold text-gray-700">Организация:</span> {{ req.client.organization }}</p>
+            {% endif %}
+
+            <!-- Информация о менеджере -->
+            <div class="mt-4">
+                <p class="font-semibold text-gray-700">Ответственный менеджер:</p>
+                {% if req.responsible_manager %}
+                    <p class="text-gray-600">{{ req.responsible_manager.user.get_full_name|default:req.responsible_manager.user.username }}</p>
+                {% else %}
+                    <p class="text-gray-400">Не назначен</p>
+                {% endif %}
+            </div>
+
+            {% if req.attached_file %}
+                <div class="mt-4">
+                    <h3 class="text-lg font-semibold text-gray-800">📎 Прикреплённый файл:</h3>
+                    <a href="{% url 'crm_download_file' req.id %}" 
+                       target="_blank" 
+                       class="inline-flex items-center px-4 py-2 bg-gold text-black rounded-lg hover:bg-amber-600 transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Скачать файл: {{ req.attached_file.name|cut:"requests/" }}
+                    </a>
+                    <p class="text-sm text-gray-500 mt-1">
+                        Размер: {{ req.attached_file.size|filesizeformat }}
+                    </p>
+                </div>
+            {% else %}
+                <p class="text-gray-400 mt-4">Файл не прикреплён.</p>
+            {% endif %}
+
+            {% if req.description %}
+                <div class="mt-6">
+                    <h3 class="text-lg font-semibold text-gray-800">📝 Описание от клиента:</h3>
+                    <p class="text-gray-600 whitespace-pre-line">{{ req.description }}</p>
+                </div>
+            {% endif %}
+
+            {% if req.services.exists %}
+                <div class="mt-6">
+                    <h3 class="text-lg font-semibold text-gray-800">🔧 Услуги:</h3>
+                    <ul class="list-disc list-inside text-gray-600">
+                        {% for service in req.services.all %}
+                            <li>{{ service.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <p class="text-gray-400 mt-4">Услуги не указаны.</p>
+            {% endif %}
+        </div>
+
+        <!-- Форма изменения статуса, назначения менеджера и добавления комментария -->
+        <div>
+            <form method="post" id="update-form" class="space-y-4">
+                {% csrf_token %}
+                
+                <!-- Назначение менеджера -->
+                <div>
+                    <label class="block text-gray-700 mb-1 font-medium">Ответственный менеджер</label>
+                    <select name="manager" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-gold">
+                        <option value="">— Не назначен —</option>
+                        {% for manager in managers %}
+                            <option value="{{ manager.id }}" {% if req.responsible_manager and req.responsible_manager.id == manager.id %}selected{% endif %}>
+                                {{ manager.user.get_full_name|default:manager.user.username }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Статус заявки -->
+                <div>
+                    <label class="block text-gray-700 mb-1 font-medium">Статус заявки</label>
+                    <select name="status" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-gold">
+                        {% for key, value in req.STATUS_CHOICES %}
+                            <option value="{{ key }}" {% if key == req.status %}selected{% endif %}>
+                                {{ value }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Комментарий -->
+                <div>
+                    <label class="block text-gray-700 mb-1 font-medium">Добавить комментарий</label>
+                    <textarea name="comment" rows="3" placeholder="Введите комментарий..." class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-gold"></textarea>
+                </div>
+
+                <button type="submit" class="btn-gold px-4 py-2 rounded-lg flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Сохранить изменения
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Комментарии -->
+<div class="mt-10" id="comments-block">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-semibold text-gray-800">Комментарии</h3>
+        <span id="comments-loading" class="hidden text-sm text-blue-500">
+            <svg class="animate-spin h-4 w-4 mr-1 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Обновление...
+        </span>
+    </div>
+    
+    {% if comments %}
+        <div class="space-y-4" id="comments-list">
+            {% for comment in comments %}
+                <div class="bg-white shadow-soft rounded-xl p-4 border-l-4 border-[#C9A96A] comment-item" data-comment-id="{{ comment.id }}">
+                    <p class="text-gray-700 mb-1">{{ comment.text }}</p>
+                    <p class="text-sm text-gray-500">
+                        {{ comment.author.user.get_full_name|default:comment.author.user.username }}
+                        — {{ comment.created_at|date:"d.m.Y H:i" }}
+                    </p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-500 italic">Комментариев пока нет.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("#update-form");
+    const commentsBlock = document.querySelector("#comments-block");
+    const updateAlert = document.querySelector("#update-alert");
+    const commentsLoading = document.querySelector("#comments-loading");
+    
+    let lastCommentIds = getCurrentCommentIds();
+    let isUpdating = false;
+
+    function getCurrentCommentIds() {
+        const elements = document.querySelectorAll(".comment-item");
+        return Array.from(elements).map(el => parseInt(el.dataset.commentId));
+    }
+
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+            type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+        }`;
+        notification.textContent = message;
+        notification.style.animation = 'slideInRight 0.5s ease-out';
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.5s ease-in';
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 500);
+        }, 3000);
+    }
+
+    function showUpdateAlert() {
+        updateAlert.classList.remove('hidden');
+        updateAlert.style.animation = 'fadeIn 0.5s ease-out';
+        
+        setTimeout(() => {
+            updateAlert.style.opacity = '0';
+            updateAlert.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                updateAlert.classList.add('hidden');
+                updateAlert.style.opacity = '1';
+                updateAlert.style.transition = '';
+            }, 500);
+        }, 3000);
+    }
+
+    // 🔁 AJAX сохранение - УПРОЩЕННАЯ ВЕРСИЯ
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        
+        // Показываем загрузку
+        submitButton.innerHTML = `
+            <svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Сохранение...
+        `;
+        submitButton.disabled = true;
+
+        fetch(window.location.href, {
+            method: "POST",
+            headers: { 
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": "{{ csrf_token }}" 
+            },
+            body: formData,
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.text();
+        })
+        .then(html => {
+            // Просто обновляем всю страницу для надежности
+            window.location.reload();
+        })
+        .catch(err => {
+            console.error("Ошибка сохранения:", err);
+            showNotification('Ошибка при сохранении. Попробуйте обновить страницу.', 'error');
+            
+            // Восстанавливаем кнопку
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        });
+    });
+
+    // ⏱ Автообновление комментариев - УПРОЩЕННАЯ ВЕРСИЯ
+    function loadComments() {
+        if (isUpdating || document.hidden) return;
+        
+        isUpdating = true;
+        commentsLoading.classList.remove("hidden");
+        
+        fetch(window.location.href, { 
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+            cache: 'no-cache'
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.text();
+        })
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newCommentsBlock = doc.querySelector('#comments-block');
+            
+            if (newCommentsBlock) {
+                const newCommentsList = newCommentsBlock.querySelector('#comments-list');
+                const newCommentItems = newCommentsList ? newCommentsList.querySelectorAll('.comment-item') : [];
+                const newCommentIds = Array.from(newCommentItems).map(el => parseInt(el.dataset.commentId));
+                
+                const newComments = newCommentIds.filter(id => !lastCommentIds.includes(id));
+                
+                if (newComments.length > 0) {
+                    commentsBlock.innerHTML = newCommentsBlock.innerHTML;
+                    lastCommentIds = newCommentIds;
+                    showUpdateAlert();
+                } else if (newCommentIds.length !== lastCommentIds.length) {
+                    commentsBlock.innerHTML = newCommentsBlock.innerHTML;
+                    lastCommentIds = newCommentIds;
+                }
+            }
+        })
+        .catch(err => console.error("Ошибка автообновления комментариев:", err))
+        .finally(() => {
+            isUpdating = false;
+            commentsLoading.classList.add("hidden");
+        });
+    }
+
+    // Запускаем автообновление каждые 10 секунд
+    setInterval(loadComments, 10000);
+
+    // Обновление при возвращении на вкладку
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            loadComments();
+        }
+    });
+
+    // Первое обновление через 5 секунд
+    setTimeout(loadComments, 5000);
+});
+</script>
+
+<style>
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideOutRight {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(100%); }
+}
+.hidden { display: none !important; }
+.btn-gold {
+    background: linear-gradient(135deg, #C9A96A 0%, #B89450 100%);
+    color: white; border: none; cursor: pointer;
+    transition: all 0.3s ease;
+}
+.btn-gold:hover {
+    background: linear-gradient(135deg, #B89450 0%, #A88340 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(201, 169, 106, 0.3);
+}
+.btn-gold:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+</style>
+{% endblock %}

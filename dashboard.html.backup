@@ -1,0 +1,898 @@
+{% extends 'crm/base_crm.html' %}
+{% load static %}
+
+{% block title %}Заявки | CRM Аргус{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50/30">
+  <!-- Header Section -->
+  <div class="bg-white border-b border-gray-100 px-6 py-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-500 rounded-xl flex items-center justify-center shadow-sm">
+          <i data-lucide="clipboard-list" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-semibold text-gray-900">Заявки</h1>
+          <p class="text-sm text-gray-500 mt-1">Управление клиентскими заявками</p>
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-3">
+        <!-- New Requests Alert -->
+        <div id="new-requests-alert" 
+             class="hidden items-center gap-3 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl animate-pulse">
+          <i data-lucide="zap" class="w-4 h-4 text-yellow-300"></i>
+          <span class="text-sm font-medium" id="alert-message"></span>
+          <button onclick="scrollToNewRequests()" 
+                  class="text-sm bg-white/20 hover:bg-white/30 px-2 py-1 rounded-lg transition-colors">
+            Показать
+          </button>
+        </div>
+        
+        <button onclick="markAllAsViewed()" 
+                class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-200 shadow-lg shadow-green-500/25 hover:shadow-xl hover:shadow-green-500/30">
+          <i data-lucide="eye-off" class="w-4 h-4 text-white"></i>
+          <span class="text-sm font-medium">Отметить все как просмотренные</span>
+        </button>
+        
+        <a href="{% url 'crm_create_request' %}" 
+           class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-white rounded-xl hover:from-amber-600 hover:to-yellow-600 transition-all duration-200 shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/30">
+          <i data-lucide="plus" class="w-4 h-4 text-white"></i>
+          <span class="text-sm font-medium">Новая заявка</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="p-6">
+    <!-- Status Filters -->
+    <div class="mb-8">
+      <div class="flex items-center gap-1 bg-white/80 backdrop-blur-sm rounded-2xl p-1.5 shadow-sm border border-gray-100 w-fit">
+        <a href="{% url 'crm_dashboard' %}" 
+           class="px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {% if not status_filter %}bg-white text-gray-900 shadow-sm border border-gray-200{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50/50{% endif %}">
+          Все заявки
+        </a>
+        <a href="?status=new" 
+           class="px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {% if status_filter == 'new' %}bg-blue-50 text-blue-700 border border-blue-200{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50/50{% endif %}">
+          Новые
+        </a>
+        <a href="?status=in_progress" 
+           class="px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {% if status_filter == 'in_progress' %}bg-amber-50 text-amber-700 border border-amber-200{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50/50{% endif %}">
+          В работе
+        </a>
+        <a href="?status=kp_ready" 
+           class="px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {% if status_filter == 'kp_ready' %}bg-purple-50 text-purple-700 border border-purple-200{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50/50{% endif %}">
+          КП готово
+        </a>
+        <a href="?status=closed" 
+           class="px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 {% if status_filter == 'closed' %}bg-green-50 text-green-700 border border-green-200{% else %}text-gray-600 hover:text-gray-900 hover:bg-gray-50/50{% endif %}">
+          Завершены
+        </a>
+      </div>
+    </div>
+
+    <!-- Requests Grid -->
+    <div id="requests-list" class="grid gap-4">
+      {% for req in requests %}
+      <div class="request-item group bg-white rounded-2xl shadow-xs border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300 relative overflow-hidden {% if req.is_new %}new-request-highlight border-l-4 border-l-blue-500 pulse-animation{% endif %}"
+           data-request-id="{{ req.id }}" data-status="{{ req.status }}" data-created="{{ req.created_at|date:'c' }}">
+        
+        <!-- Status Indicator -->
+        <div class="absolute top-0 left-0 w-1.5 h-full 
+          {% if req.status == 'new' %}bg-blue-500
+          {% elif req.status == 'in_progress' %}bg-amber-500
+          {% elif req.status == 'kp_ready' %}bg-purple-500
+          {% elif req.status == 'closed' %}bg-green-500
+          {% else %}bg-gray-400{% endif %}">
+        </div>
+
+        <div class="p-5">
+          <!-- Header Row -->
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <h3 class="text-lg font-semibold text-gray-900 truncate">{{ req.client.company_name }}</h3>
+                  {% if req.is_new %}
+                  <span class="new-badge bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full animate-pulse">
+                    НОВАЯ
+                  </span>
+                  {% endif %}
+                </div>
+                <div class="flex items-center gap-3 text-sm text-gray-500">
+                  <span class="flex items-center gap-1">
+                    <i data-lucide="building" class="w-4 h-4"></i>
+                    {% if req.object_type == 'office' %}
+                      🏢 Офис
+                    {% elif req.object_type == 'apartment' %}
+                      🏠 Квартира
+                    {% elif req.object_type == 'house' %}
+                      🏡 Частный дом
+                    {% elif req.object_type == 'commercial' %}
+                      🏪 Коммерческое помещение
+                    {% elif req.object_type == 'industrial' %}
+                      🏭 Промышленный объект
+                    {% elif req.object_type == 'warehouse' %}
+                      📦 Склад
+                    {% elif req.object_type == 'retail' %}
+                      🛍️ Торговый центр
+                    {% elif req.object_type == 'cafe' %}
+                      ☕ Кафе/Ресторан
+                    {% elif req.object_type == 'hotel' %}
+                      🏨 Отель
+                    {% elif req.object_type == 'medical' %}
+                      🏥 Медицинский центр
+                    {% elif req.object_type == 'sport' %}
+                      ⚽ Спортивный объект
+                    {% elif req.object_type == 'educational' %}
+                      🎓 Образовательный центр
+                    {% elif req.object_type == 'other' %}
+                      📍 Другой тип
+                    {% else %}
+                      {% if req.object_type %}
+                        {{ req.object_type }}
+                      {% else %}
+                        Не указано
+                      {% endif %}
+                    {% endif %}
+                  </span>
+                  {% if req.area %}
+                  <span class="flex items-center gap-1">
+                    <i data-lucide="maximize" class="w-4 h-4"></i>
+                    {{ req.area }} м²
+                  </span>
+                  {% endif %}
+                  <span class="flex items-center gap-1">
+                    <i data-lucide="briefcase" class="w-4 h-4"></i>
+                    {{ req.client.organization|default:"Не указана" }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Status & Actions -->
+            <div class="flex items-center gap-3 ml-4">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                {% if req.status == 'new' %}bg-blue-50 text-blue-700 border border-blue-200
+                {% elif req.status == 'in_progress' %}bg-amber-50 text-amber-700 border border-amber-200
+                {% elif req.status == 'kp_ready' %}bg-purple-50 text-purple-700 border border-purple-200
+                {% elif req.status == 'closed' %}bg-green-50 text-green-700 border border-green-200
+                {% else %}bg-gray-50 text-gray-700 border border-gray-200{% endif %}">
+                {{ req.get_status_display }}
+              </span>
+
+              <div class="flex items-center gap-2">
+                <a href="{% url 'crm_request_detail' req.id %}" 
+                   onclick="markRequestAsViewed('{{ req.id }}')"
+                   class="flex items-center gap-2 px-3 py-2 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium">
+                  <i data-lucide="eye" class="w-4 h-4"></i>
+                </a>
+                
+                <button onclick="deleteRequest('{{ req.id }}')" 
+                        class="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Services Section -->
+          {% if req.services.all %}
+          <div class="mb-4">
+            <div class="flex items-center gap-2 mb-2">
+              <i data-lucide="shapes" class="w-4 h-4 text-gray-400"></i>
+              <span class="text-sm font-medium text-gray-700">Услуги:</span>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              {% for service in req.services.all %}
+              <span class="inline-flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-medium border border-blue-200">
+                <i data-lucide="check-circle" class="w-3 h-3 mr-1"></i>
+                {{ service.name }}
+              </span>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Details Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
+            <!-- Manager & Contact -->
+            <div class="space-y-2">
+              <div class="flex items-center gap-2 text-sm text-gray-600">
+                <i data-lucide="user" class="w-4 h-4 text-gray-400"></i>
+                <span class="{% if not req.responsible_manager %}text-amber-600 font-medium{% endif %}">
+                  {% if req.responsible_manager %}
+                    {{ req.responsible_manager.user.get_full_name|default:req.responsible_manager.user.username }}
+                  {% else %}
+                    Менеджер не назначен
+                  {% endif %}
+                </span>
+              </div>
+              <div class="flex items-center gap-2 text-sm text-gray-600">
+                <i data-lucide="phone" class="w-4 h-4 text-gray-400"></i>
+                <span>
+                  {{ req.client.contact_person|default:"Контакт не указан" }}
+                  {% if req.client.phone %}
+                    • {{ req.client.phone }}
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+
+            <!-- Address -->
+            {% if req.object_address %}
+            <div class="flex items-start gap-2 text-sm text-gray-600">
+              <i data-lucide="map-pin" class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"></i>
+              <span class="line-clamp-2">{{ req.object_address }}</span>
+            </div>
+            {% endif %}
+
+            <!-- Description -->
+            {% if req.description %}
+            <div class="lg:col-span-{% if req.object_address %}1{% else %}2{% endif %}">
+              <div class="flex items-start gap-2 text-sm text-gray-600">
+                <i data-lucide="file-text" class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"></i>
+                <p class="line-clamp-2">{{ req.description }}</p>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Footer -->
+          <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+            <div class="flex items-center gap-4 text-xs text-gray-500">
+              <div class="flex items-center gap-1.5">
+                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                <span>{{ req.created_at|date:"d.m.Y H:i" }}</span>
+              </div>
+              {% if req.updated_at != req.created_at %}
+              <div class="flex items-center gap-1.5">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                <span>Обновлено: {{ req.updated_at|date:"d.m.Y H:i" }}</span>
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="flex items-center gap-3">
+              {% if req.attached_file %}
+              <a href="{% url 'crm_download_file' req.id %}" 
+                 class="group/file flex items-center gap-2 px-3 py-1.5 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-all duration-200 text-xs font-medium border border-gray-200">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span>Файл</span>
+                <span class="text-xs bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded">
+                  {{ req.attached_file.size|filesizeformat }}
+                </span>
+              </a>
+              {% endif %}
+
+              {% if is_owner and not req.responsible_manager %}
+              <div class="flex items-center gap-1.5 text-amber-600 text-xs font-medium">
+                <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+                <span>Назначить менеджера</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <!-- Empty State -->
+      <div class="bg-white rounded-2xl shadow-xs border border-gray-100 p-16 text-center">
+        <div class="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl flex items-center justify-center mx-auto mb-6">
+          <i data-lucide="inbox" class="w-10 h-10 text-gray-400"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Нет заявок для отображения</h3>
+        <p class="text-gray-500 mb-6">Новые заявки появятся здесь автоматически</p>
+        <a href="{% url 'crm_create_request' %}" 
+           class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-500 to-yellow-500 text-white rounded-xl hover:from-amber-600 hover:to-yellow-600 transition-all duration-200 shadow-lg shadow-amber-500/25">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span class="font-medium">Создать первую заявку</span>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast-notification" 
+     class="fixed top-4 right-4 z-50 px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl shadow-xl transform translate-x-full transition-transform duration-300 hidden">
+  <div class="flex items-center gap-3">
+    <i data-lucide="zap" class="w-5 h-5 text-yellow-300"></i>
+    <div>
+      <p class="font-medium" id="toast-title">Новая заявка!</p>
+      <p class="text-sm text-blue-100" id="toast-message"></p>
+    </div>
+    <button onclick="hideToast()" class="text-blue-200 hover:text-white">
+      <i data-lucide="x" class="w-4 h-4"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden animate-fade-in">
+  <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl border border-gray-100 transform animate-scale-in">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center">
+        <i data-lucide="alert-triangle" class="w-6 h-6 text-red-600"></i>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900">Удаление заявки</h3>
+        <p class="text-sm text-gray-500 mt-1">Это действие нельзя отменить</p>
+      </div>
+    </div>
+    
+    <p class="text-gray-600 mb-6" id="delete-message">
+      Вы уверены, что хотите удалить эту заявку?
+    </p>
+    
+    <div class="flex gap-3">
+      <button id="cancel-delete" 
+              class="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-200 font-medium">
+        Отмена
+      </button>
+      <button id="confirm-delete" 
+              class="flex-1 px-4 py-2.5 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-xl hover:from-red-600 hover:to-rose-600 transition-all duration-200 font-medium flex items-center justify-center gap-2 shadow-lg shadow-red-500/25">
+        <i data-lucide="trash-2" class="w-4 h-4"></i>
+        Удалить
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ============================================================
+// 🔔 REAL-TIME NOTIFICATION SYSTEM
+// ============================================================
+
+class RealTimeNotifications {
+    constructor() {
+        this.lastCheck = new Date().toISOString();
+        this.isConnected = false;
+        this.checkInterval = null;
+        this.retryCount = 0;
+        this.maxRetries = 5;
+        this.checkFrequency = 8000; // 8 seconds
+        this.unreadCount = 0;
+        
+        this.init();
+    }
+
+    init() {
+        console.log('🔔 Initializing real-time notifications...');
+        this.startPolling();
+        this.updateUnreadCount();
+    }
+
+    startPolling() {
+        // Immediate first check
+        setTimeout(() => this.checkForNewRequests(), 1000);
+        
+        // Set up interval for continuous checking
+        this.checkInterval = setInterval(() => {
+            this.checkForNewRequests();
+        }, this.checkFrequency);
+    }
+
+    async checkForNewRequests() {
+        try {
+            const url = '/crm/api/check-new-requests/';
+            const params = `?last_check=${encodeURIComponent(this.lastCheck)}`;
+            
+            const response = await fetch(url + params, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': this.getCSRFToken(),
+                }
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const data = await response.json();
+            this.handleNewRequests(data);
+            
+        } catch (error) {
+            console.error('❌ Error checking new requests:', error);
+            this.handleConnectionError();
+        }
+    }
+
+    handleNewRequests(data) {
+        this.updateConnectionStatus(true);
+        
+        if (data.new_requests && data.new_requests.length > 0) {
+            console.log('🎯 New requests detected:', data.new_requests.length);
+            this.showNewRequests(data.new_requests);
+        }
+        
+        this.lastCheck = data.current_timestamp;
+    }
+
+    showNewRequests(requests) {
+        // Show toast notification
+        this.showToast(requests);
+        
+        // Show floating alert
+        this.showFloatingAlert(requests.length);
+    }
+
+    showToast(requests) {
+        const toast = document.getElementById('toast-notification');
+        const title = document.getElementById('toast-title');
+        const message = document.getElementById('toast-message');
+        
+        if (requests.length === 1) {
+            const request = requests[0];
+            title.textContent = 'Новая заявка!';
+            message.textContent = `${request.client_company} - ${this.getBuildingTypeText(request.object_type)}`;
+        } else {
+            title.textContent = 'Новые заявки!';
+            message.textContent = `Поступило ${requests.length} новых заявок`;
+        }
+        
+        toast.classList.remove('hidden', 'translate-x-full');
+        toast.classList.add('translate-x-0');
+        
+        // Auto hide after 5 seconds
+        setTimeout(() => {
+            this.hideToast();
+        }, 5000);
+    }
+
+    hideToast() {
+        const toast = document.getElementById('toast-notification');
+        toast.classList.remove('translate-x-0');
+        toast.classList.add('translate-x-full');
+    }
+
+    showFloatingAlert(count) {
+        const alert = document.getElementById('new-requests-alert');
+        const message = document.getElementById('alert-message');
+        
+        message.textContent = count === 1 ? '1 новая заявка' : `${count} новых заявок`;
+        alert.classList.remove('hidden');
+        
+        // Auto hide after 10 seconds
+        setTimeout(() => {
+            alert.classList.add('hidden');
+        }, 10000);
+    }
+
+    updateConnectionStatus(connected) {
+        // Connection status removed
+    }
+
+    handleConnectionError() {
+        this.retryCount++;
+        
+        if (this.retryCount >= this.maxRetries) {
+            console.error('🔴 Max retries reached, stopping polling');
+            this.stopPolling();
+        }
+    }
+
+    stopPolling() {
+        if (this.checkInterval) {
+            clearInterval(this.checkInterval);
+            this.checkInterval = null;
+        }
+    }
+
+    getBuildingTypeText(type) {
+        const types = {
+            'office': '🏢 Офис',
+            'apartment': '🏠 Квартира', 
+            'house': '🏡 Частный дом',
+            'commercial': '🏪 Коммерческое',
+            'industrial': '🏭 Промышленный',
+            'warehouse': '📦 Склад',
+            'retail': '🛍️ Торговый центр',
+            'cafe': '☕ Кафе/Ресторан',
+            'hotel': '🏨 Отель',
+            'medical': '🏥 Медицинский центр',
+            'sport': '⚽ Спортивный объект',
+            'educational': '🎓 Образовательный центр',
+            'other': '📍 Другой'
+        };
+        return types[type] || type || 'Не указано';
+    }
+
+    updateUnreadCount() {
+        // Count initial unread requests
+        const newRequests = document.querySelectorAll('.new-request-highlight');
+        this.unreadCount = newRequests.length;
+    }
+
+    getCSRFToken() {
+        let csrfToken = '';
+        const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (csrfInput) csrfToken = csrfInput.value;
+        
+        if (!csrfToken) {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+            if (cookieValue) csrfToken = decodeURIComponent(cookieValue);
+        }
+        
+        return csrfToken;
+    }
+}
+
+// ============================================================
+// 🎯 NOTIFICATION UI CONTROLS
+// ============================================================
+
+function scrollToNewRequests() {
+    const newRequests = document.querySelectorAll('.new-request-highlight');
+    if (newRequests.length > 0) {
+        newRequests[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Highlight briefly
+        newRequests[0].style.animation = 'highlightPulse 2s ease-in-out 3';
+    }
+}
+
+function hideToast() {
+    const toast = document.getElementById('toast-notification');
+    toast.classList.remove('translate-x-0');
+    toast.classList.add('translate-x-full');
+}
+
+// ============================================================
+// 👀 MARK AS VIEWED SYSTEM
+// ============================================================
+
+function markAllAsViewed() {
+    console.log('👀 Marking all requests as viewed...');
+    
+    const button = event.target.closest('button');
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Обработка...';
+    button.disabled = true;
+    
+    const csrfToken = getCSRFToken();
+    if (!csrfToken) {
+        showMessage('Ошибка безопасности. Обновите страницу.', 'error');
+        resetButton(button, originalText);
+        return;
+    }
+    
+    fetch('/crm/mark-all-viewed/', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrfToken,
+        },
+        body: new URLSearchParams({
+            'csrfmiddlewaretoken': csrfToken
+        })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            document.querySelectorAll('.new-request-highlight').forEach(element => {
+                element.classList.remove('new-request-highlight', 'border-l-4', 'border-l-blue-500', 'pulse-animation');
+            });
+            
+            document.querySelectorAll('.new-badge').forEach(badge => {
+                badge.remove();
+            });
+            
+            showMessage(data.message, 'success');
+        } else {
+            throw new Error(data.error || 'Unknown server error');
+        }
+    })
+    .catch(error => {
+        console.error('❌ Mark all as viewed error:', error);
+        showMessage('Ошибка при отметке заявок: ' + error.message, 'error');
+    })
+    .finally(() => {
+        resetButton(button, originalText);
+    });
+}
+
+function markRequestAsViewed(requestId) {
+    console.log('👀 Marking request as viewed:', requestId);
+    
+    const csrfToken = getCSRFToken();
+    if (!csrfToken) return;
+    
+    fetch(`/crm/request/${requestId}/mark-viewed/`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrfToken,
+        },
+        body: new URLSearchParams({
+            'csrfmiddlewaretoken': csrfToken
+        })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            const element = document.querySelector(`[data-request-id="${requestId}"]`);
+            if (element) {
+                element.classList.remove('new-request-highlight', 'border-l-4', 'border-l-blue-500', 'pulse-animation');
+                const badge = element.querySelector('.new-badge');
+                if (badge) badge.remove();
+            }
+        }
+    })
+    .catch(error => {
+        console.error('❌ Mark request as viewed error:', error);
+    });
+}
+
+// ============================================================
+// 🗑️ DELETE REQUEST SYSTEM
+// ============================================================
+let currentRequestId = null;
+
+function deleteRequest(requestId) {
+    console.log('🗑️ Delete request initiated:', requestId);
+    currentRequestId = requestId;
+    
+    const modal = document.getElementById('delete-modal');
+    const message = document.getElementById('delete-message');
+    
+    const requestElement = document.querySelector(`[data-request-id="${requestId}"]`);
+    const companyName = requestElement ? requestElement.querySelector('h3').textContent : 'эту заявку';
+    
+    message.textContent = `Вы уверены, что хотите удалить заявку "${companyName}"? Это действие нельзя отменить.`;
+    modal.classList.remove('hidden');
+}
+
+function confirmDelete() {
+    if (!currentRequestId) {
+        console.error('❌ No request ID for deletion');
+        return;
+    }
+    
+    const confirmBtn = document.getElementById('confirm-delete');
+    const originalText = confirmBtn.innerHTML;
+    confirmBtn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Удаление...';
+    confirmBtn.disabled = true;
+    
+    const csrfToken = getCSRFToken();
+    if (!csrfToken) {
+        showMessage('Ошибка безопасности. Обновите страницу.', 'error');
+        resetButton(confirmBtn, originalText);
+        return;
+    }
+    
+    const url = `/crm/request/${currentRequestId}/delete/`;
+    
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrfToken,
+        },
+        body: new URLSearchParams({
+            'csrfmiddlewaretoken': csrfToken
+        })
+    })
+    .then(response => {
+        if (response.status === 403) {
+            throw new Error('CSRF token invalid');
+        }
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            const element = document.querySelector(`[data-request-id="${currentRequestId}"]`);
+            if (element) {
+                element.style.transform = 'translateX(100%)';
+                element.style.opacity = '0';
+                setTimeout(() => {
+                    element.remove();
+                    updateRequestCount();
+                    checkEmptyList();
+                }, 300);
+            }
+            showMessage(data.message, 'success');
+        } else {
+            throw new Error(data.error || 'Unknown server error');
+        }
+    })
+    .catch(error => {
+        console.error('❌ Delete error:', error);
+        showMessage('Ошибка при удалении: ' + error.message, 'error');
+    })
+    .finally(() => {
+        resetButton(confirmBtn, originalText);
+        closeDeleteModal();
+    });
+}
+
+// ============================================================
+// 🚀 INITIALIZATION & UTILITIES
+// ============================================================
+
+let realTimeNotifications;
+
+document.addEventListener('DOMContentLoaded', function() {
+    lucide.createIcons();
+    
+    // Initialize real-time notifications
+    realTimeNotifications = new RealTimeNotifications();
+    
+    // Delete modal handlers
+    document.getElementById('cancel-delete').addEventListener('click', closeDeleteModal);
+    document.getElementById('confirm-delete').addEventListener('click', confirmDelete);
+    
+    console.log('✅ CRM Dashboard with real-time notifications initialized');
+});
+
+function closeDeleteModal() {
+    const modal = document.getElementById('delete-modal');
+    modal.classList.add('hidden');
+    currentRequestId = null;
+}
+
+function getCSRFToken() {
+    let csrfToken = '';
+    const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (csrfInput) csrfToken = csrfInput.value;
+    
+    if (!csrfToken) {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+        if (cookieValue) csrfToken = decodeURIComponent(cookieValue);
+    }
+    
+    return csrfToken;
+}
+
+function resetButton(button, originalHTML) {
+    button.innerHTML = originalHTML;
+    button.disabled = false;
+    lucide.createIcons();
+}
+
+function updateRequestCount() {
+    console.log('🔄 Request count updated');
+}
+
+function checkEmptyList() {
+    const requestItems = document.querySelectorAll('.request-item');
+    const requestsList = document.getElementById('requests-list');
+    
+    if (requestItems.length === 0 && requestsList) {
+        requestsList.innerHTML = `
+            <div class="bg-white rounded-2xl shadow-xs border border-gray-100 p-16 text-center">
+                <div class="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                    <i data-lucide="inbox" class="w-10 h-10 text-gray-400"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Все заявки обработаны</h3>
+                <p class="text-gray-500 mb-6">Новые заявки появятся здесь автоматически</p>
+            </div>
+        `;
+        lucide.createIcons();
+    }
+}
+
+function showMessage(message, type) {
+    const existingMessages = document.querySelectorAll('.temp-message');
+    existingMessages.forEach(msg => msg.remove());
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `temp-message fixed top-4 right-4 z-50 px-6 py-4 rounded-2xl shadow-xl border backdrop-blur-sm transform animate-scale-in ${
+        type === 'success' 
+            ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 text-green-700' 
+            : 'bg-gradient-to-r from-red-50 to-rose-50 border-red-200 text-red-700'
+    }`;
+    messageDiv.innerHTML = `
+        <div class="flex items-center gap-3">
+            <i data-lucide="${type === 'success' ? 'check-circle' : 'alert-circle'}" class="w-5 h-5"></i>
+            <span class="font-medium">${message}</span>
+        </div>
+    `;
+    document.body.appendChild(messageDiv);
+    
+    lucide.createIcons();
+    
+    setTimeout(() => {
+        if (messageDiv.parentElement) {
+            messageDiv.style.opacity = '0';
+            messageDiv.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+                if (messageDiv.parentElement) {
+                    document.body.removeChild(messageDiv);
+                }
+            }, 300);
+        }
+    }, 4000);
+}
+</script>
+
+<style>
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { 
+        background-color: transparent; 
+        border-left-color: #3b82f6;
+    }
+    50% { 
+        background-color: rgba(59, 130, 246, 0.05);
+        border-left-color: #1d4ed8;
+    }
+}
+
+@keyframes highlightPulse {
+    0%, 100% { 
+        background-color: rgba(59, 130, 246, 0.1);
+        border-left-color: #3b82f6;
+    }
+    50% { 
+        background-color: rgba(59, 130, 246, 0.2);
+        border-left-color: #1d4ed8;
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+}
+
+.pulse-animation {
+    animation: pulseGlow 2s infinite;
+}
+
+.new-request-highlight {
+    animation: highlightPulse 2s ease-in-out infinite;
+    border-left-width: 4px;
+    border-left-color: #3b82f6;
+}
+
+.request-item {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.request-item:hover {
+    transform: translateY(-2px);
+}
+
+.temp-message {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>
+{% endblock %}

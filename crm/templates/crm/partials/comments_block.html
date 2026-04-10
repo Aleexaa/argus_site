@@ -1,0 +1,15 @@
+{% if comments %}
+  <div class="space-y-4" id="comments-list">
+    {% for comment in comments %}
+      <div class="bg-white shadow-soft rounded-xl p-4 border-l-4 border-[#C9A96A] comment-item" data-comment-id="{{ comment.id }}">
+        <p class="text-gray-700 mb-1">{{ comment.text }}</p>
+        <p class="text-sm text-gray-500">
+          {{ comment.author.user.get_full_name|default:comment.author.user.username }}
+          — {{ comment.created_at|date:"d.m.Y H:i" }}
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-gray-500 italic">Комментариев пока нет.</p>
+{% endif %}

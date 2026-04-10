@@ -1,0 +1,213 @@
+{% extends 'crm/base_crm.html' %}
+{% load static %}
+
+{% block title %}Редактирование баннера - CRM Аргус{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+        <div>
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">✏️ Редактирование баннера</h1>
+            <p class="text-gray-600">Измените параметры рекламного баннера "{{ promo.title }}"</p>
+        </div>
+        <div>
+            <a href="{% url 'crm_promo_blocks' %}" 
+               class="border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium flex items-center gap-2 justify-center hover:bg-gray-50 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Назад к списку
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+        <form method="post" enctype="multipart/form-data" class="space-y-8">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="edit">
+            <input type="hidden" name="promo_id" value="{{ promo.id }}">
+            
+            <!-- Основная информация -->
+            <div class="space-y-6">
+                <h2 class="text-xl font-bold text-gray-800 border-b border-gray-200 pb-3">📝 Основная информация</h2>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Заголовок баннера *
+                    </label>
+                    <input type="text" name="title" value="{{ promo.title }}" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent transition-all"
+                           placeholder="Например: Скидка 20% на все услуги">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Описание баннера
+                    </label>
+                    <textarea name="text" rows="3"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent transition-all resize-none"
+                              placeholder="Краткое описание вашего предложения...">{{ promo.text }}</textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Текст кнопки
+                        </label>
+                        <input type="text" name="button_text" value="{{ promo.button_text }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent transition-all"
+                               placeholder="Узнать больше">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Ссылка для кнопки
+                        </label>
+                        <input type="url" name="button_url" value="{{ promo.button_url }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent transition-all"
+                               placeholder="https://example.com">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Внешний вид -->
+            <div class="space-y-6">
+                <h2 class="text-xl font-bold text-gray-800 border-b border-gray-200 pb-3">🎨 Внешний вид</h2>
+                
+                <!-- Фон -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">
+                        Фон баннера
+                    </label>
+                    <div class="grid grid-cols-4 gap-2 mb-3">
+                        <button type="button" onclick="setBackgroundColor('#1E3A8A')" class="h-10 bg-blue-900 rounded border-2 {% if promo.background_color == '#1E3A8A' %}border-blue-900{% else %}border-gray-300{% endif %}"></button>
+                        <button type="button" onclick="setBackgroundColor('#059669')" class="h-10 bg-green-600 rounded border-2 {% if promo.background_color == '#059669' %}border-blue-900{% else %}border-gray-300{% endif %}"></button>
+                        <button type="button" onclick="setBackgroundColor('#DC2626')" class="h-10 bg-red-600 rounded border-2 {% if promo.background_color == '#DC2626' %}border-blue-900{% else %}border-gray-300{% endif %}"></button>
+                        <button type="button" onclick="setBackgroundColor('#7C3AED')" class="h-10 bg-purple-600 rounded border-2 {% if promo.background_color == '#7C3AED' %}border-blue-900{% else %}border-gray-300{% endif %}"></button>
+                    </div>
+                    <input type="color" name="background_color" id="backgroundColor" value="{{ promo.background_color }}" 
+                           class="w-full h-12 rounded border border-gray-300 cursor-pointer">
+                </div>
+                
+                <!-- Картинка -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Картинка для баннера
+                    </label>
+                    <input type="file" name="image" accept="image/*"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gold file:text-white hover:file:bg-dark-gold">
+                    
+                    {% if promo.image %}
+                    <div class="mt-3 p-3 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600 mb-2">Текущее изображение:</p>
+                        <img src="{{ promo.image.url }}" alt="Current banner image" class="h-20 w-auto rounded-lg">
+                        <div class="mt-2">
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" name="remove_image" value="true" class="w-4 h-4 text-gold border-gray-300 rounded focus:ring-gold">
+                                <span class="text-sm text-gray-700">Удалить текущее изображение</span>
+                            </label>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+        
+                
+                <!-- Цвета текста -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Цвет текста
+                        </label>
+                        <input type="color" name="text_color" value="{{ promo.text_color }}"
+                               class="w-full h-10 rounded border border-gray-300 cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Цвет кнопки
+                        </label>
+                        <input type="color" name="button_color" value="{{ promo.button_color }}"
+                               class="w-full h-10 rounded border border-gray-300 cursor-pointer">
+                    </div>
+                </div>
+            </div>
+        
+            
+            <!-- Кнопки действий -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                <button type="submit" 
+                        class="flex-1 btn-gold px-6 py-4 rounded-lg font-medium text-lg hover:scale-105 transition-transform">
+                    💾 Сохранить изменения
+                </button>
+                <a href="{% url 'crm_promo_blocks' %}" 
+                   class="flex-1 px-6 py-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium text-center">
+                    Отмена
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// 🎨 Функции для работы с цветами
+function setBackgroundColor(color) {
+    document.getElementById('backgroundColor').value = color;
+    
+    // Обновляем визуальный вид кнопок
+    document.querySelectorAll('[onclick^="setBackgroundColor"]').forEach(btn => {
+        btn.classList.remove('border-2', 'border-blue-900');
+        btn.classList.add('border-2', 'border-gray-300');
+    });
+    
+    // Подсвечиваем выбранную кнопку
+    event.target.classList.remove('border-gray-300');
+    event.target.classList.add('border-blue-900');
+}
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+.btn-gold {
+    background: linear-gradient(135deg, #C9A96A 0%, #B89960 100%);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(201, 169, 106, 0.3);
+}
+
+/* Стили для полей формы */
+input, textarea, select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #C9A96A;
+    box-shadow: 0 0 0 3px rgba(201, 169, 106, 0.1);
+}
+
+/* Стили для чекбоксов */
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+
+/* Улучшенная читаемость */
+.text-lg {
+    font-size: 1.125rem;
+    line-height: 1.6;
+}
+</style>
+{% endblock %}

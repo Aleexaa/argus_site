@@ -1,0 +1,207 @@
+{% extends 'crm/base_crm.html' %}
+{% load static %}
+
+{% block title %}{{ project.title }} | CRM Аргус{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50/30">
+  <!-- Header Section -->
+  <div class="bg-white border-b border-gray-100 px-6 py-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl flex items-center justify-center shadow-sm">
+          <i data-lucide="folder-open" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-semibold text-gray-900">{{ project.title }}</h1>
+          <p class="text-sm text-gray-500 mt-1">Детальная информация о проекте</p>
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-3">
+        <a href="{% url 'crm_projects' %}" 
+           class="group flex items-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-200">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          <span class="text-sm font-medium">Назад к проектам</span>
+        </a>
+        
+        {% if is_owner %}
+        <a href="{% url 'crm_project_edit' project.id %}" 
+           class="group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-200 shadow-lg shadow-amber-500/25">
+          <i data-lucide="edit" class="w-4 h-4"></i>
+          <span class="text-sm font-medium">Редактировать</span>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Details -->
+  <div class="p-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Main Content -->
+      <div class="lg:col-span-2">
+        <!-- Project Image -->
+        <div class="bg-white rounded-2xl shadow-xs border border-gray-100 p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">Изображение проекта</h2>
+          {% if project.image %}
+          <div class="rounded-xl overflow-hidden bg-gray-100">
+            <img src="{{ project.image.url }}" alt="{{ project.title }}" class="w-full h-96 object-cover">
+          </div>
+          {% else %}
+          <div class="rounded-xl bg-gray-100 h-96 flex items-center justify-center">
+            <div class="text-center">
+              <i data-lucide="image" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
+              <p class="text-gray-500">Изображение не загружено</p>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="space-y-6">
+        <!-- Project Info -->
+        <div class="bg-white rounded-2xl shadow-xs border border-gray-100 p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">Информация о проекте</h2>
+          <div class="space-y-4">
+            <div>
+              <label class="text-sm font-medium text-gray-500">Тип объекта</label>
+              <p class="text-gray-900 font-medium">{{ project.get_object_type_display }}</p>
+            </div>
+            
+            {% if project.address %}
+            <div>
+              <label class="text-sm font-medium text-gray-500">Адрес</label>
+              <p class="text-gray-900">{{ project.address }}</p>
+            </div>
+            {% endif %}
+            
+            <div>
+              <label class="text-sm font-medium text-gray-500">Дата создания</label>
+              <p class="text-gray-900">{{ project.created_at|date:"d.m.Y H:i" }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-2xl shadow-xs border border-gray-100 p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">Действия</h2>
+          <div class="space-y-3">
+            <a href="{% url 'crm_projects' %}" 
+               class="w-full flex items-center gap-3 px-4 py-3 bg-gray-50 text-gray-700 rounded-xl hover:bg-gray-100 transition-all duration-200">
+              <i data-lucide="arrow-left" class="w-4 h-4"></i>
+              <span class="font-medium">Все проекты</span>
+            </a>
+            
+            {% if is_owner %}
+            <a href="{% url 'crm_project_edit' project.id %}" 
+               class="w-full flex items-center gap-3 px-4 py-3 bg-amber-50 text-amber-700 rounded-xl hover:bg-amber-100 transition-all duration-200">
+              <i data-lucide="edit" class="w-4 h-4"></i>
+              <span class="font-medium">Редактировать</span>
+            </a>
+            
+            <button onclick="deleteProject('{{ project.id }}')" 
+                    class="w-full flex items-center gap-3 px-4 py-3 bg-red-50 text-red-700 rounded-xl hover:bg-red-100 transition-all duration-200">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+              <span class="font-medium">Удалить проект</span>
+            </button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-project-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl border border-gray-100">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center">
+        <i data-lucide="alert-triangle" class="w-6 h-6 text-red-600"></i>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900">Удаление проекта</h3>
+        <p class="text-sm text-gray-500 mt-1">Это действие нельзя отменить</p>
+      </div>
+    </div>
+    
+    <p class="text-gray-600 mb-6">
+      Вы уверены, что хотите удалить проект "{{ project.title }}"?
+    </p>
+    
+    <div class="flex gap-3">
+      <button onclick="closeDeleteModal()" 
+              class="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-200 font-medium">
+        Отмена
+      </button>
+      <button onclick="confirmDeleteProject()" 
+              class="flex-1 px-4 py-2.5 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-xl hover:from-red-600 hover:to-rose-600 transition-all duration-200 font-medium flex items-center justify-center gap-2">
+        <i data-lucide="trash-2" class="w-4 h-4"></i>
+        Удалить
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentProjectId = null;
+
+function deleteProject(projectId) {
+    currentProjectId = projectId;
+    document.getElementById('delete-project-modal').classList.remove('hidden');
+}
+
+function closeDeleteModal() {
+    document.getElementById('delete-project-modal').classList.add('hidden');
+    currentProjectId = null;
+}
+
+function confirmDeleteProject() {
+    if (!currentProjectId) return;
+    
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Удаление...';
+    button.disabled = true;
+    
+    fetch(`/crm/projects/${currentProjectId}/delete/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCSRFToken(),
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            window.location.href = "{% url 'crm_projects' %}";
+        } else {
+            alert('Ошибка при удалении: ' + data.error);
+            closeDeleteModal();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ошибка при удалении');
+        closeDeleteModal();
+    })
+    .finally(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
+}
+
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    lucide.createIcons();
+});
+</script>
+{% endblock %}

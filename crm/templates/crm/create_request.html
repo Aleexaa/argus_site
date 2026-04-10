@@ -1,0 +1,247 @@
+{% extends "crm/base_crm.html" %}
+{% load static %}
+
+{% block title %}Создать заявку - CRM Аргус{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-6">
+            <a href="{% url 'crm_my_requests' %}" class="text-gray-500 hover:text-gray-700">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <h1 class="text-2xl font-bold text-gray-800">Создать новую заявку</h1>
+        </div>
+
+        <form id="requestForm" method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Название компании -->
+            <div>
+                <label for="company_name" class="block text-gray-700 mb-2 font-medium">
+                    Название компании <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="company_name" name="company_name" placeholder="ООО Пример"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+            </div>
+
+            <!-- Контактное лицо -->
+            <div>
+                <label for="contact_person" class="block text-gray-700 mb-2 font-medium">
+                    Контактное лицо <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="contact_person" name="contact_person" placeholder="Иван Иванов"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+            </div>
+
+            <!-- Телефон и Email -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="phone" class="block text-gray-700 mb-2 font-medium">
+                        Телефон <span class="text-red-500">*</span>
+                    </label>
+                    <input type="tel" id="phone" name="phone" placeholder="+7 (999) 123-45-67"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                </div>
+
+                <div>
+                    <label for="email" class="block text-gray-700 mb-2 font-medium">
+                        Email <span class="text-red-500">*</span>
+                    </label>
+                    <input type="email" id="email" name="email" placeholder="example@company.ru"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                </div>
+            </div>
+
+            <!-- Тип объекта -->
+            <div>
+                <label for="object_type" class="block text-gray-700 mb-2 font-medium">
+                    Тип объекта <span class="text-red-500">*</span>
+                </label>
+                <select id="object_type" name="object_type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                    <option value="">Выберите тип объекта</option>
+                    <option value="residential">Жилое здание</option>
+                    <option value="industrial">Промышленный объект</option>
+                    <option value="commercial">Торговый центр</option>
+                    <option value="office">Офис</option>
+                    <option value="government">Гос. учреждение</option>
+                </select>
+            </div>
+
+            <!-- Адрес -->
+            <div>
+                <label for="object_address" class="block text-gray-700 mb-2 font-medium">
+                    Адрес объекта
+                </label>
+                <textarea id="object_address" name="object_address" rows="2"
+                          placeholder="г. Казань, ул. Ленина, д. 10"
+                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+            </div>
+
+            <!-- Описание -->
+            <div>
+                <label for="description" class="block text-gray-700 mb-2 font-medium">
+                    📝 Описание задачи
+                </label>
+                <textarea id="description" name="description" rows="4"
+                          placeholder="Опишите объект, особенности, пожелания..."
+                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+            </div>
+
+            <!-- Услуги -->
+            <div>
+                <label class="block text-gray-700 mb-3 font-medium">
+                    Выберите услуги <span class="text-red-500">*</span>
+                </label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {% for service in services %}
+                    <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                        <input type="checkbox" name="services" value="{{ service.id }}"
+                               class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-gray-700">{{ service.name }}</span>
+                    </label>
+                    {% empty %}
+                    <div class="col-span-2 text-center py-4 text-gray-500">
+                        Нет доступных услуг
+                    </div>
+                    {% endfor %}
+                </div>
+                <p id="servicesError" class="text-red-500 text-sm mt-2 hidden">Выберите хотя бы одну услугу</p>
+            </div>
+
+            <!-- Файл -->
+            <div>
+                <label class="block text-gray-700 mb-2 font-medium">Прикрепить документ</label>
+                <div id="file-drop" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition">
+                    <input type="file" id="fileInput" name="attached_file" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png">
+                    <p id="fileLabel" class="text-gray-500">Нажмите для выбора или перетащите файл сюда</p>
+                    <p id="fileName" class="text-gray-700 mt-2 font-medium hidden"></p>
+                    <button type="button" id="removeFileBtn" class="text-red-500 mt-2 hidden hover:underline text-sm">Удалить файл</button>
+                </div>
+            </div>
+
+            <!-- Кнопки -->
+            <div class="flex gap-3 pt-4">
+                <a href="{% url 'crm_my_requests' %}" 
+                   class="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-center font-medium">
+                    Отмена
+                </a>
+                <button type="submit"
+                        class="flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium flex items-center justify-center gap-2">
+                    <i data-lucide="plus" class="w-5 h-5"></i>
+                    Создать заявку
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+
+        // Обработка файлов
+        const drop = document.getElementById('file-drop');
+        const input = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        const removeBtn = document.getElementById('removeFileBtn');
+        const label = document.getElementById('fileLabel');
+
+        drop.addEventListener('click', () => input.click());
+        
+        input.addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (file) {
+                fileName.textContent = `📎 ${file.name}`;
+                fileName.classList.remove('hidden');
+                removeBtn.classList.remove('hidden');
+                label.classList.add('hidden');
+            }
+        });
+        
+        removeBtn.addEventListener('click', () => {
+            input.value = '';
+            fileName.classList.add('hidden');
+            removeBtn.classList.add('hidden');
+            label.classList.remove('hidden');
+        });
+
+        // Drag and drop для файлов
+        drop.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            drop.classList.add('border-blue-500', 'bg-blue-50');
+        });
+
+        drop.addEventListener('dragleave', () => {
+            drop.classList.remove('border-blue-500', 'bg-blue-50');
+        });
+
+        drop.addEventListener('drop', (e) => {
+            e.preventDefault();
+            drop.classList.remove('border-blue-500', 'bg-blue-50');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                input.files = files;
+                const file = files[0];
+                fileName.textContent = `📎 ${file.name}`;
+                fileName.classList.remove('hidden');
+                removeBtn.classList.remove('hidden');
+                label.classList.add('hidden');
+            }
+        });
+
+        // Валидация формы
+        document.getElementById('requestForm').addEventListener('submit', function(e) {
+            let valid = true;
+            
+            // Проверяем обязательные поля
+            ['company_name', 'contact_person', 'phone', 'email', 'object_type'].forEach(id => {
+                const field = document.getElementById(id);
+                if (!field.value.trim()) {
+                    field.classList.add('border-red-500');
+                    valid = false;
+                } else {
+                    field.classList.remove('border-red-500');
+                }
+            });
+
+            // Проверка выбора услуг
+            const checkedServices = document.querySelectorAll('input[name="services"]:checked');
+            const servicesError = document.getElementById('servicesError');
+            if (checkedServices.length === 0) {
+                servicesError.classList.remove('hidden');
+                valid = false;
+            } else {
+                servicesError.classList.add('hidden');
+            }
+
+            if (!valid) {
+                e.preventDefault();
+                alert('Пожалуйста, заполните все обязательные поля и выберите хотя бы одну услугу');
+            }
+        });
+
+        // Подсветка выбранных услуг
+        document.querySelectorAll('input[name="services"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const label = this.closest('label');
+                if (this.checked) {
+                    label.classList.add('bg-blue-50', 'border-blue-300');
+                } else {
+                    label.classList.remove('bg-blue-50', 'border-blue-300');
+                }
+            });
+        });
+    });
+</script>
+
+<style>
+    /* Стили для выбранных услуг */
+    input[name="services"]:checked + span {
+        font-weight: 600;
+        color: #1f2937;
+    }
+</style>
+{% endblock %}

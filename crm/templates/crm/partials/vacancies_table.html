@@ -1,0 +1,109 @@
+<div class="bg-white rounded-xl shadow-soft overflow-hidden" id="vacancies-table">
+    {% if vacancies %}
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Вакансия</th>
+                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Зарплата</th>
+                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Тип/Опыт</th>
+                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Кандидаты</th>
+                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Статус</th>
+                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Создана</th>
+                    <th class="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Действия</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200" id="vacancies-tbody">
+                {% for vacancy in vacancies %}
+                <tr class="vacancy-row hover:bg-gray-50 transition-colors"
+                    data-title="{{ vacancy.title|lower }}"
+                    data-description="{{ vacancy.description|default:''|lower }}"
+                    data-requirements="{{ vacancy.requirements|default:''|lower }}"
+                    data-status="{% if vacancy.is_active %}active{% else %}inactive{% endif %}">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-900">{{ vacancy.title }}</h3>
+                                {% if vacancy.requirements %}
+                                <p class="text-sm text-gray-600 mt-1 line-clamp-2">
+                                    <strong>Требования:</strong> {{ vacancy.requirements|truncatewords:10 }}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if vacancy.salary %}
+                        <span class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                            <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+                            {{ vacancy.salary }}
+                        </span>
+                        {% else %}
+                        <span class="text-gray-400 text-sm">—</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="space-y-1">
+                            {% if vacancy.employment_type %}
+                            <div class="text-sm text-gray-600">
+                                <strong>Тип:</strong> {{ vacancy.employment_type }}
+                            </div>
+                            {% endif %}
+                            {% if vacancy.experience %}
+                            <div class="text-sm text-gray-600">
+                                <strong>Опыт:</strong> {{ vacancy.experience }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-medium text-gray-900">
+                                {{ vacancy.candidates.count }}
+                            </span>
+                            <span class="text-sm text-gray-500">откликов</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="{% if vacancy.is_active %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-800{% endif %} px-3 py-1 rounded-full text-sm font-medium border">
+                            {{ vacancy.is_active|yesno:"Активна,Неактивна" }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                        {{ vacancy.created_at|date:"d.m.Y" }}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex justify-end gap-2">
+                            <a href="{% url 'crm_vacancy_edit' vacancy.id %}" 
+                               class="inline-flex items-center gap-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm">
+                                <i data-lucide="edit" class="w-4 h-4"></i>
+                                Редактировать
+                            </a>
+                            <button type="button" 
+                                    onclick="deleteVacancy('{{ vacancy.id }}', '{{ vacancy.title|escapejs }}')"
+                                    class="inline-flex items-center gap-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                Удалить
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <!-- Сообщение когда вообще нет вакансий в базе -->
+    <div class="text-center py-12">
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="briefcase" class="w-8 h-8 text-gray-400"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Нет вакансий</h3>
+        <p class="text-gray-600 mb-6">Создайте первую вакансию для привлечения кандидатов</p>
+        <a href="{% url 'crm_vacancy_create' %}" class="btn-gold px-6 py-3 rounded-lg font-medium inline-flex items-center gap-2">
+            <i data-lucide="plus" class="w-5 h-5"></i>
+            Создать вакансию
+        </a>
+    </div>
+    {% endif %}
+</div>

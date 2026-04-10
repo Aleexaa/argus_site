@@ -1,0 +1,520 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CRM Аргус{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f8fa;
+        }
+        .bg-dark-blue { background-color: #0D1B2A; }
+        .text-gold { color: #C9A96A; }
+        .hover-gold:hover { color: #C9A96A; }
+
+        .btn-gold {
+            background-color: #C9A96A;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover {
+            background-color: #b9925b;
+            transform: translateY(-1px);
+        }
+
+        .btn-logout {
+            background-color: #b9925b;
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .btn-logout:hover {
+            background-color: #b91c1c;
+            transform: translateY(-1px);
+        }
+
+        .shadow-soft {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .nav-link {
+            color: #d1d5db;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            white-space: nowrap;
+        }
+        .nav-link:hover { color: #ffffff; }
+        .nav-active {
+            color: #C9A96A !important;
+            font-weight: 600;
+        }
+
+        /* Анимации для уведомлений */
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+            }
+        }
+
+        .notification-pulse {
+            animation: pulseGlow 2s infinite;
+        }
+
+        .badge-pulse {
+            animation: pulseGlow 1.5s infinite;
+        }
+
+        /* Анимация появления новой заявки */
+        .new-request-appear {
+            animation: slideInDown 0.5s ease-out;
+        }
+
+        /* Подсветка новых заявок */
+        .new-request-highlight {
+            border-left: 4px solid #10b981 !important;
+            background: linear-gradient(90deg, #f0fdf4 0%, #ffffff 30%) !important;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15) !important;
+        }
+
+        .pulse-animation {
+            animation: pulseGlow 2s ease-in-out 3;
+        }
+
+        /* Стили для промо-блоков */
+        .promo-banner {
+            background: linear-gradient(135deg, #1E3A8A 0%, #3730A3 100%);
+            border-left: 4px solid #C9A96A;
+        }
+        
+        .promo-banner-success {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            border-left: 4px solid #10B981;
+        }
+        
+        .promo-banner-warning {
+            background: linear-gradient(135deg, #D97706 0%, #B45309 100%);
+            border-left: 4px solid #F59E0B;
+        }
+
+        /* Стили для выпадающего меню */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #0D1B2A;
+            border: 1px solid #1E293B;
+            border-radius: 0.5rem;
+            min-width: 200px;
+            z-index: 50;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #d1d5db;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #1E293B;
+        }
+
+        .dropdown-item:hover {
+            background: #1E293B;
+            color: #C9A96A;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+    <!-- 🔹 Глобальное уведомление о новых заявок -->
+    <div id="global-requests-alert" class="hidden fixed top-20 right-4 z-50 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg border-l-4 border-green-600 cursor-pointer max-w-sm">
+        <div class="flex items-center gap-3">
+            <span class="text-lg">🔔</span>
+            <div class="flex-1">
+                <div class="font-semibold" id="global-alert-text">Новые заявки!</div>
+                <div class="text-xs opacity-90">Нажмите для просмотра</div>
+            </div>
+            <button onclick="hideGlobalAlert()" class="ml-2 text-white hover:text-gray-200 text-lg">
+                ✕
+            </button>
+        </div>
+    </div>
+
+    <!-- 🔹 Верхнее меню -->
+    <header class="bg-dark-blue shadow-md text-white sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <!-- Логотип и основная навигация -->
+                <div class="flex items-center justify-between lg:justify-start">
+                    <h1 class="text-xl md:text-2xl font-bold tracking-wide">
+                        CRM <span class="text-gold">Аргус</span>
+                    </h1>
+                    
+                    <!-- Мобильное меню -->
+                    <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Навигация -->
+                <nav id="main-nav" class="hidden lg:flex flex-wrap items-center gap-1 text-sm">
+                    <!-- Основные вкладки -->
+                    <a href="{% url 'crm_dashboard' %}" 
+                       class="nav-link px-3 py-2 rounded-lg {% if request.path == '/crm/' or request.path == '/crm' %}nav-active bg-white/10{% else %}hover:bg-white/5{% endif %}">
+                       📊 Заявки
+                    </a>
+                    
+                    <a href="{% url 'crm_my_requests' %}" 
+                       class="nav-link px-3 py-2 rounded-lg {% if '/crm/my-requests' in request.path %}nav-active bg-white/10{% else %}hover:bg-white/5{% endif %}">
+                       📋 Мои заявкм
+                    </a>
+                    
+                    <a href="{% url 'crm_clients' %}" 
+                       class="nav-link px-3 py-2 rounded-lg {% if '/crm/clients' in request.path %}nav-active bg-white/10{% else %}hover:bg-white/5{% endif %}">
+                       👥 Клиенты
+                    </a>
+                      <a href="{% url 'crm_candidates_list' %}" 
+                               class="dropdown-item {% if '/crm/candidates' in request.path %}nav-active{% endif %}">
+                               👥 Кандидаты
+                        </a>
+                    <!-- Выпадающее меню для владельца -->
+                    {% if request.user.managerprofile and request.user.managerprofile.role == 'owner' %}
+                    <div class="dropdown relative">
+                        <button class="nav-link px-3 py-2 rounded-lg hover:bg-white/5 flex items-center gap-1">
+                            ⚙️ Управление
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'crm_managers' %}" 
+                               class="dropdown-item {% if '/crm/managers' in request.path %}nav-active{% endif %}">
+                               👔 Менеджеры
+                            </a>
+                            <a href="{% url 'crm_projects' %}" 
+                               class="dropdown-item {% if '/crm/projects' in request.path %}nav-active{% endif %}">
+                               🏗️ Проекты
+                            </a>
+                            <a href="{% url 'crm_vacancies_list' %}" 
+                               class="dropdown-item {% if '/crm/vacancies' in request.path %}nav-active{% endif %}">
+                               💼 Вакансии
+                            </a>
+                          
+                            <a href="{% url 'crm_promo_blocks' %}" 
+                               class="dropdown-item {% if '/crm/promo-blocks' in request.path %}nav-active{% endif %}">
+                               🎯 Промо-блоки
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Остальные вкладки -->
+                    <a href="{% url 'crm_feedback' %}" 
+                       class="nav-link px-3 py-2 rounded-lg {% if '/crm/feedback' in request.path %}nav-active bg-white/10{% else %}hover:bg-white/5{% endif %}">
+                       📨 Обратная связь
+                    </a>
+                    
+                    <a href="{% url 'crm_profile' %}" 
+                       class="nav-link px-3 py-2 rounded-lg {% if '/crm/profile' in request.path %}nav-active bg-white/10{% else %}hover:bg-white/5{% endif %}">
+                       👤 Профиль
+                    </a>
+                </nav>
+
+                <!-- Правая часть -->
+                <div class="flex items-center gap-3 justify-between lg:justify-end">
+                    <!-- Индикатор новых заявок -->
+                    <div id="header-notification" class="hidden items-center gap-2 px-3 py-1 bg-red-500 text-white rounded-full text-sm font-medium notification-pulse">
+                        <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                        <span id="header-notification-count">0</span>
+                        <span class="hidden sm:inline">новых</span>
+                    </div>
+
+                    <!-- Информация пользователя -->
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm text-gray-300 hidden sm:block">
+                            {{ request.user.get_full_name|default:request.user.username }}
+                            {% if request.user.managerprofile %}
+                            <span class="text-gold text-xs">({{ request.user.managerprofile.get_role_display }})</span>
+                            {% endif %}
+                        </span>
+
+                        <a href="{% url 'logout' %}" class="btn-logout flex items-center gap-1 text-sm">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                            <span class="hidden sm:inline">Выйти</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Мобильное меню (скрыто по умолчанию) -->
+            <div id="mobile-menu" class="lg:hidden mt-4 hidden">
+                <div class="flex flex-col gap-2">
+                    <a href="{% url 'crm_dashboard' %}" 
+                       class="nav-link px-3 py-2 rounded-lg {% if request.path == '/crm/' or request.path == '/crm' %}nav-active bg-white/10{% endif %}">
+                       📊 Все заявки
+                    </a>
+                    <a href="{% url 'crm_my_requests' %}" 
+                       class="nav-link px-3 py-2 rounded-lg {% if '/crm/my-requests' in request.path %}nav-active bg-white/10{% endif %}">
+                       📋 Мои заявки
+                    </a>
+                    <a href="{% url 'crm_clients' %}" 
+                       class="nav-link px-3 py-2 rounded-lg {% if '/crm/clients' in request.path %}nav-active bg-white/10{% endif %}">
+                       👥 Все клиенты
+                    </a>
+
+                    {% if request.user.managerprofile and request.user.managerprofile.role == 'owner' %}
+                    <div class="border-t border-gray-600 pt-2 mt-2">
+                        <div class="text-xs text-gray-400 uppercase font-semibold px-3 py-1">Управление</div>
+                        <a href="{% url 'crm_managers' %}" 
+                           class="nav-link px-3 py-2 rounded-lg {% if '/crm/managers' in request.path %}nav-active bg-white/10{% endif %}">
+                           👔 Менеджеры
+                        </a>
+                        <a href="{% url 'crm_projects' %}" 
+                           class="nav-link px-3 py-2 rounded-lg {% if '/crm/projects' in request.path %}nav-active bg-white/10{% endif %}">
+                           🏗️ Проекты
+                        </a>
+                        <a href="{% url 'crm_vacancies_list' %}" 
+                           class="nav-link px-3 py-2 rounded-lg {% if '/crm/vacancies' in request.path %}nav-active bg-white/10{% endif %}">
+                           💼 Вакансии
+                        </a>
+                        <a href="{% url 'crm_candidates_list' %}" 
+                           class="nav-link px-3 py-2 rounded-lg {% if '/crm/candidates' in request.path %}nav-active bg-white/10{% endif %}">
+                           👥 Кандидаты
+                        </a>
+                        <a href="{% url 'crm_promo_blocks' %}" 
+                           class="nav-link px-3 py-2 rounded-lg {% if '/crm/promo-blocks' in request.path %}nav-active bg-white/10{% endif %}">
+                           🎯 Промо-блоки
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <a href="{% url 'crm_feedback' %}" 
+                       class="nav-link px-3 py-2 rounded-lg {% if '/crm/feedback' in request.path %}nav-active bg-white/10{% endif %}">
+                       📨 Обратная связь
+                    </a>
+                    <a href="{% url 'crm_profile' %}" 
+                       class="nav-link px-3 py-2 rounded-lg {% if '/crm/profile' in request.path %}nav-active bg-white/10{% endif %}">
+                       👤 Профиль
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 🔹 Контент -->
+    <main class="flex-1 container mx-auto px-4 py-6">
+        <!-- Сообщения -->
+        {% if messages %}
+        <div class="mb-6 space-y-3">
+            {% for message in messages %}
+            <div class="p-4 rounded-lg border-l-4 
+                {% if message.tags == 'error' %}bg-red-50 text-red-700 border-red-500
+                {% elif message.tags == 'warning' %}bg-yellow-50 text-yellow-700 border-yellow-500
+                {% elif message.tags == 'success' %}bg-green-50 text-green-700 border-green-500
+                {% else %}bg-blue-50 text-blue-700 border-blue-500{% endif %}">
+                <div class="flex items-center gap-2">
+                    {% if message.tags == 'error' %}
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    {% elif message.tags == 'success' %}
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    {% endif %}
+                    {{ message }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- 🔹 Промо-блок для CRM -->
+        {% if active_promo %}
+        <div class="mb-6 rounded-xl shadow-lg overflow-hidden promo-banner text-white">
+            <div class="p-4 md:p-6">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        {% if active_promo.title %}
+                        <h3 class="text-lg md:text-xl font-bold mb-2">{{ active_promo.title }}</h3>
+                        {% endif %}
+                        
+                        {% if active_promo.text %}
+                        <div class="mb-4 text-white/90 text-sm md:text-base">
+                            {{ active_promo.text|linebreaks }}
+                        </div>
+                        {% endif %}
+                        
+                        {% if active_promo.button_text and active_promo.button_url %}
+                        <a href="{{ active_promo.button_url }}" 
+                           class="inline-flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:scale-105 shadow-lg bg-gold text-white hover:bg-amber-600 text-sm">
+                            {{ active_promo.button_text }}
+                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                            </svg>
+                        </a>
+                        {% endif %}
+                    </div>
+                    
+                    <button onclick="closeCrmPromo()" 
+                            class="ml-4 hover:opacity-70 transition-opacity text-white flex-shrink-0">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+        function closeCrmPromo() {
+            const promoBlock = document.querySelector('.promo-banner');
+            if (promoBlock) {
+                promoBlock.style.display = 'none';
+                localStorage.setItem('crmPromoClosed', 'true');
+            }
+        }
+
+        // Проверяем, был ли закрыт блок
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('crmPromoClosed') === 'true') {
+                const promoBlock = document.querySelector('.promo-banner');
+                if (promoBlock) {
+                    promoBlock.style.display = 'none';
+                }
+            }
+        });
+        </script>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- 🔹 Глобальный скрипт для уведомлений -->
+    <script>
+        // Управление мобильным меню
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mainNav = document.getElementById('main-nav');
+
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                    // Показываем основную навигацию на больших экранах
+                    if (window.innerWidth >= 1024) {
+                        mainNav.classList.remove('hidden');
+                    }
+                });
+            }
+
+            // Автоматически показывать меню на больших экранах
+            function handleResize() {
+                if (window.innerWidth >= 1024) {
+                    mainNav.classList.remove('hidden');
+                    mobileMenu.classList.add('hidden');
+                } else {
+                    mainNav.classList.add('hidden');
+                }
+            }
+
+            // Инициализация при загрузке
+            handleResize();
+            window.addEventListener('resize', handleResize);
+
+            // Инициализация системы уведомлений
+            if (typeof GlobalNotifications !== 'undefined') {
+                window.globalNotifications = new GlobalNotifications();
+            }
+
+            // Инициализация иконок Lucide
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+
+        // Класс уведомлений (остальной код остается таким же)
+        class GlobalNotifications {
+            // ... весь предыдущий код класса GlobalNotifications без изменений ...
+            // (скопируйте сюда весь класс GlobalNotifications из предыдущего кода)
+        }
+
+        // Глобальные функции
+        function hideGlobalAlert() {
+            const alert = document.getElementById('global-requests-alert');
+            if (alert) {
+                alert.style.animation = 'slideOutRight 0.5s ease-in';
+                setTimeout(() => {
+                    alert.classList.add('hidden');
+                    alert.style.animation = '';
+                }, 500);
+            }
+        }
+
+        function resetAllNotifications() {
+            if (window.globalNotifications) {
+                window.globalNotifications.resetNotifications();
+            }
+            hideGlobalAlert();
+        }
+    </script>
+
+    <!-- 🔹 БЛОК ДЛЯ СКРИПТОВ -->
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Компания Аргус - Проекты{% endblock %}
+
+{% block content %}
+<!-- Hero Section - Упрощенный -->
+<section class="bg-dark-blue text-white py-12">
+    <div class="container mx-auto px-6 text-center">
+        <h1 class="text-3xl font-bold mb-4">
+            Наши проекты
+        </h1>
+    </div>
+</section>
+
+<!-- Projects Section -->
+<section class="py-12 bg-light-gray">
+    <div class="container mx-auto px-6 max-w-7xl">
+        <!-- Фильтры - Обновленные -->
+        <div class="flex flex-wrap gap-2 justify-center mb-12">
+            <a href="?filter=all"
+               class="px-4 py-2 rounded-lg font-medium transition-colors duration-200 {% if active_filter == 'all' %}bg-gold text-white{% else %}bg-white text-gray-700 hover:bg-gray-100 border border-gray-300{% endif %}">
+                Все проекты
+            </a>
+            <a href="?filter=residential" 
+               class="px-4 py-2 rounded-lg font-medium transition-colors duration-200 {% if active_filter == 'residential' %}bg-gold text-white{% else %}bg-white text-gray-700 hover:bg-gray-100 border border-gray-300{% endif %}">
+                Жилые комплексы
+            </a>
+            <a href="?filter=commercial" 
+               class="px-4 py-2 rounded-lg font-medium transition-colors duration-200 {% if active_filter == 'commercial' %}bg-gold text-white{% else %}bg-white text-gray-700 hover:bg-gray-100 border border-gray-300{% endif %}">
+                Торговые центры и офисные здания
+            </a>
+            <a href="?filter=social" 
+               class="px-4 py-2 rounded-lg font-medium transition-colors duration-200 {% if active_filter == 'social' %}bg-gold text-white{% else %}bg-white text-gray-700 hover:bg-gray-100 border border-gray-300{% endif %}">
+                Социально-значимые объекты
+            </a>
+            <a href="?filter=other" 
+               class="px-4 py-2 rounded-lg font-medium transition-colors duration-200 {% if active_filter == 'other' %}bg-gold text-white{% else %}bg-white text-gray-700 hover:bg-gray-100 border border-gray-300{% endif %}">
+                Прочие
+            </a>
+        </div>
+
+        <!-- Сетка проектов - Упрощенная -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            {% for project in projects %}
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                <!-- Image Container -->
+                <div class="relative h-60 overflow-hidden">
+                    {% if project.image %}
+                    <img src="{{ project.image.url }}" alt="{{ project.title }}" 
+                         class="w-full h-full object-cover">
+                    {% else %}
+                    <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Type Badge -->
+                    <div class="absolute top-3 right-3">
+                        <span class="bg-white text-dark-blue px-3 py-1 rounded text-sm font-medium border border-gray-300">
+                            {{ project.get_object_type_display }}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Content -->
+                <div class="p-6">
+                    <!-- Title -->
+                    <h3 class="text-lg font-bold text-dark-blue mb-3">
+                        {{ project.title }}
+                    </h3>
+                    
+                    <!-- Address -->
+                    {% if project.address %}
+                    <div class="flex items-center gap-2 text-gray-600 text-sm mb-3">
+                        <svg class="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                        <span>{{ project.address|truncatewords:4 }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <!-- Empty State -->
+            <div class="col-span-full text-center py-12">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-dark-blue mb-2">Проекты не найдены</h3>
+                <p class="text-gray-600">
+                    {% if active_filter != 'all' %}
+                        В категории "{{ active_filter }}" пока нет проектов.
+                    {% else %}
+                        Пока нет добавленных проектов.
+                    {% endif %}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- CTA Section - Упрощенный -->
+        <div class="bg-dark-blue rounded-lg p-8 text-center">
+            <h2 class="text-2xl font-bold text-white mb-4">
+                Хотите увидеть свой проект в нашем портфолио?
+            </h2>
+            <p class="text-gray-300 mb-6 max-w-2xl mx-auto">
+                Свяжитесь с нами, и мы обсудим детали вашего проекта
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="{% url 'order_kp' %}" 
+                   class="bg-gold hover:bg-amber-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 inline-flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Заказать КП
+                </a>
+                <a href="{% url 'contacts' %}" 
+                   class="border border-white text-white hover:bg-white hover:text-dark-blue px-6 py-3 rounded-lg font-medium transition-colors duration-200 inline-flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                    </svg>
+                    Связаться с нами
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

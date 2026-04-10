@@ -1,0 +1,466 @@
+{% extends 'crm/base_crm.html' %}
+{% load static %}
+
+{% block title %}Рекламные баннеры - CRM Аргус{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
+     
+        <div class="flex flex-col sm:flex-row gap-3">
+            <button onclick="openQuickCreateModal()" 
+                    class="btn-gold px-6 py-3 rounded-lg font-medium flex items-center gap-2 justify-center hover:scale-105 transition-transform">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Быстрое создание
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 🎪 Готовые шаблоны для быстрого старта -->
+<div class="mb-8">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">🎁 Готовые шаблоны для разных случаев</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Новогодний шаблон -->
+        <div class="bg-gradient-to-br from-green-600 to-green-800 rounded-xl p-6 text-white cursor-pointer hover:scale-105 transition-transform" 
+             onclick="applyTemplate('new_year')">
+            <div class="text-center">
+                <div class="text-3xl mb-2">🎄</div>
+                <h3 class="font-bold mb-2">Новогодняя акция</h3>
+                <p class="text-sm opacity-90">Для праздничных скидок</p>
+            </div>
+        </div>
+
+        <!-- Весенний шаблон -->
+        <div class="bg-gradient-to-br from-pink-400 to-pink-600 rounded-xl p-6 text-white cursor-pointer hover:scale-105 transition-transform"
+             onclick="applyTemplate('spring')">
+            <div class="text-center">
+                <div class="text-3xl mb-2">🌸</div>
+                <h3 class="font-bold mb-2">Весенние скидки</h3>
+                <p class="text-sm opacity-90">Для сезонных распродаж</p>
+            </div>
+        </div>
+
+        <!-- Срочное предложение -->
+        <div class="bg-gradient-to-br from-red-500 to-red-700 rounded-xl p-6 text-white cursor-pointer hover:scale-105 transition-transform"
+             onclick="applyTemplate('urgent')">
+            <div class="text-center">
+                <div class="text-3xl mb-2">⚡</div>
+                <h3 class="font-bold mb-2">Срочное предложение</h3>
+                <p class="text-sm opacity-90">Для горящих акций</p>
+            </div>
+        </div>
+
+        <!-- Стандартный -->
+        <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl p-6 text-white cursor-pointer hover:scale-105 transition-transform"
+             onclick="applyTemplate('standard')">
+            <div class="text-center">
+                <div class="text-3xl mb-2">🏢</div>
+                <h3 class="font-bold mb-2">Стандартный баннер</h3>
+                <p class="text-sm opacity-90">Для повседневных объявлений</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 📋 Список баннеров -->
+{% if promo_blocks %}
+<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+    {% for promo in promo_blocks %}
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden border-2 transition-all duration-300 hover:shadow-xl {% if promo.is_active %}border-green-500{% else %}border-gray-200{% endif %}">
+        <!-- Статус баннера -->
+        <div class="bg-gradient-to-r {% if promo.is_active %}from-green-600 to-green-800{% else %}from-gray-600 to-gray-800{% endif %} px-6 py-4 text-white">
+            <div class="flex justify-between items-center">
+                <h3 class="font-semibold text-lg truncate">
+                    {{ promo.title|default:"Без названия" }}
+                </h3>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs px-2 py-1 rounded-full {% if promo.is_active %}bg-green-500{% else %}bg-gray-500{% endif %}">
+                        {% if promo.is_active %}АКТИВЕН{% else %}ВЫКЛЮЧЕН{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-6">
+            <!-- Предпросмотр баннера -->
+            <div class="border-2 border-gray-200 rounded-lg overflow-hidden mb-4" style="height: 200px;">
+                <div class="h-full w-full relative">
+                    <!-- Фон -->
+             <!-- Фон -->
+<div class="absolute inset-0 bg-cover bg-center" 
+     {% if promo.image %}style="background-image: url('{{ promo.image.url }}')"{% else %}style="background-color: {{ promo.background_color|default:'#1E3A8A' }}"{% endif %}>
+</div>
+
+<div class="relative z-10 h-full flex items-center justify-center p-6 text-center text-white">
+    <div class="max-w-xs">
+        {% if promo.title %}
+        <h4 class="font-bold mb-3 text-xl">{{ promo.title }}</h4>
+        {% endif %}
+        
+        {% if promo.text %}
+        <p class="mb-4 text-base">{{ promo.text|truncatewords:8 }}</p>
+        {% endif %}
+        
+        {% if promo.button_text %}
+        <span class="inline-block px-5 py-2 rounded-lg font-medium bg-gold text-white">
+            {{ promo.button_text }}
+        </span>
+        {% endif %}
+    </div>
+</div>
+                </div>
+            </div>
+            
+            <!-- Простые действия -->
+            <div class="flex justify-between items-center mb-4">
+                <div class="text-sm text-gray-500">
+                    Создан: {{ promo.created_at|date:"d.m.Y" }}
+                </div>
+                <div class="flex gap-2">
+                    <!-- Включить/выключить -->
+                    <form method="post" class="inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="promo_id" value="{{ promo.id }}">
+                        <input type="hidden" name="action" value="toggle">
+                        <button type="submit" 
+                                class="p-2 rounded-lg transition-all {% if promo.is_active %}bg-yellow-100 text-yellow-600 hover:bg-yellow-200{% else %}bg-green-100 text-green-600 hover:bg-green-200{% endif %}"
+                                title="{% if promo.is_active %}Выключить{% else %}Включить{% endif %}">
+                            {% if promo.is_active %}
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            {% else %}
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                            </svg>
+                            {% endif %}
+                        </button>
+                    </form>
+                    
+                    <!-- Редактировать -->
+                    <a href="{% url 'crm_promo_block_edit' promo.id %}" 
+                       class="p-2 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 transition-all"
+                       title="Редактировать">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                    </a>
+                    
+                    <!-- Удалить -->
+                    <form method="post" class="inline" onsubmit="return confirm('Удалить этот баннер?')">
+                        {% csrf_token %}
+                        <input type="hidden" name="promo_id" value="{{ promo.id }}">
+                        <input type="hidden" name="action" value="delete">
+                        <button type="submit" 
+                                class="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-all"
+                                title="Удалить">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Краткая информация -->
+            <div class="text-sm text-gray-600 space-y-2 bg-gray-50 rounded-lg p-3">
+                <div class="flex justify-between">
+                    <span>Кнопка:</span>
+                    <span class="font-medium">{{ promo.button_text|default:"Нет" }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Картинка:</span>
+                    <span>{% if promo.image %}✅ Есть{% else %}❌ Нет{% endif %}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Показ на сайте:</span>
+                    <span class="{% if promo.is_currently_active %}text-green-600 font-bold{% else %}text-gray-500{% endif %}">
+                        {% if promo.is_currently_active %}✅ Активен{% else %}❌ Неактивен{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<!-- Сообщение когда нет баннеров -->
+<div class="bg-white rounded-xl shadow-soft p-12 text-center">
+    <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+        </svg>
+    </div>
+    <h3 class="text-2xl font-bold text-gray-800 mb-3">Баннеров пока нет</h3>
+    <p class="text-gray-600 mb-6 max-w-md mx-auto">Создайте ваш первый рекламный баннер с полным контролем дизайна!</p>
+    <button onclick="openQuickCreateModal()" class="btn-gold px-8 py-4 rounded-lg font-medium text-lg hover:scale-105 transition-transform">
+        Создать первый баннер
+    </button>
+</div>
+{% endif %}
+
+<!-- ✨ Модальное окно создания -->
+<div id="quickCreateModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-auto max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
+                <h3 class="text-xl font-bold text-gray-800">🎨 Создание баннера</h3>
+                <button onclick="closeQuickCreateModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="quickPromoForm" method="post" enctype="multipart/form-data" class="space-y-6" action="{% url 'crm_promo_blocks' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create">
+                
+                <!-- Основная информация -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">📝 Основная информация</h4>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Заголовок баннера *
+                        </label>
+                        <input type="text" name="title" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent transition-all"
+                               placeholder="Например: Скидка 20% на все услуги">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Описание
+                        </label>
+                        <textarea name="text" rows="3"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent transition-all resize-none"
+                                  placeholder="Краткое описание вашего предложения..."></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Текст кнопки
+                            </label>
+                            <input type="text" name="button_text"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent transition-all"
+                                   placeholder="Узнать больше">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Ссылка кнопки
+                            </label>
+                            <input type="url" name="button_url"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent transition-all"
+                                   placeholder="https://example.com">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Внешний вид -->
+                <div class="space-y-4">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">🎨 Внешний вид</h4>
+                    
+                    <!-- Фон -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Фон баннера
+                        </label>
+                        <div class="grid grid-cols-4 gap-2 mb-3">
+                            <button type="button" onclick="setBackgroundColor('#1E3A8A')" class="h-10 bg-blue-900 rounded border-2 border-blue-900"></button>
+                            <button type="button" onclick="setBackgroundColor('#059669')" class="h-10 bg-green-600 rounded border-2 border-gray-300"></button>
+                            <button type="button" onclick="setBackgroundColor('#DC2626')" class="h-10 bg-red-600 rounded border-2 border-gray-300"></button>
+                            <button type="button" onclick="setBackgroundColor('#7C3AED')" class="h-10 bg-purple-600 rounded border-2 border-gray-300"></button>
+                        </div>
+                        <input type="color" name="background_color" id="backgroundColor" value="#1E3A8A" 
+                               class="w-full h-12 rounded border border-gray-300 cursor-pointer">
+                    </div>
+                    
+                    <!-- Картинка -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Картинка для баннера
+                        </label>
+                        <input type="file" name="image" accept="image/*"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gold file:text-white hover:file:bg-dark-gold">
+                        <p class="text-sm text-gray-500 mt-1">Рекомендуем красивую картинку для привлечения внимания</p>
+                        
+                
+                        </div>
+                    </div>
+                    
+                    <!-- Цвета текста -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Цвет текста
+                            </label>
+                            <input type="color" name="text_color" value="#FFFFFF"
+                                   class="w-full h-10 rounded border border-gray-300 cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Цвет кнопки
+                            </label>
+                            <input type="color" name="button_color" value="#C9A96A"
+                                   class="w-full h-10 rounded border border-gray-300 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <!-- Кнопки -->
+                <div class="flex gap-3 pt-6 border-t border-gray-200">
+                    <button type="submit" 
+                            class="flex-1 btn-gold px-6 py-4 rounded-lg font-medium text-lg hover:scale-105 transition-transform">
+                        🚀 Создать баннер
+                    </button>
+                    <button type="button" onclick="closeQuickCreateModal()" 
+                            class="flex-1 px-6 py-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium">
+                        Отмена
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// 📱 Управление модальными окнами
+function openQuickCreateModal() {
+    document.getElementById('quickCreateModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeQuickCreateModal() {
+    document.getElementById('quickCreateModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// 🎨 Функции для работы с цветами
+function setBackgroundColor(color) {
+    document.getElementById('backgroundColor').value = color;
+    
+    // Обновляем визуальный вид кнопок
+    document.querySelectorAll('[onclick^="setBackgroundColor"]').forEach(btn => {
+        btn.classList.remove('border-2', 'border-blue-900');
+        btn.classList.add('border-2', 'border-gray-300');
+    });
+    
+    // Подсвечиваем выбранную кнопку
+    event.target.classList.remove('border-gray-300');
+    event.target.classList.add('border-blue-900');
+}
+
+// 📝 Применение шаблонов
+function applyTemplate(templateName) {
+    const templates = {
+        'new_year': {
+            title: '🎄 Новогодние скидки!',
+            text: 'Встречайте Новый год с выгодой! Специальные предложения до 31 декабря.',
+            button_text: 'Получить подарок',
+            background_color: '#1a472a'
+        },
+        'spring': {
+            title: '🌸 Весеннее обновление',
+            text: 'Пора перемен! Скидки на все услуги до конца месяца.',
+            button_text: 'Узнать о скидках', 
+            background_color: '#ec4899'
+        },
+        'urgent': {
+            title: '⚡ Срочное предложение!',
+            text: 'Ограниченное время! Успейте воспользоваться выгодными условиями.',
+            button_text: 'Узнать подробности',
+            background_color: '#dc2626'
+        },
+        'standard': {
+            title: '🏢 Специальное предложение',
+            text: 'Профессиональные услуги по доступным ценам. Качество гарантируем!',
+            button_text: 'Оставить заявку',
+            background_color: '#1E3A8A'
+        }
+    };
+    
+    const template = templates[templateName];
+    if (template) {
+        openQuickCreateModal();
+        
+        // Заполняем форму данными шаблона
+        setTimeout(() => {
+            const form = document.getElementById('quickPromoForm');
+            form.querySelector('[name="title"]').value = template.title;
+            form.querySelector('[name="text"]').value = template.text;
+            form.querySelector('[name="button_text"]').value = template.button_text;
+            setBackgroundColor(template.background_color);
+        }, 100);
+    }
+}
+
+// 🚀 Обработка формы
+document.getElementById('quickPromoForm')?.addEventListener('submit', function(e) {
+    const title = this.querySelector('[name="title"]').value.trim();
+    
+    if (!title) {
+        e.preventDefault();
+        alert('Пожалуйста, заполните заголовок баннера');
+        return;
+    }
+});
+
+// 🚀 Инициализация при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    // Закрытие модальных окон по клику на фон
+    document.getElementById('quickCreateModal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeQuickCreateModal();
+    });
+    
+    // Закрытие по ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeQuickCreateModal();
+        }
+    });
+});
+</script>
+
+<style>
+/* 🎨 Специальные стили для удобства */
+.btn-gold {
+    background: linear-gradient(135deg, #C9A96A 0%, #B89960 100%);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(201, 169, 106, 0.3);
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#quickCreateModal > div {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Улучшенная читаемость для 40+ */
+.text-lg {
+    font-size: 1.125rem;
+    line-height: 1.6;
+}
+
+input, textarea, select {
+    font-size: 16px !important;
+}
+</style>
+{% endblock %}

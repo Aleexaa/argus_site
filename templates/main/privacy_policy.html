@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Политика конфиденциальности{% endblock %}
+
+{% block content %}
+<div class="min-h-screen py-12 bg-white">
+  <div class="container mx-auto px-4 max-w-4xl">
+    <h1 class="text-3xl md:text-4xl font-bold text-dark-blue mb-8">Политика конфиденциальности</h1>
+    
+    <div class="prose prose-lg max-w-none">
+      <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+        <p class="text-blue-700"><strong>Дата вступления в силу:</strong> {{ current_date }}</p>
+      </div>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-dark-blue mb-4">1. Общие положения</h2>
+        <p class="mb-4">Настоящая Политика конфиденциальности определяет порядок обработки и защиты персональных данных пользователей сайта.</p>
+        <p>Мы собираем только те персональные данные, которые необходимы для предоставления наших услуг.</p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-dark-blue mb-4">2. Собираемые данные</h2>
+        <ul class="list-disc list-inside space-y-2 mb-4">
+          <li>Контактная информация (имя, email, телефон)</li>
+          <li>Информация о компании</li>
+          <li>Детали заявки на коммерческое предложение</li>
+          <li>Технические данные (IP-адрес, браузер)</li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-dark-blue mb-4">3. Цели обработки данных</h2>
+        <ul class="list-disc list-inside space-y-2">
+          <li>Обработка заявок на коммерческое предложение</li>
+          <li>Коммуникация с клиентами</li>
+          <li>Улучшение качества наших услуг</li>
+          <li>Выполнение договорных обязательств</li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-dark-blue mb-4">4. Защита данных</h2>
+        <p>Мы принимаем все необходимые меры для защиты персональных данных от несанкционированного доступа.</p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-dark-blue mb-4">5. Права субъектов персональных данных</h2>
+        <p>Вы имеете право:</p>
+        <ul class="list-disc list-inside space-y-2 mt-2">
+          <li>На доступ к вашим персональным данным</li>
+          <li>На исправление неточных данных</li>
+          <li>На удаление ваших данных</li>
+          <li>На отзыв согласия на обработку</li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-dark-blue mb-4">6. Контакты</h2>
+        <p>По вопросам обработки персональных данных обращайтесь:</p>
+        <p class="mt-2"><strong>Email:</strong> privacy@yourcompany.com</p>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}
