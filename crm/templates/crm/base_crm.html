@@ -7,7 +7,7 @@
     <title>{% block title %}CRM Аргус{% endblock %}</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest" defer></script>
     
     <meta name="csrf-token" content="{{ csrf_token }}">
     {% csrf_token %}
@@ -149,6 +149,42 @@
         .new-requests-badge {
             animation: pulse 1.5s ease-in-out infinite;
         }
+
+        /* Исправление для выпадающего меню Управление */
+        .dropdown-group {
+            position: relative;
+        }
+        
+        .dropdown-group .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 0;
+            min-width: 180px;
+            background: #1f2937;
+            border-radius: 8px;
+            padding: 4px 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 100;
+        }
+        
+        .dropdown-group:hover .dropdown-menu {
+            display: block;
+        }
+        
+        .dropdown-menu a {
+            display: block;
+            padding: 8px 16px;
+            color: #d1d5db;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .dropdown-menu a:hover {
+            background: #374151;
+            color: white;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -203,20 +239,20 @@
                         <a href="{% url 'crm_my_requests' %}" class="nav-link px-3 py-2 rounded-lg hover:bg-gray-800 transition">📋 Мои заявки</a>
                         <a href="{% url 'crm_clients' %}" class="nav-link px-3 py-2 rounded-lg hover:bg-gray-800 transition">👥 Клиенты</a>
                         {% if request.user.managerprofile and request.user.managerprofile.role == 'owner' %}
-                        <div class="relative group">
+                        <div class="dropdown-group">
                             <button class="nav-link px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center gap-1">
                                 ⚙️ Управление
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
                             </button>
-                            <div class="absolute top-full left-0 mt-1 w-48 bg-gray-800 rounded-lg shadow-lg hidden group-hover:block z-50">
-                                <a href="{% url 'crm_services' %}" class="block px-4 py-2 text-sm hover:bg-gray-700 rounded-t-lg">🛠️ Услуги</a>
-                                <a href="{% url 'crm_managers' %}" class="block px-4 py-2 text-sm hover:bg-gray-700">👔 Менеджеры</a>
-                                <a href="{% url 'crm_projects' %}" class="block px-4 py-2 text-sm hover:bg-gray-700">🏗️ Проекты</a>
-                                <a href="{% url 'crm_vacancies_list' %}" class="block px-4 py-2 text-sm hover:bg-gray-700">💼 Вакансии</a>
-                                <a href="{% url 'crm_candidates_list' %}" class="block px-4 py-2 text-sm hover:bg-gray-700">👥 Кандидаты</a>
-                                <a href="{% url 'crm_promo_blocks' %}" class="block px-4 py-2 text-sm hover:bg-gray-700 rounded-b-lg">🎯 Промо-блоки</a>
+                            <div class="dropdown-menu">
+                                <a href="{% url 'crm_services' %}">🛠️ Услуги</a>
+                                <a href="{% url 'crm_managers' %}">👔 Менеджеры</a>
+                                <a href="{% url 'crm_projects' %}">🏗️ Проекты</a>
+                                <a href="{% url 'crm_vacancies_list' %}">💼 Вакансии</a>
+                                <a href="{% url 'crm_candidates_list' %}">👥 Кандидаты</a>
+                                <a href="{% url 'crm_promo_blocks' %}">🎯 Промо-блоки</a>
                             </div>
                         </div>
                         {% endif %}
@@ -278,14 +314,12 @@
     </main>
     
     <script>
-        // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
+        console.log('✅ base.html загружен');
         
         function getCSRFToken() {
             return document.querySelector('meta[name="csrf-token"]')?.content || 
                    document.querySelector('[name=csrfmiddlewaretoken]')?.value;
         }
-        
-        // ==================== УВЕДОМЛЕНИЯ ====================
         
         let soundEnabled = localStorage.getItem('crm_sound') !== 'false';
         let audioCtx = null;
@@ -598,15 +632,27 @@
         });
         
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ DOM загружен');
+            
             initSound();
+            
             const notifyToggle = document.getElementById('notifications-toggle');
             if (notifyToggle) notifyToggle.onclick = toggleNotifications;
+            
             const mobileBtn = document.getElementById('mobile-menu-btn');
-            if (mobileBtn) mobileBtn.onclick = openMobileMenu;
+            if (mobileBtn) {
+                mobileBtn.onclick = openMobileMenu;
+                console.log('✅ Кнопка меню найдена');
+            }
+            
             checkNew();
             if (checkInterval) clearInterval(checkInterval);
             checkInterval = setInterval(checkNew, 15000);
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            
+            if (typeof lucide !== 'undefined') {
+                try { lucide.createIcons(); } catch(e) { console.log('lucide error:', e); }
+            }
+            
             loadNotifications();
         });
         
