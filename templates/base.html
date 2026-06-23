@@ -11,7 +11,7 @@
     <meta name="keywords" content="пожарная безопасность, противопожарные системы, проектирование, монтаж, СОУЭ, сигнализация">
     
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com" defer></script>
     <script>
         tailwind.config = {
             theme: {
@@ -190,7 +190,7 @@
         }
     </style>
 </head>
-<script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+
 <body class="font-sans antialiased bg-white">
     <!-- Header -->
     <header class="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 transition-all duration-800">
@@ -237,7 +237,7 @@
                 </div>
 
                 <!-- Mobile Menu Button -->
-                <button class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-all duration-800 premium-hover" id="mobileMenuButton" aria-label="Открыть меню" aria-expanded="false">
+                <button class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-all duration-800 premium-hover" id="mobileMenuButton" onclick="toggleMobileMenu()" aria-label="Открыть меню" aria-expanded="false">
                     <svg class="w-6 h-6" id="menuIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
@@ -248,13 +248,13 @@
             <div id="mobileMenu" class="mobile-menu hidden lg:hidden py-4 border-t border-gray-100 bg-white/95 backdrop-blur-md" aria-hidden="true">
                 <nav class="flex flex-col gap-1">
                     {% with url_name=request.resolver_match.url_name %}
-                    <a href="{% url 'home' %}" class="px-4 py-3 rounded-lg transition-all duration-800 {% if url_name == 'home' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %}">Главная</a>
-                    <a href="{% url 'about' %}" class="px-4 py-3 rounded-lg transition-all {% if url_name == 'about' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %}">О компании</a>
-                    <a href="{% url 'services' %}" class="px-4 py-3 rounded-lg transition-all {% if url_name == 'services' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %}">Услуги</a>
-                    <a href="{% url 'projects' %}" class="px-4 py-3 rounded-lg transition-all {% if url_name == 'projects' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %}">Проекты</a>
-                    <a href="{% url 'partners' %}" class="px-4 py-3 rounded-lg transition-all {% if url_name == 'partners' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %}">Партнеры</a>
-                    <a href="{% url 'vacancies_list' %}" class="px-4 py-3 rounded-lg transition-all {% if url_name == 'vacancies_list' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %}">Вакансии</a>
-                    <a href="{% url 'contacts' %}" class="px-4 py-3 rounded-lg transition-all {% if url_name == 'contacts' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %}">Контакты</a>
+                    <a href="{% url 'home' %}" class="px-4 py-3 rounded-lg transition-all duration-800 {% if url_name == 'home' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %}" onclick="toggleMobileMenu()">Главная</a>
+                    <a href="{% url 'about' %}" class="px-4 py-3 rounded-lg transition-all {% if url_name == 'about' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %}" onclick="toggleMobileMenu()">О компании</a>
+                    <a href="{% url 'services' %}" class="px-4 py-3 rounded-lg transition-all {% if url_name == 'services' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %}" onclick="toggleMobileMenu()">Услуги</a>
+                    <a href="{% url 'projects' %}" class="px-4 py-3 rounded-lg transition-all {% if url_name == 'projects' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %}" onclick="toggleMobileMenu()">Проекты</a>
+                    <a href="{% url 'partners' %}" class="px-4 py-3 rounded-lg transition-all {% if url_name == 'partners' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %}" onclick="toggleMobileMenu()">Партнеры</a>
+                    <a href="{% url 'vacancies_list' %}" class="px-4 py-3 rounded-lg transition-all {% if url_name == 'vacancies_list' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %}" onclick="toggleMobileMenu()">Вакансии</a>
+                    <a href="{% url 'contacts' %}" class="px-4 py-3 rounded-lg transition-all {% if url_name == 'contacts' %}bg-gold text-white font-semibold{% else %}text-dark-blue hover:bg-gold/10 hover:text-gold{% endif %}" onclick="toggleMobileMenu()">Контакты</a>
                     {% endwith %}
                     
                     <div class="px-4 py-3 space-y-3 mt-2">
@@ -264,7 +264,7 @@
                             </svg>
                             <span class="font-medium">(3452) 59-30-20</span>
                         </a>
-                        <a href="{% url 'order_kp' %}" class="btn-premium text-white py-3 rounded-lg shadow-lg font-medium text-center block">Заказать КП</a>
+                        <a href="{% url 'order_kp' %}" class="btn-premium text-white py-3 rounded-lg shadow-lg font-medium text-center block" onclick="toggleMobileMenu()">Заказать КП</a>
                     </div>
                 </nav>
             </div>
@@ -331,9 +331,11 @@
     </button>
 
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+    <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js" defer></script>
     
     <script>
+    console.log('✅ Скрипт base.html загружен!');
+    
     // ===== УЛУЧШЕННАЯ ФУНКЦИЯ МОБИЛЬНОГО МЕНЮ =====
     function toggleMobileMenu() {
         const menu = document.getElementById('mobileMenu');
@@ -343,6 +345,7 @@
         if (!menu) return;
         
         if (menu.classList.contains('hidden')) {
+            // Открываем меню
             menu.classList.remove('hidden');
             setTimeout(() => menu.classList.add('open'), 10);
             if (icon) {
@@ -354,6 +357,7 @@
             menu.setAttribute('aria-hidden', 'false');
             document.body.style.overflow = 'hidden';
         } else {
+            // Закрываем меню
             menu.classList.remove('open');
             setTimeout(() => {
                 menu.classList.add('hidden');
@@ -370,52 +374,57 @@
     }
 
     // Закрытие меню при клике вне его
-    document.addEventListener('click', function(event) {
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('✅ DOM загружен, инициализация...');
+        
         const menu = document.getElementById('mobileMenu');
         const button = document.getElementById('mobileMenuButton');
         
-        if (menu && button && !menu.classList.contains('hidden') && 
-            !menu.contains(event.target) && !button.contains(event.target)) {
-            toggleMobileMenu();
+        if (button) {
+            console.log('✅ Кнопка меню найдена');
+            // Убираем onclick из HTML, чтобы не было дублирования
+            button.removeAttribute('onclick');
+            button.addEventListener('click', toggleMobileMenu);
+        } else {
+            console.log('❌ Кнопка меню НЕ найдена');
         }
-    });
-
-    // Закрытие меню при изменении ориентации экрана
-    window.addEventListener('resize', function() {
-        const menu = document.getElementById('mobileMenu');
-        if (window.innerWidth >= 1024 && menu && !menu.classList.contains('hidden')) {
-            toggleMobileMenu();
-        }
-    });
-
-    // ===== КНОПКА ПРОКРУТКИ ВВЕРХ =====
-    (function() {
-        const scrollBtn = document.getElementById('scrollToTopBtn');
         
-        if (!scrollBtn) return;
-        
-        function toggleScrollButton() {
-            if (window.scrollY > 300) {
-                scrollBtn.classList.add('visible');
-            } else {
-                scrollBtn.classList.remove('visible');
+        // Закрытие меню при клике вне его
+        document.addEventListener('click', function(event) {
+            const menuEl = document.getElementById('mobileMenu');
+            const btn = document.getElementById('mobileMenuButton');
+            
+            if (menuEl && btn && !menuEl.classList.contains('hidden') && 
+                !menuEl.contains(event.target) && !btn.contains(event.target)) {
+                toggleMobileMenu();
             }
-        }
+        });
         
-        function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
+        // Закрытие меню при изменении ориентации экрана
+        window.addEventListener('resize', function() {
+            const menuEl = document.getElementById('mobileMenu');
+            if (window.innerWidth >= 1024 && menuEl && !menuEl.classList.contains('hidden')) {
+                toggleMobileMenu();
+            }
+        });
+        
+        // Кнопка прокрутки вверх
+        const scrollBtn = document.getElementById('scrollToTopBtn');
+        if (scrollBtn) {
+            function toggleScrollButton() {
+                if (window.scrollY > 300) {
+                    scrollBtn.classList.add('visible');
+                } else {
+                    scrollBtn.classList.remove('visible');
+                }
+            }
+            scrollBtn.addEventListener('click', function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
+            window.addEventListener('scroll', toggleScrollButton);
+            toggleScrollButton();
         }
         
-        window.addEventListener('scroll', toggleScrollButton);
-        scrollBtn.addEventListener('click', scrollToTop);
-        toggleScrollButton();
-    })();
-
-    // Инициализация анимаций и иконок
-    document.addEventListener('DOMContentLoaded', function() {
         // Плавное появление header
         const header = document.querySelector('header');
         if (header) {
@@ -428,9 +437,11 @@
             }, 100);
         }
         
-        // Инициализация иконок Lucide
+        // Безопасная инициализация иконок Lucide
         if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
+            try { lucide.createIcons(); } catch(e) { console.log('lucide error:', e); }
+        } else {
+            console.log('⚠️ lucide не загружен, иконки будут пропущены');
         }
     });
     </script>
