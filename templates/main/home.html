@@ -30,6 +30,7 @@
 </section>
 
 <!-- Блок новостей -->
+<!-- Блок новостей -->
 {% if promo_blocks %}
 <section class="py-12 sm:py-16 promo-section">
     <div class="container mx-auto px-4 sm:px-6">
@@ -38,26 +39,17 @@
             <p class="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">Актуальные события и важные обновления</p>
         </div>
 
-        <!-- Разные варианты отображения в зависимости от количества промо-блоков -->
         {% with total_promo=promo_blocks|length %}
             {% if total_promo == 1 %}
-                <!-- Один промо-блок - отображаем как отдельную карточку -->
+                <!-- Один промо-блок -->
                 <div class="max-w-2xl mx-auto">
                     {% with promo=promo_blocks.0 %}
-                    <div class="news-card rounded-2xl shadow-xl overflow-hidden transform transition-all duration-500 hover:shadow-2xl cursor-pointer group"
-                         data-news-index="0"
-                         data-bg-color="{{ promo.background_color|default:'#1E3A8A' }}"
-                         data-text-color="{{ promo.text_color|default:'#FFFFFF' }}"
-                         data-button-color="{{ promo.button_color|default:'#C9A96A' }}"
-                         data-button-text="{{ promo.button_text|default:'' }}"
-                         data-button-url="{{ promo.button_url|default:'' }}"
-                         data-promo-text="{{ promo.text|default:'' }}"
-                         data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}">
-                        
+                    <div class="rounded-2xl shadow-xl overflow-hidden transition-all duration-500 hover:shadow-2xl"
+                         style="background-color: {{ promo.background_color|default:'#1E3A8A' }}; color: {{ promo.text_color|default:'#FFFFFF' }};">
                         {% if promo.image %}
-                        <div class="news-media relative h-48 sm:h-56 overflow-hidden">
+                        <div class="relative h-48 sm:h-56 overflow-hidden">
                             <img src="{{ promo.image.url }}" alt="{{ promo.title|default:'Новость' }}" 
-                                 class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                                 class="w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
                             <div class="absolute bottom-4 left-6 right-6">
                                 {% if promo.title %}
@@ -72,28 +64,26 @@
                         </div>
                         {% endif %}
                         
-                        <!-- Текст под картинкой или вместо нее -->
                         <div class="p-6 sm:p-8">
-                            <div class="flex-1 flex flex-col">
-                                {% if not promo.image and promo.title %}
-                                <h3 class="text-xl sm:text-2xl font-bold mb-4 leading-tight" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
-                                    {{ promo.title }}
-                                </h3>
-                                {% endif %}
-                                
-                                {% if promo.text %}
-                                <div class="text-base sm:text-lg leading-relaxed mb-6" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
-                                    {{ promo.text|striptags|truncatewords:50 }}
-                                </div>
-                                {% endif %}
-                            </div>
+                            {% if not promo.image and promo.title %}
+                            <h3 class="text-xl sm:text-2xl font-bold mb-4 leading-tight" style="color: {{ promo.text_color|default:'#FFFFFF' }};">
+                                {{ promo.title }}
+                            </h3>
+                            {% endif %}
                             
-                            <div class="flex items-center justify-between pt-4 border-t" data-border-color="{{ promo.text_color|default:'#FFFFFF' }}30">
-                                <span class="text-sm font-medium" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                            {% if promo.text %}
+                            <div class="text-base sm:text-lg leading-relaxed mb-6" style="color: {{ promo.text_color|default:'#FFFFFF' }};">
+                                {{ promo.text|striptags|truncatewords:50 }}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="flex items-center justify-between pt-4 border-t" style="border-color: {{ promo.text_color|default:'#FFFFFF' }}30;">
+                                <span class="text-sm font-medium" style="color: {{ promo.text_color|default:'#FFFFFF' }};">
                                     {{ promo.created_at|date:"d.m.Y"|default:"Сегодня" }}
                                 </span>
-                                <button class="text-sm font-medium px-4 py-2 rounded-lg transition-all duration-300 group-hover:scale-105 custom-button-style read-more-btn" 
-                                      data-button-color="{{ promo.button_color|default:'#C9A96A' }}">
+                                <button class="text-sm font-medium px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105"
+                                        style="background-color: {{ promo.button_color|default:'#C9A96A' }}; color: {{ promo.button_text_color|default:'#FFFFFF' }};"
+                                        onclick="openPromoModal('{{ promo.id }}')">
                                     {% if promo.button_text %}{{ promo.button_text }}{% else %}Читать далее{% endif %}
                                 </button>
                             </div>
@@ -103,24 +93,16 @@
                 </div>
 
             {% elif total_promo == 2 %}
-                <!-- Два промо-блока - отображаем в сетке -->
+                <!-- Два промо-блока -->
                 <div class="max-w-6xl mx-auto">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                         {% for promo in promo_blocks %}
-                        <div class="news-card rounded-2xl shadow-xl overflow-hidden transform transition-all duration-500 hover:shadow-2xl cursor-pointer group"
-                             data-news-index="{{ forloop.counter0 }}"
-                             data-bg-color="{{ promo.background_color|default:'#1E3A8A' }}"
-                             data-text-color="{{ promo.text_color|default:'#FFFFFF' }}"
-                             data-button-color="{{ promo.button_color|default:'#C9A96A' }}"
-                             data-button-text="{{ promo.button_text|default:'' }}"
-                             data-button-url="{{ promo.button_url|default:'' }}"
-                             data-promo-text="{{ promo.text|default:'' }}"
-                             data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}">
-                            
+                        <div class="rounded-2xl shadow-xl overflow-hidden transition-all duration-500 hover:shadow-2xl"
+                             style="background-color: {{ promo.background_color|default:'#1E3A8A' }}; color: {{ promo.text_color|default:'#FFFFFF' }};">
                             {% if promo.image %}
-                            <div class="news-media relative h-40 sm:h-48 overflow-hidden">
+                            <div class="relative h-40 sm:h-48 overflow-hidden">
                                 <img src="{{ promo.image.url }}" alt="{{ promo.title|default:'Новость' }}" 
-                                     class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                                     class="w-full h-full object-cover">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
                                 <div class="absolute bottom-4 left-4 right-4">
                                     {% if promo.title %}
@@ -134,23 +116,24 @@
                             
                             <div class="p-4 sm:p-6">
                                 {% if not promo.image and promo.title %}
-                                <h3 class="text-lg sm:text-xl font-bold mb-3 leading-tight" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                <h3 class="text-lg sm:text-xl font-bold mb-3 leading-tight" style="color: {{ promo.text_color|default:'#FFFFFF' }};">
                                     {{ promo.title }}
                                 </h3>
                                 {% endif %}
                                 
                                 {% if promo.text %}
-                                <div class="mb-4 leading-relaxed line-clamp-3 text-sm sm:text-base" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                <div class="mb-4 leading-relaxed line-clamp-3 text-sm sm:text-base" style="color: {{ promo.text_color|default:'#FFFFFF' }};">
                                     {{ promo.text|striptags|truncatewords:30 }}
                                 </div>
                                 {% endif %}
                                 
-                                <div class="flex items-center justify-between pt-3 border-t" data-border-color="{{ promo.text_color|default:'#FFFFFF' }}30">
-                                    <span class="text-xs sm:text-sm font-medium" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                <div class="flex items-center justify-between pt-3 border-t" style="border-color: {{ promo.text_color|default:'#FFFFFF' }}30;">
+                                    <span class="text-xs sm:text-sm font-medium" style="color: {{ promo.text_color|default:'#FFFFFF' }};">
                                         {{ promo.created_at|date:"d.m.Y"|default:"Сегодня" }}
                                     </span>
-                                    <button class="text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-all duration-300 group-hover:scale-105 custom-button-style read-more-btn" 
-                                          data-button-color="{{ promo.button_color|default:'#C9A96A' }}">
+                                    <button class="text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-all duration-300 hover:scale-105"
+                                            style="background-color: {{ promo.button_color|default:'#C9A96A' }}; color: {{ promo.button_text_color|default:'#FFFFFF' }};"
+                                            onclick="openPromoModal('{{ promo.id }}')">
                                         {% if promo.button_text %}{{ promo.button_text }}{% else %}Читать далее{% endif %}
                                     </button>
                                 </div>
@@ -161,24 +144,16 @@
                 </div>
 
             {% elif total_promo == 3 %}
-                <!-- Три промо-блока - отображаем в сетке 3 колонки -->
+                <!-- Три промо-блока -->
                 <div class="max-w-6xl mx-auto">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
                         {% for promo in promo_blocks %}
-                        <div class="news-card rounded-2xl shadow-xl overflow-hidden transform transition-all duration-500 hover:shadow-2xl cursor-pointer group"
-                             data-news-index="{{ forloop.counter0 }}"
-                             data-bg-color="{{ promo.background_color|default:'#1E3A8A' }}"
-                             data-text-color="{{ promo.text_color|default:'#FFFFFF' }}"
-                             data-button-color="{{ promo.button_color|default:'#C9A96A' }}"
-                             data-button-text="{{ promo.button_text|default:'' }}"
-                             data-button-url="{{ promo.button_url|default:'' }}"
-                             data-promo-text="{{ promo.text|default:'' }}"
-                             data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}">
-                            
+                        <div class="rounded-2xl shadow-xl overflow-hidden transition-all duration-500 hover:shadow-2xl"
+                             style="background-color: {{ promo.background_color|default:'#1E3A8A' }}; color: {{ promo.text_color|default:'#FFFFFF' }};">
                             {% if promo.image %}
-                            <div class="news-media relative h-40 sm:h-48 overflow-hidden">
+                            <div class="relative h-40 sm:h-48 overflow-hidden">
                                 <img src="{{ promo.image.url }}" alt="{{ promo.title|default:'Новость' }}" 
-                                     class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                                     class="w-full h-full object-cover">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
                                 <div class="absolute bottom-4 left-4 right-4">
                                     {% if promo.title %}
@@ -192,23 +167,24 @@
                             
                             <div class="p-4 sm:p-6">
                                 {% if not promo.image and promo.title %}
-                                <h3 class="text-lg sm:text-xl font-bold mb-3 leading-tight" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                <h3 class="text-lg sm:text-xl font-bold mb-3 leading-tight" style="color: {{ promo.text_color|default:'#FFFFFF' }};">
                                     {{ promo.title }}
                                 </h3>
                                 {% endif %}
                                 
                                 {% if promo.text %}
-                                <div class="mb-4 leading-relaxed line-clamp-3 text-sm sm:text-base" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                <div class="mb-4 leading-relaxed line-clamp-3 text-sm sm:text-base" style="color: {{ promo.text_color|default:'#FFFFFF' }};">
                                     {{ promo.text|striptags|truncatewords:30 }}
                                 </div>
                                 {% endif %}
                                 
-                                <div class="flex items-center justify-between pt-3 border-t" data-border-color="{{ promo.text_color|default:'#FFFFFF' }}30">
-                                    <span class="text-xs sm:text-sm font-medium" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                <div class="flex items-center justify-between pt-3 border-t" style="border-color: {{ promo.text_color|default:'#FFFFFF' }}30;">
+                                    <span class="text-xs sm:text-sm font-medium" style="color: {{ promo.text_color|default:'#FFFFFF' }};">
                                         {{ promo.created_at|date:"d.m.Y"|default:"Сегодня" }}
                                     </span>
-                                    <button class="text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-all duration-300 group-hover:scale-105 custom-button-style read-more-btn" 
-                                          data-button-color="{{ promo.button_color|default:'#C9A96A' }}">
+                                    <button class="text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-all duration-300 hover:scale-105"
+                                            style="background-color: {{ promo.button_color|default:'#C9A96A' }}; color: {{ promo.button_text_color|default:'#FFFFFF' }};"
+                                            onclick="openPromoModal('{{ promo.id }}')">
                                         {% if promo.button_text %}{{ promo.button_text }}{% else %}Читать далее{% endif %}
                                     </button>
                                 </div>
@@ -219,50 +195,44 @@
                 </div>
 
             {% else %}
-                <!-- Четыре и более промо-блока - отображаем в карусели -->
+                <!-- Карусель для 4+ блоков -->
                 <div class="relative max-w-6xl mx-auto px-2 sm:px-0">
                     <div class="news-carousel-container overflow-hidden rounded-2xl">
                         <div id="newsCarousel" class="flex transition-transform duration-500 ease-in-out">
                             {% for promo in promo_blocks %}
-                            <div class="news-slide flex-shrink-0 px-2 sm:px-3" data-news-index="{{ forloop.counter0 }}">
-                                <div class="news-card h-full rounded-xl shadow-lg overflow-hidden transform transition-all duration-400 hover:shadow-xl hover:scale-[1.02] group"
-                                     data-bg-color="{{ promo.background_color|default:'#1E3A8A' }}"
-                                     data-text-color="{{ promo.text_color|default:'#FFFFFF' }}"
-                                     data-button-color="{{ promo.button_color|default:'#C9A96A' }}"
-                                     data-button-text="{{ promo.button_text|default:'' }}"
-                                     data-button-url="{{ promo.button_url|default:'' }}"
-                                     data-promo-text="{{ promo.text|default:'' }}"
-                                     data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}">
-                                    
+                            <div class="news-slide flex-shrink-0 px-2 sm:px-3">
+                                <div class="rounded-xl shadow-lg overflow-hidden transition-all duration-400 hover:shadow-xl h-full"
+                                     style="background-color: {{ promo.background_color|default:'#1E3A8A' }}; color: {{ promo.text_color|default:'#FFFFFF' }};">
                                     {% if promo.image %}
-                                    <div class="news-media relative h-32 sm:h-40 overflow-hidden">
+                                    <div class="relative h-32 sm:h-40 overflow-hidden">
                                         <img src="{{ promo.image.url }}" alt="{{ promo.title|default:'Новость' }}" 
-                                             class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                                             class="w-full h-full object-cover">
                                         <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                                     </div>
                                     {% endif %}
                                     
-                                    <div class="news-content p-4 sm:p-5 flex flex-col justify-between h-full">
+                                    <div class="p-4 sm:p-5 flex flex-col justify-between h-full">
                                         <div class="flex-1">
                                             {% if promo.title %}
-                                            <h3 class="text-base sm:text-lg font-bold mb-2 sm:mb-3 leading-tight line-clamp-2" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                            <h3 class="text-base sm:text-lg font-bold mb-2 sm:mb-3 leading-tight line-clamp-2" style="color: {{ promo.text_color|default:'#FFFFFF' }};">
                                                 {{ promo.title }}
                                             </h3>
                                             {% endif %}
                                             
                                             {% if promo.text %}
-                                            <div class="text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed line-clamp-3" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                            <div class="text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed line-clamp-3" style="color: {{ promo.text_color|default:'#FFFFFF' }};">
                                                 {{ promo.text|striptags|truncatewords:20 }}
                                             </div>
                                             {% endif %}
                                         </div>
                                         
-                                        <div class="flex items-center justify-between pt-2 sm:pt-3 border-t" data-border-color="{{ promo.text_color|default:'#FFFFFF' }}30">
-                                            <span class="text-xs font-medium" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                        <div class="flex items-center justify-between pt-2 sm:pt-3 border-t" style="border-color: {{ promo.text_color|default:'#FFFFFF' }}30;">
+                                            <span class="text-xs font-medium" style="color: {{ promo.text_color|default:'#FFFFFF' }};">
                                                 {{ promo.created_at|date:"d.m.Y"|default:"Сегодня" }}
                                             </span>
-                                            <button class="text-xs font-medium px-2 py-1 rounded transition-all duration-300 group-hover:scale-105 custom-button-style read-more-btn" 
-                                                  data-button-color="{{ promo.button_color|default:'#C9A96A' }}">
+                                            <button class="text-xs font-medium px-2 py-1 rounded transition-all duration-300 hover:scale-105"
+                                                    style="background-color: {{ promo.button_color|default:'#C9A96A' }}; color: {{ promo.button_text_color|default:'#FFFFFF' }};"
+                                                    onclick="openPromoModal('{{ promo.id }}')">
                                                 {% if promo.button_text %}{{ promo.button_text }}{% else %}Читать далее{% endif %}
                                             </button>
                                         </div>
@@ -274,19 +244,19 @@
                     </div>
 
                     <!-- Навигационные кнопки -->
-                    <button id="prevNews" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-dark-blue p-2 sm:p-3 rounded-full shadow-lg transition-all duration-300 z-10 ml-1 sm:ml-2 hover:scale-110 border border-gray-200 mobile-touch-fix">
+                    <button id="prevNews" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-dark-blue p-2 sm:p-3 rounded-full shadow-lg transition-all duration-300 z-10 ml-1 sm:ml-2 hover:scale-110 border border-gray-200">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                         </svg>
                     </button>
-                    <button id="nextNews" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-dark-blue p-2 sm:p-3 rounded-full shadow-lg transition-all duration-300 z-10 mr-1 sm:mr-2 hover:scale-110 border border-gray-200 mobile-touch-fix">
+                    <button id="nextNews" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-dark-blue p-2 sm:p-3 rounded-full shadow-lg transition-all duration-300 z-10 mr-1 sm:mr-2 hover:scale-110 border border-gray-200">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </button>
                 </div>
 
-                <!-- Индикаторы для карусели -->
+                <!-- Индикаторы -->
                 <div class="flex justify-center mt-6 sm:mt-8 space-x-2">
                     {% for promo in promo_blocks %}
                     <button class="news-indicator w-2 h-2 rounded-full bg-gray-300 transition-all duration-300 {% if forloop.first %}bg-dark-blue active{% endif %}"
@@ -297,7 +267,8 @@
         {% endwith %}
     </div>
 </section>
-
+{% endif %}
+                  
 <!-- Модальное окно для новостей -->
 <div id="newsModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden p-3 sm:p-4">
     <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0">
