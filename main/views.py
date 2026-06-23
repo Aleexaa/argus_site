@@ -11,7 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from crm.models import Client, Feedback, PromoBlock, Vacancy, Candidate
 from .models import Request, RequestService, Service, Project
 from .forms import RequestForm, CandidateForm
-
+print("✅ main/views.py загружен")
 
 def home(request):
     services = Service.objects.all()[:8]
@@ -111,6 +111,7 @@ def order_kp(request):
 
         pd_agreed = request.POST.get('pd_agreed') == 'on'
 
+        # ✅ Проверяем согласие
         if not pd_agreed:
             messages.error(request, "❌ Для отправки заявки необходимо согласие на обработку персональных данных")
             services = Service.objects.filter(has_kp=True).order_by('id')
@@ -121,20 +122,17 @@ def order_kp(request):
                 'selected_services': selected_services,
             })
 
-            if form.is_valid():
-                print("✅ ФОРМА ВАЛИДНА!")
-                print("Очищенные данные:", form.cleaned_data)
-            else:
-                print("❌ ФОРМА НЕ ВАЛИДНА!")
-                print("Ошибки формы:", form.errors)
-                messages.error(request, f"❌ Ошибки формы: {form.errors}")
-                return render(request, 'main/order_kp.html', {
-                    'form': form,
-                    'services': Service.objects.filter(has_kp=True).order_by('id'),
-                    'selected_services': request.POST.getlist('services'),
-                })
+        # ✅ Проверяем валидность формы (ВНЕ блока pd_agreed!)
+        if form.is_valid():
+            print("✅ ФОРМА ВАЛИДНА!")
+            print("Очищенные данные:", form.cleaned_data)
+            
+            company_name = form.cleaned_data.get('company_name') or 'Не указано'
+            phone = form.cleaned_data.get('phone') or ''
+            email = form.cleaned_data.get('email') or ''
+            contact_person = form.cleaned_data.get('contact_person') or ''
 
-            # ✅ Создаем/находим клиента (Client из crm.models)
+            # ✅ Создаем/находим клиента
             try:
                 client = Client.objects.create(
                     company_name=company_name,
@@ -142,14 +140,16 @@ def order_kp(request):
                     email=email,
                     contact_person=contact_person
                 )
+                print(f"✅ Клиент создан: ID={client.id}")
             except Exception as e:
+                print(f"❌ Ошибка создания клиента: {e}")
                 normalized_phone = Client.normalize_phone(phone)
                 client = Client.objects.filter(phone__contains=normalized_phone).first()
                 if not client:
                     messages.error(request, f"Ошибка создания клиента: {str(e)}")
                     return redirect('order_kp')
 
-            # ✅ Создаем заявку (Request из main.models)
+            # ✅ Создаем заявку
             try:
                 new_request = Request.objects.create(
                     client=client,
@@ -164,15 +164,18 @@ def order_kp(request):
                     policy_version='1.0',
                     user_agent=request.META.get('HTTP_USER_AGENT', '')
                 )
+                print(f"✅ Заявка создана: ID={new_request.id}")
             except Exception as e:
+                print(f"❌ Ошибка создания заявки: {e}")
                 messages.error(request, f"Ошибка сохранения заявки: {str(e)}")
                 return redirect('order_kp')
 
+            # ✅ Сохраняем услуги
             selected_services = form.cleaned_data.get('services', [])
             for service in selected_services:
                 RequestService.objects.create(request=new_request, service=service)
 
-            # Отправка уведомления на почту
+            # ✅ Отправка уведомления на почту
             try:
                 send_mail(
                     subject=f"🆕 Новая заявка #{new_request.id} от {client.company_name}",
@@ -199,7 +202,9 @@ def order_kp(request):
             return redirect('order_success')
 
         else:
-            messages.error(request, "❌ Проверьте правильность заполнения формы.")
+            print("❌ ФОРМА НЕ ВАЛИДНА!")
+            print("Ошибки формы:", form.errors)
+            messages.error(request, f"❌ Проверьте правильность заполнения формы: {form.errors}")
     else:
         form = RequestForm()
 
