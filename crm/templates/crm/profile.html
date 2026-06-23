@@ -5,18 +5,21 @@
 
 {% block content %}
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Заголовок с аватаркой (оригинальная версия) -->
+    <!-- Заголовок с аватаркой -->
     <div class="mb-12">
         <div class="flex flex-col lg:flex-row items-center lg:items-end justify-between gap-8">
             <div class="flex items-center gap-6">
                 <div class="relative group">
                     <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-2xl border-4 border-white ring-4 ring-blue-100">
-                        <img src="{% static 'images/profile-icon.svg' %}" alt="Profile" class="w-12 h-12 text-white" 
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                        <i data-lucide="user" class="w-12 h-12 text-white" style="display: none;"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
                     </div>
                     <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white flex items-center justify-center">
-                        <i data-lucide="check" class="w-3 h-3 text-white"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
                     </div>
                 </div>
                 <div class="text-center lg:text-left">
@@ -24,12 +27,19 @@
                     <p class="text-gray-600 text-lg mb-4">Добро пожаловать в ваш профиль</p>
                     <div class="flex items-center gap-4 text-sm text-gray-500">
                         <div class="flex items-center gap-2">
-                            <i data-lucide="shield" class="w-4 h-4"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
                             <span>{{ profile.get_role_display }}</span>
                         </div>
                         <div class="w-1 h-1 bg-gray-300 rounded-full"></div>
                         <div class="flex items-center gap-2">
-                            <i data-lucide="calendar" class="w-4 h-4"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
                             <span>С {{ user.date_joined|date:"d.m.Y" }}</span>
                         </div>
                     </div>
@@ -45,7 +55,10 @@
             <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                 <div class="flex items-center gap-3 mb-6">
                     <div class="w-10 h-10 bg-gray-800 rounded-xl flex items-center justify-center">
-                        <i data-lucide="user" class="w-5 h-5 text-white"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
                     </div>
                     <div>
                         <h2 class="text-xl font-semibold text-gray-900">Основная информация</h2>
@@ -54,12 +67,14 @@
                 </div>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <!-- Левая колонка -->
                     <div class="space-y-3">
                         <div class="group p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-400 transition-all duration-200">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                                    <i data-lucide="at-sign" class="w-4 h-4 text-gray-700"></i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-gray-700">
+                                        <path d="M4 4v16h16"/>
+                                        <polyline points="20 10 12 18 8 14"/>
+                                    </svg>
                                 </div>
                                 <div class="flex-1">
                                     <div class="text-xs font-medium text-gray-500 mb-1">Имя пользователя</div>
@@ -71,7 +86,10 @@
                         <div class="group p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-400 transition-all duration-200">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                                    <i data-lucide="user" class="w-4 h-4 text-gray-700"></i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-gray-700">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="12" cy="7" r="4"/>
+                                    </svg>
                                 </div>
                                 <div class="flex-1">
                                     <div class="text-xs font-medium text-gray-500 mb-1">Имя</div>
@@ -83,7 +101,10 @@
                         <div class="group p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-400 transition-all duration-200">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                                    <i data-lucide="mail" class="w-4 h-4 text-gray-700"></i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-gray-700">
+                                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                                    </svg>
                                 </div>
                                 <div class="flex-1">
                                     <div class="text-xs font-medium text-gray-500 mb-1">Email</div>
@@ -93,12 +114,13 @@
                         </div>
                     </div>
 
-                    <!-- Правая колонка -->
                     <div class="space-y-3">
                         <div class="group p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-400 transition-all duration-200">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                                    <i data-lucide="shield" class="w-4 h-4 text-gray-700"></i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-gray-700">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                    </svg>
                                 </div>
                                 <div class="flex-1">
                                     <div class="text-xs font-medium text-gray-500 mb-1">Роль в системе</div>
@@ -110,7 +132,10 @@
                         <div class="group p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-400 transition-all duration-200">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                                    <i data-lucide="user-plus" class="w-4 h-4 text-gray-700"></i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-gray-700">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="12" cy="7" r="4"/>
+                                    </svg>
                                 </div>
                                 <div class="flex-1">
                                     <div class="text-xs font-medium text-gray-500 mb-1">Фамилия</div>
@@ -122,7 +147,9 @@
                         <div class="group p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-400 transition-all duration-200">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                                    <i data-lucide="phone" class="w-4 h-4 text-gray-700"></i>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-gray-700">
+                                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                    </svg>
                                 </div>
                                 <div class="flex-1">
                                     <div class="text-xs font-medium text-gray-500 mb-1">Телефон</div>
@@ -138,7 +165,10 @@
             <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                 <div class="flex items-center gap-3 mb-6">
                     <div class="w-10 h-10 bg-gray-800 rounded-xl flex items-center justify-center">
-                        <i data-lucide="edit-3" class="w-5 h-5 text-white"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
                     </div>
                     <div>
                         <h2 class="text-xl font-semibold text-gray-900">Редактирование профиля</h2>
@@ -151,19 +181,13 @@
                     
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <div class="space-y-2">
-                            <label for="first_name" class="block text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                                <i data-lucide="user" class="w-3 h-3 text-gray-500"></i>
-                                Имя
-                            </label>
+                            <label for="first_name" class="block text-sm font-semibold text-gray-900">Имя</label>
                             <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}"
                                    class="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-all duration-200">
                         </div>
                         
                         <div class="space-y-2">
-                            <label for="last_name" class="block text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                                <i data-lucide="user-plus" class="w-3 h-3 text-gray-500"></i>
-                                Фамилия
-                            </label>
+                            <label for="last_name" class="block text-sm font-semibold text-gray-900">Фамилия</label>
                             <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}"
                                    class="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-all duration-200">
                         </div>
@@ -171,19 +195,13 @@
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <div class="space-y-2">
-                            <label for="email" class="block text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                                <i data-lucide="mail" class="w-3 h-3 text-gray-500"></i>
-                                Email
-                            </label>
+                            <label for="email" class="block text-sm font-semibold text-gray-900">Email</label>
                             <input type="email" id="email" name="email" value="{{ user.email }}"
                                    class="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-all duration-200">
                         </div>
                         
                         <div class="space-y-2">
-                            <label for="phone" class="block text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                                <i data-lucide="phone" class="w-3 h-3 text-gray-500"></i>
-                                Телефон
-                            </label>
+                            <label for="phone" class="block text-sm font-semibold text-gray-900">Телефон</label>
                             <input type="text" id="phone" name="phone" value="{{ profile.phone|default:'' }}"
                                    class="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-all duration-200"
                                    placeholder="+7 (XXX) XXX-XX-XX">
@@ -191,10 +209,7 @@
                     </div>
 
                     <div class="space-y-2">
-                        <label for="corporate_email" class="block text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                            <i data-lucide="briefcase" class="w-3 h-3 text-gray-500"></i>
-                            Корпоративный Email
-                        </label>
+                        <label for="corporate_email" class="block text-sm font-semibold text-gray-900">Корпоративный Email</label>
                         <input type="email" id="corporate_email" name="corporate_email" value="{{ profile.corporate_email|default:'' }}"
                                class="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-all duration-200"
                                placeholder="corporate@company.com">
@@ -203,13 +218,19 @@
                     <div class="flex gap-3 pt-4">
                         <button type="submit" 
                                 class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-semibold flex items-center gap-2 transition-all duration-200">
-                            <i data-lucide="save" class="w-4 h-4"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                <polyline points="17 21 17 13 7 13 7 21"/>
+                                <polyline points="7 3 7 8 15 8"/>
+                            </svg>
                             Сохранить изменения
                         </button>
                         
                         <button type="button" onclick="showPasswordModal()"
                                 class="border border-gray-300 text-gray-700 hover:bg-gray-50 px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2">
-                            <i data-lucide="key" class="w-4 h-4"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                            </svg>
                             Сменить пароль
                         </button>
                     </div>
@@ -223,7 +244,9 @@
             <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-200">
                 <h2 class="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
                     <div class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
-                        <i data-lucide="shield-check" class="w-4 h-4 text-white"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
                     </div>
                     Статус аккаунта
                 </h2>
@@ -232,7 +255,9 @@
                     <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200">
                         <span class="text-gray-900 text-sm font-medium">Статус:</span>
                         <span class="px-2 py-1 bg-green-600 text-white text-xs rounded font-semibold flex items-center gap-1">
-                            <i data-lucide="check" class="w-2 h-2"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-2 h-2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
                             Активен
                         </span>
                     </div>
@@ -253,7 +278,9 @@
             <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-200">
                 <h2 class="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
                     <div class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
-                        <i data-lucide="zap" class="w-4 h-4 text-white"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
                     </div>
                     Быстрые действия
                 </h2>
@@ -262,51 +289,77 @@
                     <a href="{% url 'crm_my_requests' %}" 
                        class="group w-full flex items-center gap-3 p-3 text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200 border border-transparent hover:border-gray-300">
                         <div class="w-10 h-10 bg-gray-100 group-hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors duration-200">
-                            <i data-lucide="list-checks" class="w-4 h-4 text-gray-700"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-gray-700">
+                                <line x1="8" y1="6" x2="21" y2="6"/>
+                                <line x1="8" y1="12" x2="21" y2="12"/>
+                                <line x1="8" y1="18" x2="21" y2="18"/>
+                                <line x1="3" y1="6" x2="3.01" y2="6"/>
+                                <line x1="3" y1="12" x2="3.01" y2="12"/>
+                                <line x1="3" y1="18" x2="3.01" y2="18"/>
+                            </svg>
                         </div>
                         <div class="flex-1">
                             <div class="font-medium text-sm">Мои заявки</div>
                             <div class="text-xs text-gray-500">Управление задачами</div>
                         </div>
-                        <i data-lucide="chevron-right" class="w-3 h-3 text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3 text-gray-400 group-hover:text-gray-600 transition-colors">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
                     </a>
                     
                     <a href="{% url 'crm_clients' %}" 
                        class="group w-full flex items-center gap-3 p-3 text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200 border border-transparent hover:border-gray-300">
                         <div class="w-10 h-10 bg-gray-100 group-hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors duration-200">
-                            <i data-lucide="users" class="w-4 h-4 text-gray-700"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-gray-700">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
                         </div>
                         <div class="flex-1">
                             <div class="font-medium text-sm">Клиенты</div>
                             <div class="text-xs text-gray-500">База клиентов</div>
                         </div>
-                        <i data-lucide="chevron-right" class="w-3 h-3 text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3 text-gray-400 group-hover:text-gray-600 transition-colors">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
                     </a>
                     
                     {% if profile.role == 'owner' %}
                     <a href="{% url 'crm_managers_list' %}" 
                        class="group w-full flex items-center gap-3 p-3 text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200 border border-transparent hover:border-gray-300">
                         <div class="w-10 h-10 bg-gray-100 group-hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors duration-200">
-                            <i data-lucide="settings" class="w-4 h-4 text-gray-700"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-gray-700">
+                                <path d="M12 15v2m-6 4h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm10-10V7a4 4 0 0 0-8 0v4h8z"/>
+                            </svg>
                         </div>
                         <div class="flex-1">
                             <div class="font-medium text-sm">Управление</div>
                             <div class="text-xs text-gray-500">Администрирование</div>
                         </div>
-                        <i data-lucide="chevron-right" class="w-3 h-3 text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3 text-gray-400 group-hover:text-gray-600 transition-colors">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
                     </a>
                     {% endif %}
                     
                     <a href="{% url 'logout' %}" 
                        class="group w-full flex items-center gap-3 p-3 text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200 border border-transparent hover:border-gray-300">
                         <div class="w-10 h-10 bg-gray-100 group-hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors duration-200">
-                            <i data-lucide="log-out" class="w-4 h-4 text-gray-700"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-gray-700">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                <polyline points="16 17 21 12 16 7"/>
+                                <line x1="21" y1="12" x2="9" y2="12"/>
+                            </svg>
                         </div>
                         <div class="flex-1">
                             <div class="font-medium text-sm">Выйти</div>
                             <div class="text-xs text-gray-500">Завершить сеанс</div>
                         </div>
-                        <i data-lucide="chevron-right" class="w-3 h-3 text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3 text-gray-400 group-hover:text-gray-600 transition-colors">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
                     </a>
                 </div>
             </div>
@@ -319,7 +372,9 @@
     <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-lg border border-gray-300 transform transition-all duration-300 scale-95 opacity-0" id="passwordModalContent">
         <div class="text-center mb-4">
             <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-3">
-                <i data-lucide="key" class="w-6 h-6 text-white"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
             </div>
             <h3 class="text-xl font-semibold text-gray-900">Смена пароля</h3>
             <p class="text-gray-600 text-sm mt-1">Введите текущий и новый пароль</p>
@@ -329,28 +384,19 @@
             {% csrf_token %}
             
             <div class="space-y-2">
-                <label for="current_password" class="block text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                    <i data-lucide="lock" class="w-3 h-3 text-gray-500"></i>
-                    Текущий пароль
-                </label>
+                <label for="current_password" class="block text-sm font-semibold text-gray-900">Текущий пароль</label>
                 <input type="password" id="current_password" name="current_password" required
                        class="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             </div>
             
             <div class="space-y-2">
-                <label for="new_password" class="block text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                    <i data-lucide="lock" class="w-3 h-3 text-gray-500"></i>
-                    Новый пароль
-                </label>
+                <label for="new_password" class="block text-sm font-semibold text-gray-900">Новый пароль</label>
                 <input type="password" id="new_password" name="new_password" required
                        class="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             </div>
             
             <div class="space-y-2">
-                <label for="confirm_password" class="block text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                    <i data-lucide="lock" class="w-3 h-3 text-gray-500"></i>
-                    Подтвердите пароль
-                </label>
+                <label for="confirm_password" class="block text-sm font-semibold text-gray-900">Подтвердите пароль</label>
                 <input type="password" id="confirm_password" name="confirm_password" required
                        class="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             </div>
@@ -358,13 +404,18 @@
             <div class="flex gap-2 pt-3">
                 <button type="submit" 
                         class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all duration-200">
-                    <i data-lucide="check" class="w-3 h-3"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
                     Сменить пароль
                 </button>
                 
                 <button type="button" onclick="hidePasswordModal()"
                         class="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2.5 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2">
-                    <i data-lucide="x" class="w-3 h-3"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
                     Отмена
                 </button>
             </div>
@@ -395,16 +446,15 @@
         }, 300);
     }
 
-    // Закрытие модального окна по клику вне его
-    document.getElementById('passwordModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            hidePasswordModal();
-        }
-    });
-
-    // Инициализация иконок
     document.addEventListener('DOMContentLoaded', function() {
-        lucide.createIcons();
+        const modal = document.getElementById('passwordModal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    hidePasswordModal();
+                }
+            });
+        }
     });
 </script>
 {% endblock %}
