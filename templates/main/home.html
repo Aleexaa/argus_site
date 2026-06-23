@@ -1,6 +1,4 @@
-## 📄 Полностью готовый `home.html` (с data-атрибутами и JavaScript)
 
-```html
 {% extends 'base.html' %}
 {% load static %}
 
@@ -616,6 +614,7 @@
 </style>
 
 <script>
+
 document.addEventListener('DOMContentLoaded', function() {
     // ===== ПРИМЕНЯЕМ СТИЛИ К ПРОМО-КАРТОЧКАМ =====
     function applyPromoStyles() {
@@ -631,12 +630,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 card.style.color = textColor;
             }
             
-            // Применяем цвет к тексту внутри карточки
             card.querySelectorAll('[data-text-color]').forEach(function(el) {
                 if (textColor) el.style.color = textColor;
             });
             
-            // Применяем цвет к кнопкам
             card.querySelectorAll('.read-more-btn').forEach(function(btn) {
                 var btnColor = btn.getAttribute('data-btn-color');
                 var btnTextColor = btn.getAttribute('data-btn-text-color');
@@ -648,7 +645,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Применяем цвет к границам
             card.querySelectorAll('[data-border-color]').forEach(function(el) {
                 if (textColor) {
                     el.style.borderColor = textColor + '30';
@@ -844,6 +840,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // ===== ОТКРЫТИЕ МОДАЛЬНОГО ОКНА ПО КНОПКЕ "ЧИТАТЬ ДАЛЕЕ" =====
+    document.querySelectorAll('.read-more-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var card = this.closest('.news-card');
+            if (card) {
+                var index = card.getAttribute('data-news-index');
+                if (index !== null) {
+                    openNewsModal(parseInt(index));
+                }
+            }
+        });
+    });
+
+    // ===== ОТКРЫТИЕ МОДАЛЬНОГО ОКНА ПО КЛИКУ НА КАРТОЧКУ =====
+    document.querySelectorAll('.news-card').forEach(function(card) {
+        card.addEventListener('click', function(e) {
+            if (e.target.closest('.read-more-btn')) return;
+            var index = this.getAttribute('data-news-index');
+            if (index !== null) {
+                openNewsModal(parseInt(index));
+            }
+        });
+    });
+
     // ===== КЛИК ПО КАРТОЧКЕ ПРОЕКТА =====
     document.querySelectorAll('.project-card').forEach(function(card) {
         card.addEventListener('click', function() {
@@ -868,6 +889,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
 </script>
 {% endblock %}
-```
