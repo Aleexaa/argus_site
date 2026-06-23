@@ -96,7 +96,12 @@ def order_kp(request):
     """
     if request.method == 'POST':
         form = RequestForm(request.POST, request.FILES)
-
+        print("📩 Получен POST-запрос")
+        print("Данные формы:", request.POST)
+        print("Файлы:", request.FILES)
+        print("Форма валидна?", form.is_valid())
+        if not form.is_valid():
+            print("❌ Ошибки формы:", form.errors)
         # ✅ ВАЖНО: Проверяем согласие на сервере ПЕРВЫМ делом
         pd_agreed = request.POST.get('pd_agreed') == 'on'
         
