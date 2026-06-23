@@ -3,20 +3,20 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from django.db import models
-from crm.models import Client, Feedback, PromoBlock
-from .models import Request, RequestService, Service, Project
-from .forms import RequestForm
-from crm.models import Vacancy, Candidate
-from .forms import CandidateForm
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django.http import HttpResponse, HttpResponseRedirect
+
+# ✅ ПРАВИЛЬНЫЕ ИМПОРТЫ
+from crm.models import Client, Feedback, PromoBlock, Vacancy, Candidate
+from .models import Request, RequestService, Service, Project
+from .forms import RequestForm, CandidateForm
+
 
 def home(request):
     services = Service.objects.all()[:8]
     projects = Project.objects.all().order_by('-created_at')
     
-    # Получаем ВСЕ активные промо-блоки для главной страницы
     now = timezone.now()
     promo_blocks = PromoBlock.objects.filter(
         is_active=True
@@ -29,13 +29,14 @@ def home(request):
     context = {
         'services': services,
         'projects': projects,
-        'promo_blocks': promo_blocks,  # Теперь передаем список, а не один объект
+        'promo_blocks': promo_blocks,
     }
     return render(request, 'main/home.html', context)
 
+
 def partners(request):
-    """Страница партнеров"""
     return render(request, 'main/partners.html')
+
 
 def about(request):
     stats = [
@@ -51,6 +52,7 @@ def about(request):
         {'icon': 'briefcase', 'title': 'Комплексный подход', 'description': 'Предоставляем полный цикл услуг: от проектирования до технического обслуживания.'},
     ]
     return render(request, 'main/about.html', {'stats': stats, 'advantages': advantages})
+
 
 def services(request):
     section1_services = [
@@ -76,6 +78,7 @@ def services(request):
         'section2_services': section2_services,
     })
 
+
 def projects(request):
     projects_list = Project.objects.all()
     object_types = ['all', 'residential', 'commercial', 'industrial', 'medical', 'sports']
@@ -89,6 +92,15 @@ def projects(request):
     })
 
 
+def get_client_ip(request):
+    """Получение IP-адреса клиента"""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
 
 def order_kp(request):
     """
@@ -96,15 +108,9 @@ def order_kp(request):
     """
     if request.method == 'POST':
         form = RequestForm(request.POST, request.FILES)
-        print("📩 Получен POST-запрос")
-        print("Данные формы:", request.POST)
-        print("Файлы:", request.FILES)
-        print("Форма валидна?", form.is_valid())
-        if not form.is_valid():
-            print("❌ Ошибки формы:", form.errors)
-        # ✅ ВАЖНО: Проверяем согласие на сервере ПЕРВЫМ делом
+
         pd_agreed = request.POST.get('pd_agreed') == 'on'
-        
+
         if not pd_agreed:
             messages.error(request, "❌ Для отправки заявки необходимо согласие на обработку персональных данных")
             services = Service.objects.filter(has_kp=True).order_by('id')
@@ -121,14 +127,13 @@ def order_kp(request):
             email = form.cleaned_data.get('email') or ''
             contact_person = form.cleaned_data.get('contact_person') or ''
 
-            # ✅ Создаем/находим клиента (БЕЗ данных о согласии)
+            # ✅ Создаем/находим клиента (Client из crm.models)
             try:
                 client = Client.objects.create(
                     company_name=company_name,
                     phone=phone,
                     email=email,
                     contact_person=contact_person
-                    # ❌ НЕ сохраняем здесь данные о согласии
                 )
             except Exception as e:
                 normalized_phone = Client.normalize_phone(phone)
@@ -137,45 +142,51 @@ def order_kp(request):
                     messages.error(request, f"Ошибка создания клиента: {str(e)}")
                     return redirect('order_kp')
 
-            # ✅ Создаем заявку с сохранением согласия
-            new_request = Request.objects.create(
-                client=client,
-                object_type=form.cleaned_data['object_type'],
-                object_address=form.cleaned_data.get('object_address', ''),
-                attached_file=form.cleaned_data.get('attached_file'),
-                description=form.cleaned_data.get('description', ''),
-                status='new',
-                responsible_manager=None,
-                # ✅ СОХРАНЯЕМ ДОКАЗАТЕЛЬСТВА СОГЛАСИЯ В ЗАЯВКЕ
-                pd_agreed=True,
-                ip_address=get_client_ip(request),
-                policy_version='1.0',  # Укажите актуальную версию
-                user_agent=request.META.get('HTTP_USER_AGENT', '')
-            )
+            # ✅ Создаем заявку (Request из main.models)
+            try:
+                new_request = Request.objects.create(
+                    client=client,
+                    object_type=form.cleaned_data['object_type'],
+                    object_address=form.cleaned_data.get('object_address', ''),
+                    attached_file=form.cleaned_data.get('attached_file'),
+                    description=form.cleaned_data.get('description', ''),
+                    status='new',
+                    responsible_manager=None,
+                    pd_agreed=True,
+                    ip_address=get_client_ip(request),
+                    policy_version='1.0',
+                    user_agent=request.META.get('HTTP_USER_AGENT', '')
+                )
+            except Exception as e:
+                messages.error(request, f"Ошибка сохранения заявки: {str(e)}")
+                return redirect('order_kp')
 
             selected_services = form.cleaned_data.get('services', [])
             for service in selected_services:
                 RequestService.objects.create(request=new_request, service=service)
 
-            # В уведомление добавляем информацию о согласии
-            send_mail(
-                subject=f"🆕 Новая заявка #{new_request.id} от {client.company_name}",
-                message=(
-                    f"Поступила новая заявка!\n\n"
-                    f"Компания: {client.company_name}\n"
-                    f"Контакт: {client.contact_person} ({client.phone})\n"
-                    f"Email: {client.email}\n"
-                    f"Согласие на обработку ПД: ДА\n"
-                    f"IP: {new_request.ip_address}\n"
-                    f"Время: {new_request.consent_date}\n"
-                    f"Версия политики: {new_request.policy_version}\n\n"
-                    f"Описание:\n{form.cleaned_data.get('description', '—')}\n\n"
-                    f"Посмотреть в CRM: http://127.0.0.1:8000/crm/request/{new_request.id}/"
-                ),
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[settings.EMAIL_HOST_USER],
-                fail_silently=True,
-            )
+            # Отправка уведомления на почту
+            try:
+                send_mail(
+                    subject=f"🆕 Новая заявка #{new_request.id} от {client.company_name}",
+                    message=(
+                        f"Поступила новая заявка!\n\n"
+                        f"Компания: {client.company_name}\n"
+                        f"Контакт: {client.contact_person} ({client.phone})\n"
+                        f"Email: {client.email}\n"
+                        f"Согласие на обработку ПД: ДА\n"
+                        f"IP: {new_request.ip_address}\n"
+                        f"Время: {new_request.consent_date}\n"
+                        f"Версия политики: {new_request.policy_version}\n\n"
+                        f"Описание:\n{form.cleaned_data.get('description', '—')}\n\n"
+                        f"Посмотреть в CRM: http://31.177.82.171/crm/request/{new_request.id}/"
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[settings.EMAIL_HOST_USER],
+                    fail_silently=True,
+                )
+            except Exception as e:
+                print(f"Ошибка отправки email: {e}")
 
             messages.success(request, "✅ Заявка успешно отправлена.")
             return redirect('order_success')
@@ -194,65 +205,52 @@ def order_kp(request):
         'selected_services': selected_services,
     })
 
-def get_client_ip(request):
-    """Получение IP-адреса клиента"""
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
 
 def order_success(request):
     return render(request, 'main/order_success.html')
 
+
 def vacancies_list(request):
-    """Список активных вакансий"""
     vacancies = Vacancy.objects.filter(is_active=True)
     return render(request, 'main/vacancies_list.html', {'vacancies': vacancies})
 
+
 def vacancy_detail(request, pk):
     vacancy = get_object_or_404(Vacancy, pk=pk)
-    
+
     if request.method == 'POST':
         form = CandidateForm(request.POST)
         if form.is_valid():
             candidate = form.save(commit=False)
             candidate.vacancy = vacancy
             candidate.save()
-            
             messages.success(request, 'Ваш отклик успешно отправлен!')
             return redirect('vacancy_detail', pk=pk)
     else:
         form = CandidateForm()
-    
+
     return render(request, 'main/vacancy_detail.html', {
         'vacancy': vacancy,
         'form': form
     })
 
+
 def contacts(request):
-    """
-    Обработка формы обратной связи с сохранением согласия на обработку ПД
-    """
     if request.method == 'POST':
         name = request.POST.get('name')
         contact = request.POST.get('contact')
         message = request.POST.get('message')
         pd_agreed = request.POST.get('pd_agreed') == 'on'
-        
-        # Валидация данных
+
         if not name or not contact or not message:
             messages.error(request, '❌ Заполните все обязательные поля')
             return render(request, 'main/contacts.html')
-        
-        # Проверка согласия на обработку ПД
+
         if not pd_agreed:
             messages.error(request, '❌ Необходимо дать согласие на обработку персональных данных')
             return render(request, 'main/contacts.html')
-        
+
         try:
-            # Сохраняем обратную связь в CRM
             feedback = Feedback.objects.create(
                 name=name.strip(),
                 contact=contact.strip(),
@@ -262,8 +260,7 @@ def contacts(request):
                 user_agent=request.META.get('HTTP_USER_AGENT', ''),
                 policy_version='1.0'
             )
-            
-            # Отправляем уведомление на email (опционально)
+
             try:
                 send_mail(
                     subject=f"📨 Новое сообщение обратной связи от {name}",
@@ -277,7 +274,7 @@ def contacts(request):
                         f"Дата согласия: {feedback.pd_agreed_at.strftime('%d.%m.%Y %H:%M')}\n"
                         f"Версия политики: {feedback.policy_version}\n\n"
                         f"Дата: {feedback.created_at.strftime('%d.%m.%Y %H:%M')}\n"
-                        f"Посмотреть в CRM: http://127.0.0.1:8000/admin/crm/feedback/{feedback.id}/"
+                        f"Посмотреть в CRM: http://31.177.82.171/admin/crm/feedback/{feedback.id}/"
                     ),
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[settings.EMAIL_HOST_USER],
@@ -285,27 +282,28 @@ def contacts(request):
                 )
             except Exception as e:
                 print(f"Ошибка отправки email: {e}")
-            
+
             messages.success(request, '✅ Ваше сообщение успешно отправлено! Мы свяжемся с вами в ближайшее время.')
             return redirect('contacts')
-            
+
         except Exception as e:
             messages.error(request, f'❌ Произошла ошибка при отправке сообщения: {str(e)}')
-    
+
     return render(request, 'main/contacts.html')
 
 
 class PrivacyPolicyView(TemplateView):
     template_name = 'main/privacy_policy.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['current_date'] = timezone.now().strftime('%d.%m.%Y')
         return context
 
+
 class TermsView(TemplateView):
     template_name = 'main/terms.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['current_date'] = timezone.now().strftime('%d.%m.%Y')
