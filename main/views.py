@@ -121,11 +121,18 @@ def order_kp(request):
                 'selected_services': selected_services,
             })
 
-        if form.is_valid():
-            company_name = form.cleaned_data.get('company_name') or 'Не указано'
-            phone = form.cleaned_data.get('phone') or ''
-            email = form.cleaned_data.get('email') or ''
-            contact_person = form.cleaned_data.get('contact_person') or ''
+            if form.is_valid():
+                print("✅ ФОРМА ВАЛИДНА!")
+                print("Очищенные данные:", form.cleaned_data)
+            else:
+                print("❌ ФОРМА НЕ ВАЛИДНА!")
+                print("Ошибки формы:", form.errors)
+                messages.error(request, f"❌ Ошибки формы: {form.errors}")
+                return render(request, 'main/order_kp.html', {
+                    'form': form,
+                    'services': Service.objects.filter(has_kp=True).order_by('id'),
+                    'selected_services': request.POST.getlist('services'),
+                })
 
             # ✅ Создаем/находим клиента (Client из crm.models)
             try:
