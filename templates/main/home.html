@@ -47,7 +47,9 @@
                          data-btn-text-color="{{ promo.button_text_color|default:'#FFFFFF' }}"
                          data-news-index="0"
                          data-promo-text="{{ promo.text|default:'' }}"
-                         data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}">
+                         data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}"
+                         data-button-text="{{ promo.button_text|default:'Подробнее' }}"
+                         data-button-url="{{ promo.button_url|default:'' }}">
                         
                         {% if promo.image %}
                         <div class="news-media relative h-48 sm:h-56 overflow-hidden">
@@ -109,7 +111,9 @@
                              data-btn-text-color="{{ promo.button_text_color|default:'#FFFFFF' }}"
                              data-news-index="{{ forloop.counter0 }}"
                              data-promo-text="{{ promo.text|default:'' }}"
-                             data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}">
+                             data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}"
+                             data-button-text="{{ promo.button_text|default:'Подробнее' }}"
+                             data-button-url="{{ promo.button_url|default:'' }}">
                             
                             {% if promo.image %}
                             <div class="news-media relative h-40 sm:h-48 overflow-hidden">
@@ -167,7 +171,9 @@
                              data-btn-text-color="{{ promo.button_text_color|default:'#FFFFFF' }}"
                              data-news-index="{{ forloop.counter0 }}"
                              data-promo-text="{{ promo.text|default:'' }}"
-                             data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}">
+                             data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}"
+                             data-button-text="{{ promo.button_text|default:'Подробнее' }}"
+                             data-button-url="{{ promo.button_url|default:'' }}">
                             
                             {% if promo.image %}
                             <div class="news-media relative h-40 sm:h-48 overflow-hidden">
@@ -227,7 +233,9 @@
                                      data-btn-text-color="{{ promo.button_text_color|default:'#FFFFFF' }}"
                                      data-news-index="{{ forloop.counter0 }}"
                                      data-promo-text="{{ promo.text|default:'' }}"
-                                     data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}">
+                                     data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}"
+                                     data-button-text="{{ promo.button_text|default:'Подробнее' }}"
+                                     data-button-url="{{ promo.button_url|default:'' }}">
                                     
                                     {% if promo.image %}
                                     <div class="news-media relative h-32 sm:h-40 overflow-hidden">
@@ -331,7 +339,6 @@
     <div class="container mx-auto px-4 sm:px-6">
         <h2 class="text-2xl sm:text-3xl md:text-4xl text-dark-blue text-center mb-8 sm:mb-12 font-bold">Ключевые услуги</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <!-- Service 1 -->
             <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-400 cursor-pointer p-4 sm:p-6 border border-gray-100 group">
                 <div class="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-dark-blue text-gold mb-3 sm:mb-4 rounded-lg transition-all duration-400 group-hover:scale-110 group-hover:bg-gold group-hover:text-white">
                     <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -764,7 +771,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== МОДАЛЬНОЕ ОКНО =====
+    // ===== МОДАЛЬНОЕ ОКНО С ПЕРЕХОДОМ ПО ССЫЛКЕ =====
     var modal = document.getElementById('newsModal');
     var modalContent = document.getElementById('newsModalContent');
     var closeModalBtn = document.getElementById('closeNewsModal');
@@ -778,23 +785,35 @@ document.addEventListener('DOMContentLoaded', function() {
         var text = card.getAttribute('data-promo-text') || '';
         var img = card.querySelector('img') ? card.querySelector('img').src : '';
         var date = card.getAttribute('data-promo-date') || 'Сегодня';
-        var buttonText = card.querySelector('.read-more-btn') ? card.querySelector('.read-more-btn').textContent : 'Подробнее';
+        var buttonText = card.getAttribute('data-button-text') || 'Подробнее';
+        var buttonUrl = card.getAttribute('data-button-url') || '';
         var btnColor = card.getAttribute('data-btn-color') || '#C9A96A';
         var btnTextColor = card.getAttribute('data-btn-text-color') || '#FFFFFF';
         
-        modalContent.innerHTML = 
-            '<div class="space-y-4 sm:space-y-6">' +
-            (img ? '<div class="rounded-lg overflow-hidden"><img src="' + img + '" alt="' + title + '" class="w-full h-32 sm:h-48 object-cover"></div>' : '') +
-            '<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">' +
-            '<h3 class="text-xl sm:text-2xl font-bold text-dark-blue">' + title + '</h3>' +
-            '<span class="text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-full bg-gray-100 text-dark-blue">' + date + '</span>' +
-            '</div>' +
-            (text ? '<div class="modal-text-content text-gray-700">' + text + '</div>' : '') +
-            '<div class="flex flex-col sm:flex-row gap-3 pt-4 sm:pt-6 border-t border-gray-200">' +
-            '<button class="inline-block px-4 sm:px-6 py-3 rounded-lg font-medium text-center text-sm sm:text-base transition-all duration-300 hover:scale-105" style="background-color: ' + btnColor + '; color: ' + btnTextColor + ';" onclick="closeNewsModal()">' + buttonText + '</button>' +
-            '<button class="bg-dark-blue hover:bg-blue-900 text-white px-6 sm:px-8 py-3 rounded-lg font-medium transition-colors duration-300 text-sm sm:text-base" onclick="closeNewsModal()">Закрыть</button>' +
-            '</div>' +
-            '</div>';
+        var html = '<div class="space-y-4 sm:space-y-6">';
+        if (img) {
+            html += '<div class="rounded-lg overflow-hidden"><img src="' + img + '" alt="' + title + '" class="w-full h-32 sm:h-48 object-cover"></div>';
+        }
+        html += '<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">';
+        html += '<h3 class="text-xl sm:text-2xl font-bold text-dark-blue">' + title + '</h3>';
+        html += '<span class="text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-full bg-gray-100 text-dark-blue">' + date + '</span>';
+        html += '</div>';
+        if (text) {
+            html += '<div class="modal-text-content text-gray-700">' + text + '</div>';
+        }
+        html += '<div class="flex flex-col sm:flex-row gap-3 pt-4 sm:pt-6 border-t border-gray-200">';
+        
+        // КНОПКА СО ССЫЛКОЙ (если есть URL)
+        if (buttonUrl) {
+            html += '<a href="' + buttonUrl + '" target="_blank" class="inline-block px-4 sm:px-6 py-3 rounded-lg font-medium text-center text-sm sm:text-base transition-all duration-300 hover:scale-105" style="background-color: ' + btnColor + '; color: ' + btnTextColor + ';">' + buttonText + '</a>';
+        } else {
+            html += '<button class="inline-block px-4 sm:px-6 py-3 rounded-lg font-medium text-center text-sm sm:text-base transition-all duration-300 hover:scale-105" style="background-color: ' + btnColor + '; color: ' + btnTextColor + ';" onclick="closeNewsModal()">' + buttonText + '</button>';
+        }
+        
+        html += '<button class="bg-dark-blue hover:bg-blue-900 text-white px-6 sm:px-8 py-3 rounded-lg font-medium transition-colors duration-300 text-sm sm:text-base" onclick="closeNewsModal()">Закрыть</button>';
+        html += '</div></div>';
+        
+        modalContent.innerHTML = html;
         
         var container = modal.querySelector('.rounded-xl');
         modal.classList.remove('hidden');
