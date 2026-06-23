@@ -11,7 +11,7 @@
     <meta name="keywords" content="пожарная безопасность, противопожарные системы, проектирование, монтаж, СОУЭ, сигнализация">
     
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -237,7 +237,7 @@
                 </div>
 
                 <!-- Mobile Menu Button -->
-                <button class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-all duration-800 premium-hover" id="mobileMenuButton" onclick="toggleMobileMenu()" aria-label="Открыть меню" aria-expanded="false">
+                <button class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-all duration-800 premium-hover" id="mobileMenuButton" aria-label="Открыть меню" aria-expanded="false">
                     <svg class="w-6 h-6" id="menuIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
@@ -335,7 +335,7 @@
     
     <script>
     console.log('✅ Скрипт base.html загружен!');
-    
+
     // ===== УЛУЧШЕННАЯ ФУНКЦИЯ МОБИЛЬНОГО МЕНЮ =====
     function toggleMobileMenu() {
         const menu = document.getElementById('mobileMenu');
@@ -345,7 +345,6 @@
         if (!menu) return;
         
         if (menu.classList.contains('hidden')) {
-            // Открываем меню
             menu.classList.remove('hidden');
             setTimeout(() => menu.classList.add('open'), 10);
             if (icon) {
@@ -357,7 +356,6 @@
             menu.setAttribute('aria-hidden', 'false');
             document.body.style.overflow = 'hidden';
         } else {
-            // Закрываем меню
             menu.classList.remove('open');
             setTimeout(() => {
                 menu.classList.add('hidden');
@@ -373,42 +371,42 @@
         }
     }
 
-    // Закрытие меню при клике вне его
+    // Инициализация после загрузки DOM
     document.addEventListener('DOMContentLoaded', function() {
         console.log('✅ DOM загружен, инициализация...');
         
-        const menu = document.getElementById('mobileMenu');
-        const button = document.getElementById('mobileMenuButton');
-        
-        if (button) {
+        // Кнопка меню
+        const menuBtn = document.getElementById('mobileMenuButton');
+        if (menuBtn) {
             console.log('✅ Кнопка меню найдена');
-            // Убираем onclick из HTML, чтобы не было дублирования
-            button.removeAttribute('onclick');
-            button.addEventListener('click', toggleMobileMenu);
+            // Убираем все старые обработчики
+            menuBtn.removeAttribute('onclick');
+            // Добавляем наш обработчик
+            menuBtn.addEventListener('click', toggleMobileMenu);
         } else {
             console.log('❌ Кнопка меню НЕ найдена');
         }
         
         // Закрытие меню при клике вне его
         document.addEventListener('click', function(event) {
-            const menuEl = document.getElementById('mobileMenu');
-            const btn = document.getElementById('mobileMenuButton');
+            const menu = document.getElementById('mobileMenu');
+            const button = document.getElementById('mobileMenuButton');
             
-            if (menuEl && btn && !menuEl.classList.contains('hidden') && 
-                !menuEl.contains(event.target) && !btn.contains(event.target)) {
+            if (menu && button && !menu.classList.contains('hidden') && 
+                !menu.contains(event.target) && !button.contains(event.target)) {
                 toggleMobileMenu();
             }
         });
         
         // Закрытие меню при изменении ориентации экрана
         window.addEventListener('resize', function() {
-            const menuEl = document.getElementById('mobileMenu');
-            if (window.innerWidth >= 1024 && menuEl && !menuEl.classList.contains('hidden')) {
+            const menu = document.getElementById('mobileMenu');
+            if (window.innerWidth >= 1024 && menu && !menu.classList.contains('hidden')) {
                 toggleMobileMenu();
             }
         });
         
-        // Кнопка прокрутки вверх
+        // ===== КНОПКА ПРОКРУТКИ ВВЕРХ =====
         const scrollBtn = document.getElementById('scrollToTopBtn');
         if (scrollBtn) {
             function toggleScrollButton() {
@@ -418,10 +416,16 @@
                     scrollBtn.classList.remove('visible');
                 }
             }
-            scrollBtn.addEventListener('click', function() {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+            
+            function scrollToTop() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+            
             window.addEventListener('scroll', toggleScrollButton);
+            scrollBtn.addEventListener('click', scrollToTop);
             toggleScrollButton();
         }
         
@@ -437,11 +441,16 @@
             }, 100);
         }
         
-        // Безопасная инициализация иконок Lucide
+        // Безопасная инициализация Lucide
         if (typeof lucide !== 'undefined') {
-            try { lucide.createIcons(); } catch(e) { console.log('lucide error:', e); }
+            try {
+                lucide.createIcons();
+                console.log('✅ Lucide инициализирован');
+            } catch(e) {
+                console.log('lucide error:', e);
+            }
         } else {
-            console.log('⚠️ lucide не загружен, иконки будут пропущены');
+            console.log('⚠️ lucide не загружен');
         }
     });
     </script>
