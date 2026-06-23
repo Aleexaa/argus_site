@@ -159,8 +159,8 @@
           <p class="error-text hidden" id="file_error"></p>
         </div>
 
-        <!-- ✅ БЛОК СОГЛАСИЯ НА ОБРАБОТКУ ПЕРСОНАЛЬНЫХ ДАННЫХ -->
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <!-- Блок согласия на обработку персональных данных -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div class="flex items-start space-x-3">
             <input type="checkbox" id="pd_agreed" name="pd_agreed" required
                    class="mt-1 rounded border-gray-300 text-gold focus:ring-gold"
@@ -185,17 +185,6 @@
           <p class="error-text hidden mt-2" id="pd_agreed_error">
             Необходимо дать согласие на обработку персональных данных
           </p>
-        </div>
-
-        <!-- Прогресс заполнения -->
-        <div class="bg-gray-50 rounded-lg p-4">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-sm font-medium text-dark-blue">Заполнено формы:</span>
-            <span id="progressPercent" class="text-sm font-bold text-gold">0%</span>
-          </div>
-          <div class="w-full bg-gray-200 rounded-full h-2">
-            <div id="progressBar" class="bg-gold h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
-          </div>
         </div>
 
         <!-- Сообщения об ошибках Django -->
@@ -234,7 +223,7 @@
   </div>
 </div>
 
-<!-- ===== CSS стили ===== -->
+<!-- CSS стили -->
 <style>
 .form-input {
   width: 100%;
@@ -264,12 +253,9 @@
 #file-drop.error {
   border-color: #dc2626;
 }
-.progress-complete {
-  background-color: #10b981 !important;
-}
 </style>
 
-<!-- ===== JS валидация и автоматизация ===== -->
+<!-- JS валидация -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   // Основные элементы
@@ -277,13 +263,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const submitBtn = document.getElementById('submitBtn');
   const submitSpinner = document.getElementById('submitSpinner');
   const successMessage = document.getElementById('successMessage');
-  const progressBar = document.getElementById('progressBar');
-  const progressPercent = document.getElementById('progressPercent');
 
   // Если форма не найдена, выходим
   if (!form) return;
 
-  // Простая функция для получения элементов ошибок
+  // Функция для получения элементов ошибок
   function getErrorElement(fieldName) {
     return document.getElementById(fieldName + '_error');
   }
@@ -302,9 +286,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обработчики событий
     setupEventListeners();
     setupFileUpload();
-    calculateProgress();
-
-    // Валидация телефона с умной маской
     initPhoneMask();
   }
 
@@ -316,7 +297,6 @@ document.addEventListener('DOMContentLoaded', function() {
       if (field) {
         field.addEventListener('input', () => {
           validateField(fieldName);
-          calculateProgress();
           if (fieldName === 'object_address' || fieldName === 'description') {
             updateCounter(fieldName);
           }
@@ -328,19 +308,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обработчики для чекбоксов услуг
     const serviceCheckboxes = document.querySelectorAll('.service-checkbox');
     serviceCheckboxes.forEach(checkbox => {
-      checkbox.addEventListener('change', () => {
-        validateField('services');
-        calculateProgress();
-      });
+      checkbox.addEventListener('change', () => validateField('services'));
     });
 
     // Обработчик для согласия
     const pdAgreed = document.getElementById('pd_agreed');
     if (pdAgreed) {
-      pdAgreed.addEventListener('change', () => {
-        validateField('pd_agreed');
-        calculateProgress();
-      });
+      pdAgreed.addEventListener('change', () => validateField('pd_agreed'));
     }
 
     // Отправка формы
@@ -414,7 +388,6 @@ document.addEventListener('DOMContentLoaded', function() {
       if (fileSize) fileSize.textContent = formatFileSize(file.size);
       if (fileContent) fileContent.classList.add('hidden');
       if (filePreview) filePreview.classList.remove('hidden');
-      calculateProgress();
     }
 
     function resetFileInput() {
@@ -422,7 +395,6 @@ document.addEventListener('DOMContentLoaded', function() {
       if (fileContent) fileContent.classList.remove('hidden');
       if (filePreview) filePreview.classList.add('hidden');
       hideFileError();
-      calculateProgress();
     }
 
     function showFileError(message) {
@@ -528,7 +500,6 @@ document.addEventListener('DOMContentLoaded', function() {
         break;
     }
 
-    // Упрощенная обработка ошибок
     if (!isValid) {
       field.classList.add('error');
       errorElement.textContent = errorMessage;
@@ -552,52 +523,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     return allValid;
-  }
-
-  function calculateProgress() {
-    const requiredFields = ['company_name', 'contact_person', 'phone', 'email', 'object_type', 'services', 'pd_agreed'];
-    let completed = 0;
-
-    requiredFields.forEach(fieldName => {
-      const field = document.getElementById(fieldName);
-      if (!field) return;
-
-      if (fieldName === 'services') {
-        const checkedServices = document.querySelectorAll('.service-checkbox:checked');
-        if (checkedServices.length > 0) completed++;
-      } else if (fieldName === 'pd_agreed') {
-        if (field.checked) completed++;
-      } else if (field.value.trim() !== '') {
-        completed++;
-      }
-    });
-
-    // Опциональные поля
-    const optionalFields = ['object_address', 'description'];
-    optionalFields.forEach(fieldName => {
-      const field = document.getElementById(fieldName);
-      if (field && field.value.trim() !== '') {
-        completed += 0.5;
-      }
-    });
-
-    // Файл
-    const fileInput = document.getElementById('fileInput');
-    if (fileInput && fileInput.files.length > 0) {
-      completed += 0.5;
-    }
-
-    const total = requiredFields.length + (optionalFields.length * 0.5) + 0.5;
-    const progress = Math.round((completed / total) * 100);
-
-    if (progressBar) progressBar.style.width = `${progress}%`;
-    if (progressPercent) progressPercent.textContent = `${progress}%`;
-
-    if (progress === 100 && progressBar) {
-      progressBar.classList.add('progress-complete');
-    } else if (progressBar) {
-      progressBar.classList.remove('progress-complete');
-    }
   }
 
   function updateCounter(fieldName) {
@@ -640,7 +565,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (successMessage) successMessage.classList.remove('hidden');
         form.reset();
         resetFileInput();
-        calculateProgress();
         showNotification('Заявка успешно отправлена!', 'success');
         
         if (successMessage) successMessage.scrollIntoView({ behavior: 'smooth' });

@@ -9,6 +9,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
     path('crm/', include('crm.urls')),
+    
+    # Обработчик для accounts/login/ (стандартный путь Django)
+    path('accounts/login/', crm_views.login_view, name='accounts_login'),
+    
+    # Основной путь для логина
     path('login/', crm_views.login_view, name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
 ]

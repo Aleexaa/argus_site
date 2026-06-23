@@ -3,286 +3,624 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% block title %}CRM Аргус{% endblock %}</title>
-
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-
+    
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    {% csrf_token %}
+    
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7f8fa;
-        }
-        .bg-dark-blue { background-color: #0D1B2A; }
-        .text-gold { color: #C9A96A; }
-        .hover-gold:hover { color: #C9A96A; }
-
-        .btn-gold {
-            background-color: #C9A96A;
-            color: white;
-            transition: all 0.3s ease;
-        }
-        .btn-gold:hover {
-            background-color: #b9925b;
-            transform: translateY(-1px);
-        }
-
-        .btn-logout {
-            background-color: #b9925b;
-            color: white;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;
-        }
-        .btn-logout:hover {
-            background-color: #b91c1c;
-            transform: translateY(-1px);
-        }
-
-        .shadow-soft {
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        .nav-link {
-            color: #d1d5db;
-            font-weight: 500;
-            transition: color 0.2s ease;
-            white-space: nowrap;
-        }
-        .nav-link:hover { color: #ffffff; }
-        .nav-active {
-            color: #C9A96A !important;
-            font-weight: 600;
-        }
-
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(100%); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 5px rgba(34, 197, 94, 0.5); }
-            50% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.8); }
-        }
-
-        .notification-pulse {
-            animation: pulseGlow 2s infinite;
-        }
-
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: #0D1B2A;
-            border: 1px solid #1E293B;
-            border-radius: 0.5rem;
-            min-width: 200px;
-            z-index: 50;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-
-        .dropdown:hover .dropdown-menu {
-            display: block;
-        }
-
-        .dropdown-item {
-            display: block;
-            padding: 0.75rem 1rem;
-            color: #d1d5db;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            border-bottom: 1px solid #1E293B;
-        }
-
-        .dropdown-item:hover {
-            background: #1E293B;
-            color: #C9A96A;
-        }
-
-        .dropdown-item:last-child {
-            border-bottom: none;
+        * {
+            -webkit-tap-highlight-color: transparent;
         }
         
-        .sound-toggle-btn {
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        .notification-toast {
+            position: fixed;
+            top: 70px;
+            right: 16px;
+            z-index: 10000;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 12px 16px;
+            min-width: 280px;
+            max-width: 350px;
+            border-left: 4px solid #EF4444;
             cursor: pointer;
-            transition: all 0.3s ease;
+            animation: slideInRight 0.3s ease;
         }
-        .sound-toggle-btn:hover {
-            transform: scale(1.05);
+        
+        .notification-toast:hover {
+            transform: translateY(-2px);
+            transition: transform 0.2s;
         }
-        .sound-off {
-            opacity: 0.6;
+        
+        .notification-toast.hide {
+            animation: slideOutRight 0.3s ease forwards;
+        }
+        
+        .notifications-panel {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 380px;
+            max-width: calc(100vw - 20px);
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            z-index: 1000;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        @media (max-width: 640px) {
+            .notifications-panel {
+                position: fixed;
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                max-width: 100%;
+                border-radius: 20px 20px 0 0;
+                margin-top: 0;
+                max-height: 80vh;
+            }
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #EF4444;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+            line-height: 1;
+        }
+        
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 280px;
+            height: 100%;
+            background: #111827;
+            z-index: 1001;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+        }
+        
+        .mobile-menu.open {
+            left: 0;
+        }
+        
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .menu-overlay.show {
+            display: block;
+        }
+        
+        @media (min-width: 1024px) {
+            .mobile-menu, .menu-overlay, .mobile-menu-btn {
+                display: none;
+            }
+        }
+        
+        .nav-link {
+            transition: all 0.2s;
+        }
+        
+        .new-requests-badge {
+            animation: pulse 1.5s ease-in-out infinite;
         }
     </style>
 </head>
-
-<body class="min-h-screen flex flex-col">
-    <div id="global-requests-alert" class="hidden fixed top-20 right-4 z-50 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg border-l-4 border-green-600 cursor-pointer max-w-sm">
-        <div class="flex items-center gap-3">
-            <span class="text-lg">🔔</span>
-            <div class="flex-1">
-                <div class="font-semibold" id="global-alert-text">Новые заявки!</div>
-                <div class="text-xs opacity-90">Нажмите для просмотра</div>
+<body class="bg-gray-50">
+    <div id="menu-overlay" class="menu-overlay" onclick="closeMobileMenu()"></div>
+    
+    <div id="mobile-menu" class="mobile-menu">
+        <div class="p-4 border-b border-gray-700">
+            <div class="flex items-center justify-between">
+                <h2 class="text-white font-bold">Меню</h2>
+                <button onclick="closeMobileMenu()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
             </div>
-            <button onclick="hideGlobalAlert()" class="ml-2 text-white hover:text-gray-200 text-lg">✕</button>
+            <div class="mt-3 text-sm text-gray-400">
+                {{ request.user.get_full_name|default:request.user.username }}
+            </div>
+        </div>
+        <div class="p-2">
+            <a href="{% url 'crm_dashboard' %}" class="nav-link block px-3 py-3 text-gray-300 hover:bg-gray-800 rounded-lg" onclick="closeMobileMenu()">📊 Заявки</a>
+            <a href="{% url 'crm_my_requests' %}" class="nav-link block px-3 py-3 text-gray-300 hover:bg-gray-800 rounded-lg" onclick="closeMobileMenu()">📋 Мои заявки</a>
+            <a href="{% url 'crm_clients' %}" class="nav-link block px-3 py-3 text-gray-300 hover:bg-gray-800 rounded-lg" onclick="closeMobileMenu()">👥 Клиенты</a>
+            {% if request.user.managerprofile and request.user.managerprofile.role == 'owner' %}
+            <div class="border-t border-gray-700 my-2 pt-2">
+                <div class="px-3 py-2 text-xs text-gray-500 uppercase">Управление</div>
+                <a href="{% url 'crm_services' %}" class="nav-link block px-3 py-3 text-gray-300 hover:bg-gray-800 rounded-lg" onclick="closeMobileMenu()">🛠️ Услуги</a>
+                <a href="{% url 'crm_managers' %}" class="nav-link block px-3 py-3 text-gray-300 hover:bg-gray-800 rounded-lg" onclick="closeMobileMenu()">👔 Менеджеры</a>
+                <a href="{% url 'crm_projects' %}" class="nav-link block px-3 py-3 text-gray-300 hover:bg-gray-800 rounded-lg" onclick="closeMobileMenu()">🏗️ Проекты</a>
+                <a href="{% url 'crm_vacancies_list' %}" class="nav-link block px-3 py-3 text-gray-300 hover:bg-gray-800 rounded-lg" onclick="closeMobileMenu()">💼 Вакансии</a>
+                <a href="{% url 'crm_candidates_list' %}" class="nav-link block px-3 py-3 text-gray-300 hover:bg-gray-800 rounded-lg" onclick="closeMobileMenu()">👥 Кандидаты</a>
+                <a href="{% url 'crm_promo_blocks' %}" class="nav-link block px-3 py-3 text-gray-300 hover:bg-gray-800 rounded-lg" onclick="closeMobileMenu()">🎯 Промо-блоки</a>
+            </div>
+            {% endif %}
+            <a href="{% url 'crm_feedback' %}" class="nav-link block px-3 py-3 text-gray-300 hover:bg-gray-800 rounded-lg" onclick="closeMobileMenu()">📨 Обратная связь</a>
+            <a href="{% url 'crm_profile' %}" class="nav-link block px-3 py-3 text-gray-300 hover:bg-gray-800 rounded-lg" onclick="closeMobileMenu()">👤 Профиль</a>
+            <div class="border-t border-gray-700 mt-2 pt-2">
+                <a href="{% url 'logout' %}" class="nav-link block px-3 py-3 text-red-400 hover:bg-gray-800 rounded-lg" onclick="closeMobileMenu()">🚪 Выйти</a>
+            </div>
         </div>
     </div>
-
-    <header class="bg-dark-blue shadow-md text-white sticky top-0 z-40">
+    
+    <header class="bg-gray-900 shadow-md text-white sticky top-0 z-40">
         <div class="container mx-auto px-4 py-3">
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div class="flex items-center justify-between lg:justify-start">
-                    <h1 class="text-xl md:text-2xl font-bold tracking-wide">
-                        CRM <span class="text-gold">Аргус</span>
-                    </h1>
-                    <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <button id="mobile-menu-btn" class="mobile-menu-btn lg:hidden p-2 rounded-lg hover:bg-gray-800 transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
                     </button>
+                    <h1 class="text-xl font-bold">CRM <span class="text-blue-400">Аргус</span></h1>
+                    
+                    <nav class="hidden lg:flex gap-1 ml-6">
+                        <a href="{% url 'crm_dashboard' %}" class="nav-link px-3 py-2 rounded-lg hover:bg-gray-800 transition">📊 Заявки</a>
+                        <a href="{% url 'crm_my_requests' %}" class="nav-link px-3 py-2 rounded-lg hover:bg-gray-800 transition">📋 Мои заявки</a>
+                        <a href="{% url 'crm_clients' %}" class="nav-link px-3 py-2 rounded-lg hover:bg-gray-800 transition">👥 Клиенты</a>
+                        {% if request.user.managerprofile and request.user.managerprofile.role == 'owner' %}
+                        <div class="relative group">
+                            <button class="nav-link px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center gap-1">
+                                ⚙️ Управление
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div class="absolute top-full left-0 mt-1 w-48 bg-gray-800 rounded-lg shadow-lg hidden group-hover:block z-50">
+                                <a href="{% url 'crm_services' %}" class="block px-4 py-2 text-sm hover:bg-gray-700 rounded-t-lg">🛠️ Услуги</a>
+                                <a href="{% url 'crm_managers' %}" class="block px-4 py-2 text-sm hover:bg-gray-700">👔 Менеджеры</a>
+                                <a href="{% url 'crm_projects' %}" class="block px-4 py-2 text-sm hover:bg-gray-700">🏗️ Проекты</a>
+                                <a href="{% url 'crm_vacancies_list' %}" class="block px-4 py-2 text-sm hover:bg-gray-700">💼 Вакансии</a>
+                                <a href="{% url 'crm_candidates_list' %}" class="block px-4 py-2 text-sm hover:bg-gray-700">👥 Кандидаты</a>
+                                <a href="{% url 'crm_promo_blocks' %}" class="block px-4 py-2 text-sm hover:bg-gray-700 rounded-b-lg">🎯 Промо-блоки</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <a href="{% url 'crm_feedback' %}" class="nav-link px-3 py-2 rounded-lg hover:bg-gray-800 transition">📨 Обратная связь</a>
+                        <a href="{% url 'crm_profile' %}" class="nav-link px-3 py-2 rounded-lg hover:bg-gray-800 transition">👤 Профиль</a>
+                    </nav>
                 </div>
-
-                <nav id="main-nav" class="hidden lg:flex flex-wrap items-center gap-1 text-sm">
-                    <a href="{% url 'crm_dashboard' %}" class="nav-link px-3 py-2 rounded-lg hover:bg-white/5">📊 Заявки</a>
-                    <a href="{% url 'crm_my_requests' %}" class="nav-link px-3 py-2 rounded-lg hover:bg-white/5">📋 Мои заявки</a>
-                    <a href="{% url 'crm_clients' %}" class="nav-link px-3 py-2 rounded-lg hover:bg-white/5">👥 Клиенты</a>
-
-                    {% if request.user.managerprofile and request.user.managerprofile.role == 'owner' %}
-                    <div class="dropdown relative">
-                        <button class="nav-link px-3 py-2 rounded-lg hover:bg-white/5 flex items-center gap-1">
-                            ⚙️ Управление
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
+                
+                <div class="flex items-center gap-2">
+                    <button id="sound-toggle-btn" class="p-2 rounded-lg hover:bg-gray-800 transition text-xl" title="Звук уведомлений">
+                        🔊
+                    </button>
+                    
+                    <button id="new-requests-btn" class="hidden items-center gap-2 px-3 py-1.5 bg-red-500 text-white rounded-full text-sm font-medium cursor-pointer transition hover:bg-red-600" onclick="markAllAsViewed()">
+                        <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                        <span id="new-requests-count">0</span>
+                        <span class="hidden sm:inline">новых</span>
+                    </button>
+                    
+                    <div class="relative">
+                        <button id="notifications-toggle" class="p-2 rounded-lg hover:bg-gray-800 transition relative">
+                            🔔
+                            <span id="notification-badge" class="notification-badge">0</span>
                         </button>
-                        <div class="dropdown-menu">
-                            <a href="{% url 'crm_services' %}" class="dropdown-item">🛠️ Услуги</a>
-                            <a href="{% url 'crm_managers' %}" class="dropdown-item">👔 Менеджеры</a>
-                            <a href="{% url 'crm_projects' %}" class="dropdown-item">🏗️ Проекты</a>
-                            <a href="{% url 'crm_vacancies_list' %}" class="dropdown-item">💼 Вакансии</a>
-                            <a href="{% url 'crm_candidates_list' %}" class="dropdown-item">👥 Кандидаты</a>
-                            <a href="{% url 'crm_promo_blocks' %}" class="dropdown-item">🎯 Промо-блоки</a>
+                        <div id="notifications-panel" class="hidden notifications-panel">
+                            <div class="p-4 border-b bg-gray-50">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="font-semibold text-gray-900">Уведомления</h3>
+                                    <button onclick="markAllNotificationsRead()" class="text-xs text-blue-600 hover:text-blue-800">
+                                        Все прочитано
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="notifications-list" class="max-h-96 overflow-y-auto divide-y">
+                                <div class="p-8 text-center text-gray-500">Загрузка...</div>
+                            </div>
                         </div>
                     </div>
-                    {% endif %}
-
-                    <a href="{% url 'crm_feedback' %}" class="nav-link px-3 py-2 rounded-lg hover:bg-white/5">📨 Обратная связь</a>
-                    <a href="{% url 'crm_profile' %}" class="nav-link px-3 py-2 rounded-lg hover:bg-white/5">👤 Профиль</a>
-                </nav>
-
-                <div class="flex items-center gap-3 justify-between lg:justify-end">
-                    <button id="sound-toggle-btn" class="sound-toggle-btn text-white text-xl px-2 py-1 rounded-lg hover:bg-white/10 transition" onclick="toggleSound()">🔊</button>
                     
-                    <div id="header-notification" class="hidden items-center gap-2 px-3 py-1 bg-red-500 text-white rounded-full text-sm font-medium notification-pulse">
-                        <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                        <span id="header-notification-count">0</span>
-                        <span class="hidden sm:inline">новых</span>
-                    </div>
-
-                    <div class="flex items-center gap-3">
-                        <span class="text-sm text-gray-300 hidden sm:block">
-                            {{ request.user.get_full_name|default:request.user.username }}
-                            {% if request.user.managerprofile %}
-                            <span class="text-gold text-xs">({{ request.user.managerprofile.get_role_display }})</span>
-                            {% endif %}
-                        </span>
-                        <a href="{% url 'logout' %}" class="btn-logout flex items-center gap-1 text-sm">
-                            <i data-lucide="log-out" class="w-4 h-4"></i>
-                            <span class="hidden sm:inline">Выйти</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div id="mobile-menu" class="lg:hidden mt-4 hidden">
-                <div class="flex flex-col gap-2">
-                    <a href="{% url 'crm_dashboard' %}" class="nav-link px-3 py-2 rounded-lg">📊 Все заявки</a>
-                    <a href="{% url 'crm_my_requests' %}" class="nav-link px-3 py-2 rounded-lg">📋 Мои заявки</a>
-                    <a href="{% url 'crm_clients' %}" class="nav-link px-3 py-2 rounded-lg">👥 Все клиенты</a>
-
-                    {% if request.user.managerprofile and request.user.managerprofile.role == 'owner' %}
-                    <div class="border-t border-gray-600 pt-2 mt-2">
-                        <div class="text-xs text-gray-400 uppercase font-semibold px-3 py-1">Управление</div>
-                        <a href="{% url 'crm_services' %}" class="nav-link px-3 py-2 rounded-lg">🛠️ Услуги</a>
-                        <a href="{% url 'crm_managers' %}" class="nav-link px-3 py-2 rounded-lg">👔 Менеджеры</a>
-                        <a href="{% url 'crm_projects' %}" class="nav-link px-3 py-2 rounded-lg">🏗️ Проекты</a>
-                        <a href="{% url 'crm_vacancies_list' %}" class="nav-link px-3 py-2 rounded-lg">💼 Вакансии</a>
-                        <a href="{% url 'crm_candidates_list' %}" class="nav-link px-3 py-2 rounded-lg">👥 Кандидаты</a>
-                        <a href="{% url 'crm_promo_blocks' %}" class="nav-link px-3 py-2 rounded-lg">🎯 Промо-блоки</a>
-                    </div>
-                    {% endif %}
-
-                    <a href="{% url 'crm_feedback' %}" class="nav-link px-3 py-2 rounded-lg">📨 Обратная связь</a>
-                    <a href="{% url 'crm_profile' %}" class="nav-link px-3 py-2 rounded-lg">👤 Профиль</a>
+                    <span class="text-sm hidden md:block">{{ request.user.get_full_name|default:request.user.username }}</span>
+                    <a href="{% url 'logout' %}" class="hidden md:block px-3 py-1.5 bg-red-600 rounded-lg hover:bg-red-700 text-sm transition">Выйти</a>
                 </div>
             </div>
         </div>
     </header>
-
-    <main class="flex-1 container mx-auto px-4 py-6">
+    
+    <main class="container mx-auto px-4 py-6">
         {% if messages %}
-        <div class="mb-6 space-y-3">
+        <div class="mb-4 space-y-2">
             {% for message in messages %}
-            <div class="p-4 rounded-lg border-l-4 
-                {% if message.tags == 'error' %}bg-red-50 text-red-700 border-red-500
-                {% elif message.tags == 'warning' %}bg-yellow-50 text-yellow-700 border-yellow-500
-                {% elif message.tags == 'success' %}bg-green-50 text-green-700 border-green-500
-                {% else %}bg-blue-50 text-blue-700 border-blue-500{% endif %}">
+            <div class="p-3 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700 border-l-4 border-red-500{% elif message.tags == 'success' %}bg-green-100 text-green-700 border-l-4 border-green-500{% else %}bg-blue-100 text-blue-700 border-l-4 border-blue-500{% endif %}">
                 {{ message }}
             </div>
             {% endfor %}
         </div>
         {% endif %}
-
+        
         {% block content %}{% endblock %}
     </main>
-
-    <audio id="notification-sound" preload="auto" style="display: none;">
-        <source src="{% static 'sounds/notification.mp3' %}" type="audio/mpeg">
-    </audio>
-
+    
     <script>
-        const SOUND_ENABLED_KEY = 'crm_sound_enabled';
-        let soundEnabled = localStorage.getItem(SOUND_ENABLED_KEY) !== 'false';
-
-        function playNotificationSound() {
-            if (!soundEnabled) return;
-            const audio = document.getElementById('notification-sound');
-            if (audio) {
-                audio.currentTime = 0;
-                audio.play().catch(e => console.log('Звук не воспроизведён:', e));
-            }
+        // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
+        
+        function getCSRFToken() {
+            return document.querySelector('meta[name="csrf-token"]')?.content || 
+                   document.querySelector('[name=csrfmiddlewaretoken]')?.value;
         }
-
-        function toggleSound() {
-            soundEnabled = !soundEnabled;
-            localStorage.setItem(SOUND_ENABLED_KEY, soundEnabled);
+        
+        // ==================== УВЕДОМЛЕНИЯ ====================
+        
+        let soundEnabled = localStorage.getItem('crm_sound') !== 'false';
+        let audioCtx = null;
+        let lastCheck = localStorage.getItem('crm_last_check') || new Date().toISOString();
+        let lastCount = parseInt(localStorage.getItem('crm_last_count') || '0');
+        let checkInterval = null;
+        
+        function playSound() {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.value = 800;
+                gain.gain.value = 0.2;
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.3);
+                osc.stop(audioCtx.currentTime + 0.3);
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+            } catch(e) { console.log('Sound error:', e); }
+        }
+        
+        function initSound() {
             const btn = document.getElementById('sound-toggle-btn');
             if (btn) {
                 btn.textContent = soundEnabled ? '🔊' : '🔇';
-                btn.classList.toggle('sound-off', !soundEnabled);
+                btn.onclick = function() {
+                    soundEnabled = !soundEnabled;
+                    localStorage.setItem('crm_sound', soundEnabled);
+                    btn.textContent = soundEnabled ? '🔊' : '🔇';
+                    if (soundEnabled) playSound();
+                };
             }
         }
-
-        function hideGlobalAlert() {
-            const alert = document.getElementById('global-requests-alert');
-            if (alert) alert.classList.add('hidden');
+        
+        function updateBadge(count) {
+            const btn = document.getElementById('new-requests-btn');
+            const span = document.getElementById('new-requests-count');
+            if (btn && span) {
+                if (count > 0) {
+                    span.textContent = count;
+                    btn.classList.remove('hidden');
+                    btn.style.display = 'flex';
+                    btn.classList.add('new-requests-badge');
+                } else {
+                    btn.classList.add('hidden');
+                    btn.style.display = 'none';
+                    btn.classList.remove('new-requests-badge');
+                }
+            }
+            localStorage.setItem('crm_last_count', count);
+            lastCount = count;
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-            const mobileMenu = document.getElementById('mobile-menu');
-            if (mobileMenuBtn && mobileMenu) {
-                mobileMenuBtn.addEventListener('click', function() {
-                    mobileMenu.classList.toggle('hidden');
+        
+        function showToast(title, message, link) {
+            const existing = document.querySelector('.notification-toast');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'notification-toast';
+            toast.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">🆕</span>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; margin-bottom: 4px;">${title}</div>
+                        <div style="font-size: 13px; color: #666;">${message}</div>
+                    </div>
+                    <button class="toast-close" style="background: none; border: none; font-size: 20px; cursor: pointer;">&times;</button>
+                </div>
+            `;
+            
+            toast.onclick = (e) => {
+                if (!e.target.classList.contains('toast-close') && link) {
+                    window.location.href = link;
+                }
+                toast.remove();
+            };
+            
+            toast.querySelector('.toast-close').onclick = (e) => {
+                e.stopPropagation();
+                toast.remove();
+            };
+            
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.add('hide');
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 8000);
+        }
+        
+        async function checkNew() {
+            try {
+                const res = await fetch(`/crm/api/check-new-requests/?last_check=${encodeURIComponent(lastCheck)}`);
+                const data = await res.json();
+                if (data.status === 'success') {
+                    const count = data.unviewed_requests_count || 0;
+                    const savedCount = parseInt(localStorage.getItem('crm_last_count') || '0');
+                    updateBadge(count);
+                    
+                    if (count > savedCount && data.new_requests && data.new_requests.length > 0) {
+                        const newCount = count - savedCount;
+                        console.log('🆕 Новых заявок:', newCount);
+                        playSound();
+                        data.new_requests.slice(0, 3).forEach(req => {
+                            showToast('Новая заявка', req.company_name, `/crm/request/${req.id}/`);
+                        });
+                        if (Notification.permission === 'granted') {
+                            new Notification('Новые заявки', { body: `Поступило ${newCount} новых заявок` });
+                        }
+                    }
+                    lastCheck = data.last_check;
+                    localStorage.setItem('crm_last_check', lastCheck);
+                }
+            } catch(e) { console.log('Check error:', e); }
+        }
+        
+        async function markRequestAsViewed(requestId) {
+            try {
+                const res = await fetch(`/crm/api/mark-request-viewed/${requestId}/`, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': getCSRFToken() }
                 });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    const card = document.querySelector(`[data-request-id="${requestId}"]`);
+                    if (card) {
+                        const newBadge = card.querySelector('.bg-blue-500.text-white.text-xs.rounded-full');
+                        if (newBadge) newBadge.remove();
+                        card.classList.remove('border-blue-300', 'bg-blue-50/30');
+                    }
+                    if (data.unviewed_count !== undefined) {
+                        updateBadge(data.unviewed_count);
+                    }
+                }
+            } catch(e) { console.log('Mark error:', e); }
+        }
+        
+        async function markAllAsViewed() {
+            try {
+                await fetch('/crm/api/mark-all-viewed/', {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': getCSRFToken() }
+                });
+                updateBadge(0);
+                location.reload();
+            } catch(e) { console.log('Mark all error:', e); }
+        }
+        
+        async function loadNotifications() {
+            const container = document.getElementById('notifications-list');
+            if (!container) return;
+            try {
+                const res = await fetch('/crm/api/notifications/');
+                const data = await res.json();
+                console.log('Загружено уведомлений:', data.internal_notifications?.length || 0);
+                
+                if (data.status === 'success' && data.internal_notifications?.length > 0) {
+                    container.innerHTML = data.internal_notifications.map(n => `
+                        <div data-notif-id="${n.id}" class="p-4 hover:bg-gray-50 cursor-pointer transition bg-blue-50" 
+                             onclick="markNotificationRead(${n.id}, '${n.link || ''}')">
+                            <div class="flex items-start gap-3">
+                                <div class="text-xl">${n.type === 'new_request' ? '🆕' : n.type === 'status_changed' ? '🔄' : '💬'}</div>
+                                <div class="flex-1">
+                                    <div class="font-medium text-sm font-semibold">${n.title}</div>
+                                    <div class="text-xs text-gray-500 mt-1">${n.message}</div>
+                                    <div class="text-xs text-gray-400 mt-2">${n.created_at}</div>
+                                </div>
+                                <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                            </div>
+                        </div>
+                    `).join('');
+                    const count = data.internal_notifications.length;
+                    const badge = document.getElementById('notification-badge');
+                    if (badge) {
+                        badge.style.display = count > 0 ? 'flex' : 'none';
+                        if (count > 0) badge.textContent = count > 99 ? '99+' : count;
+                    }
+                } else {
+                    container.innerHTML = '<div class="p-8 text-center text-gray-500">📭 Нет уведомлений</div>';
+                    document.getElementById('notification-badge').style.display = 'none';
+                }
+            } catch(e) {
+                console.error('Load error:', e);
+                container.innerHTML = '<div class="p-8 text-center text-gray-500">❌ Ошибка загрузки</div>';
             }
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+        
+        async function markNotificationRead(id, link) {
+            try {
+                const response = await fetch(`/crm/api/notifications/mark/${id}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCSRFToken(),
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('Результат удаления:', result);
+                
+                if (result.status === 'success') {
+                    const notifElement = document.querySelector(`[data-notif-id="${id}"]`);
+                    if (notifElement) {
+                        notifElement.remove();
+                    }
+                    
+                    const remainingItems = document.querySelectorAll('[data-notif-id]').length;
+                    const badge = document.getElementById('notification-badge');
+                    if (badge) {
+                        if (remainingItems > 0) {
+                            badge.textContent = remainingItems;
+                            badge.style.display = 'flex';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+                    
+                    const container = document.getElementById('notifications-list');
+                    if (container && remainingItems === 0) {
+                        container.innerHTML = '<div class="p-8 text-center text-gray-500">📭 Нет уведомлений</div>';
+                    }
+                    
+                    if (link && link !== '#') {
+                        window.location.href = link;
+                    }
+                }
+            } catch(e) { 
+                console.error('Ошибка удаления уведомления:', e);
+                if (link && link !== '#') window.location.href = link; 
+            }
+        }
+        
+        async function markAllNotificationsRead() {
+            try {
+                const response = await fetch('/crm/api/notifications/mark-all/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCSRFToken(),
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin'
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const container = document.getElementById('notifications-list');
+                    if (container) {
+                        container.innerHTML = '<div class="p-8 text-center text-gray-500">📭 Нет уведомлений</div>';
+                    }
+                    const badge = document.getElementById('notification-badge');
+                    if (badge) badge.style.display = 'none';
+                    showToast('Уведомления', `Удалено ${data.deleted_count || 0} уведомлений`, null);
+                }
+            } catch(e) {
+                console.error('Ошибка:', e);
+            }
+        }
+        
+        function toggleNotifications() {
+            const panel = document.getElementById('notifications-panel');
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+                loadNotifications();
+            } else {
+                panel.classList.add('hidden');
+            }
+        }
+        
+        function openMobileMenu() {
+            document.getElementById('mobile-menu').classList.add('open');
+            document.getElementById('menu-overlay').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeMobileMenu() {
+            document.getElementById('mobile-menu').classList.remove('open');
+            document.getElementById('menu-overlay').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        
+        document.addEventListener('click', function(e) {
+            const card = e.target.closest('[data-request-id]');
+            if (card && card.dataset.requestId) {
+                markRequestAsViewed(card.dataset.requestId);
+            }
+            const link = e.target.closest('a[href*="/crm/request/"]');
+            if (link) {
+                const match = link.href.match(/\/request\/(\d+)/);
+                if (match) markRequestAsViewed(match[1]);
+            }
         });
+        
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('notifications-panel');
+            const toggle = document.getElementById('notifications-toggle');
+            if (panel && toggle && !toggle.contains(e.target) && !panel.contains(e.target)) {
+                panel.classList.add('hidden');
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initSound();
+            const notifyToggle = document.getElementById('notifications-toggle');
+            if (notifyToggle) notifyToggle.onclick = toggleNotifications;
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            if (mobileBtn) mobileBtn.onclick = openMobileMenu;
+            checkNew();
+            if (checkInterval) clearInterval(checkInterval);
+            checkInterval = setInterval(checkNew, 15000);
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            loadNotifications();
+        });
+        
+        if (Notification.permission === 'default') {
+            setTimeout(() => {
+                if (confirm('🔔 Разрешить показывать уведомления?')) Notification.requestPermission();
+            }, 2000);
+        }
+        
+        document.body.addEventListener('click', function() {
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        }, { once: true });
     </script>
-
+    
     {% block scripts %}{% endblock %}
 </body>
 </html>

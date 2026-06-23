@@ -520,3 +520,94 @@ class PromoBlock(models.Model):
         styles.append(f"padding: {self.padding_top}px {self.padding_right}px {self.padding_bottom}px {self.padding_left}px;")
         
         return " ".join(styles)
+    
+    # Добавьте в конец файла crm/models.py
+
+class InternalNotification(models.Model):
+    """
+    Модель для внутренних уведомлений в CRM системе.
+    Позволяет отправлять уведомления между сотрудниками внутри системы.
+    """
+    NOTIFICATION_TYPES = [
+        ('new_request', '🆕 Новая заявка'),
+        ('request_assigned', '👤 Назначение заявки'),
+        ('status_changed', '🔄 Изменение статуса'),
+        ('new_comment', '💬 Новый комментарий'),
+        ('new_feedback', '📨 Новое сообщение'),
+        ('new_candidate', '🎯 Новый кандидат'),
+        ('system', '⚙️ Системное уведомление'),
+    ]
+    
+    recipient = models.ForeignKey(
+        ManagerProfile, 
+        on_delete=models.CASCADE, 
+        related_name='notifications', 
+        verbose_name='Получатель'
+    )
+    notification_type = models.CharField(
+        max_length=50, 
+        choices=NOTIFICATION_TYPES, 
+        verbose_name='Тип уведомления'
+    )
+    title = models.CharField(
+        max_length=255, 
+        verbose_name='Заголовок'
+    )
+    message = models.TextField(
+        verbose_name='Сообщение'
+    )
+    link = models.CharField(
+        max_length=500, 
+        blank=True, 
+        null=True, 
+        verbose_name='Ссылка'
+    )
+    is_read = models.BooleanField(
+        default=False, 
+        verbose_name='Прочитано'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name='Дата создания'
+    )
+    related_object_id = models.PositiveIntegerField(
+        blank=True, 
+        null=True, 
+        verbose_name='ID связанного объекта'
+    )
+    related_object_type = models.CharField(
+        max_length=50, 
+        blank=True, 
+        null=True, 
+        verbose_name='Тип связанного объекта'
+    )
+    
+    class Meta:
+        verbose_name = 'Внутреннее уведомление'
+        verbose_name_plural = 'Внутренние уведомления'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['recipient', 'is_read']),
+            models.Index(fields=['created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.get_notification_type_display()}: {self.title} -> {self.recipient.user.username}"
+    
+    def mark_as_read(self):
+        """Отметить уведомление как прочитанное"""
+        if not self.is_read:
+            self.is_read = True
+            self.save(update_fields=['is_read'])
+            return True
+        return False
+    
+    @classmethod
+    def get_unread_count(cls, recipient):
+        """Получить количество непрочитанных уведомлений для пользователя"""
+        return cls.objects.filter(recipient=recipient, is_read=False).count()
+    
+    @classmethod
+    def mark_all_as_read(cls, recipient):
+        """Отметить все уведомления пользователя как прочитанные"""
+        return cls.objects.filter(recipient=recipient, is_read=False).update(is_read=True)

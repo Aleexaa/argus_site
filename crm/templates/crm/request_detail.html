@@ -1,374 +1,427 @@
 {% extends 'crm/base_crm.html' %}
 {% load static %}
 
-{% block title %}Заявка #{{ req.id }}{% endblock %}
+{% block title %}Заявка #{{ req.id }} | CRM Аргус{% endblock %}
 
 {% block content %}
-<div class="bg-white rounded-2xl p-6 shadow-soft">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+    <!-- Кнопка Назад и заголовок -->
     <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-semibold text-gray-800">
-            Заявка #{{ req.id }} от {{ req.client.company_name }}
-        </h2>
-        <span id="update-alert" class="hidden text-sm bg-green-500/20 text-green-600 px-3 py-2 rounded-lg border border-green-500/30 shadow-sm">
-            🔔 Данные обновлены!
-        </span>
+        <div class="flex items-center gap-4">
+            <a href="javascript:history.back()" 
+               class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all duration-300 shadow-sm hover:shadow">
+                <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+                Назад
+            </a>
+            
+            <a href="{% url 'crm_my_requests' %}" 
+               class="inline-flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors">
+                <i data-lucide="list" class="w-4 h-4 mr-2"></i>
+                Все заявки
+            </a>
+        </div>
+        
+        <div class="flex items-center gap-2">
+            {% if is_owner or req.responsible_manager == profile %}
+            <button onclick="showDeleteModal({{ req.id }})" 
+                    class="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-all duration-300 text-sm font-medium border border-red-200">
+                <i data-lucide="trash-2" class="w-4 h-4 inline mr-1"></i>
+                Удалить
+            </button>
+            {% endif %}
+        </div>
     </div>
 
-    <div class="grid md:grid-cols-2 gap-6">
-        <div>
-            <p><span class="font-semibold text-gray-700">Адрес:</span> {{ req.object_address|default:"—" }}</p>
+    <!-- Основная информация -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Левая колонка - Информация о заявке -->
+        <div class="lg:col-span-2 space-y-6">
             
-            <!-- Тип объекта с переводом -->
-            <p><span class="font-semibold text-gray-700">Тип объекта:</span> 
-                {% if req.object_type == 'office' %}
-                    🏢 Офис
-                {% elif req.object_type == 'apartment' %}
-                    🏠 Квартира
-                {% elif req.object_type == 'house' %}
-                    🏡 Частный дом
-                {% elif req.object_type == 'commercial' %}
-                    🏪 Коммерческое помещение
-                {% elif req.object_type == 'industrial' %}
-                    🏭 Промышленный объект
-                {% elif req.object_type == 'other' %}
-                    📍 Другой тип
-                {% else %}
-                    {{ req.object_type|default:"—" }}
-                {% endif %}
-            </p>
-            
-            <p><span class="font-semibold text-gray-700">Дата создания:</span> {{ req.created_at|date:"d.m.Y H:i" }}</p>
-            
-            <!-- Контактное лицо с телефоном -->
-            <p><span class="font-semibold text-gray-700">Клиент:</span> 
-                {{ req.client.contact_person|default:"—" }}
-                {% if req.client.phone %}
-                    • {{ req.client.phone }}
-                {% endif %}
-            </p>
-            
-            <p><span class="font-semibold text-gray-700">Email:</span> {{ req.client.email|default:"—" }}</p>
-            
-            <!-- Площадь, если указана -->
-            {% if req.area %}
-            <p><span class="font-semibold text-gray-700">Площадь:</span> {{ req.area }} м²</p>
-            {% endif %}
-            
-            <!-- Организация, если указана -->
-            {% if req.client.organization %}
-            <p><span class="font-semibold text-gray-700">Организация:</span> {{ req.client.organization }}</p>
-            {% endif %}
-
-            <!-- Информация о менеджере -->
-            <div class="mt-4">
-                <p class="font-semibold text-gray-700">Ответственный менеджер:</p>
-                {% if req.responsible_manager %}
-                    <p class="text-gray-600">{{ req.responsible_manager.user.get_full_name|default:req.responsible_manager.user.username }}</p>
-                {% else %}
-                    <p class="text-gray-400">Не назначен</p>
-                {% endif %}
+            <!-- Карточка заявки -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50/50">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-semibold text-gray-900">Заявка #{{ req.id }}</h2>
+                                <p class="text-sm text-gray-500">{{ req.created_at|date:"d.m.Y H:i" }}</p>
+                            </div>
+                        </div>
+                        
+                        <span class="px-3 py-1.5 text-sm font-medium rounded-full 
+                            {% if req.status == 'new' %}bg-blue-100 text-blue-700 border border-blue-300
+                            {% elif req.status == 'in_progress' %}bg-amber-100 text-amber-700 border border-amber-300
+                            {% elif req.status == 'kp_ready' %}bg-purple-100 text-purple-700 border border-purple-300
+                            {% elif req.status == 'completed' %}bg-green-100 text-green-700 border border-green-300
+                            {% elif req.status == 'rejected' %}bg-red-100 text-red-700 border border-red-300
+                            {% else %}bg-gray-100 text-gray-700 border border-gray-300{% endif %}">
+                            {{ req.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="p-6 space-y-4">
+                    <!-- Клиент -->
+                    <div class="pb-4 border-b border-gray-100">
+                        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Клиент</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Компания</p>
+                                <p class="font-medium text-gray-900">{{ req.client.company_name }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Контактное лицо</p>
+                                <p class="font-medium text-gray-900">{{ req.client.contact_person|default:"Не указано" }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Телефон</p>
+                                <a href="tel:{{ req.client.phone }}" class="font-medium text-blue-600 hover:text-blue-800">
+                                    {{ req.client.phone }}
+                                </a>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Email</p>
+                                <a href="mailto:{{ req.client.email }}" class="font-medium text-blue-600 hover:text-blue-800">
+                                    {{ req.client.email|default:"Не указан" }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Объект -->
+                    <div class="pb-4 border-b border-gray-100">
+                        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Объект</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Тип объекта</p>
+                                <p class="font-medium text-gray-900">{{ req.object_type }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Площадь</p>
+                                <p class="font-medium text-gray-900">{{ req.area|default:"Не указана" }} {% if req.area %}м²{% endif %}</p>
+                            </div>
+                            <div class="md:col-span-2">
+                                <p class="text-sm text-gray-500">Адрес</p>
+                                <p class="font-medium text-gray-900">{{ req.object_address|default:"Не указан" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Услуги -->
+                    {% if req.services.all %}
+                    <div class="pb-4 border-b border-gray-100">
+                        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Выбранные услуги</h3>
+                        <div class="flex flex-wrap gap-2">
+                            {% for service in req.services.all %}
+                            <span class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm">
+                                {{ service.name }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Описание -->
+                    {% if req.description %}
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Описание</h3>
+                        <div class="bg-gray-50 rounded-lg p-4 text-gray-700">
+                            {{ req.description|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Прикрепленный файл -->
+                    {% if req.attached_file %}
+                    <div class="pt-4 border-t border-gray-100">
+                        <a href="{% url 'crm_download_file' req.id %}" 
+                           class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
+                            <i data-lucide="paperclip" class="w-4 h-4"></i>
+                            <span>Скачать прикрепленный файл</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
-
-            {% if req.attached_file %}
-                <div class="mt-4">
-                    <h3 class="text-lg font-semibold text-gray-800">📎 Прикреплённый файл:</h3>
-                    <a href="{% url 'crm_download_file' req.id %}" 
-                       target="_blank" 
-                       class="inline-flex items-center px-4 py-2 bg-gold text-black rounded-lg hover:bg-amber-600 transition-colors">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        Скачать файл: {{ req.attached_file.name|cut:"requests/" }}
-                    </a>
-                    <p class="text-sm text-gray-500 mt-1">
-                        Размер: {{ req.attached_file.size|filesizeformat }}
-                    </p>
+            
+            <!-- Комментарии -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" id="comments-section">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50/50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i data-lucide="message-square" class="w-5 h-5 text-purple-600"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900">Комментарии</h3>
+                    </div>
                 </div>
-            {% else %}
-                <p class="text-gray-400 mt-4">Файл не прикреплён.</p>
-            {% endif %}
-
-            {% if req.description %}
-                <div class="mt-6">
-                    <h3 class="text-lg font-semibold text-gray-800">📝 Описание от клиента:</h3>
-                    <p class="text-gray-600 whitespace-pre-line">{{ req.description }}</p>
-                </div>
-            {% endif %}
-
-            {% if req.services.exists %}
-                <div class="mt-6">
-                    <h3 class="text-lg font-semibold text-gray-800">🔧 Услуги:</h3>
-                    <ul class="list-disc list-inside text-gray-600">
-                        {% for service in req.services.all %}
-                            <li>{{ service.name }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% else %}
-                <p class="text-gray-400 mt-4">Услуги не указаны.</p>
-            {% endif %}
-        </div>
-
-        <!-- Форма изменения статуса, назначения менеджера и добавления комментария -->
-        <div>
-            <form method="post" id="update-form" class="space-y-4">
-                {% csrf_token %}
                 
-                <!-- Назначение менеджера -->
-                <div>
-                    <label class="block text-gray-700 mb-1 font-medium">Ответственный менеджер</label>
-                    <select name="manager" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-gold">
-                        <option value="">— Не назначен —</option>
-                        {% for manager in managers %}
-                            <option value="{{ manager.id }}" {% if req.responsible_manager and req.responsible_manager.id == manager.id %}selected{% endif %}>
-                                {{ manager.user.get_full_name|default:manager.user.username }}
+                <div class="p-6">
+                    <!-- Форма добавления комментария -->
+                    <form method="POST" action="{% url 'crm_request_detail' req.id %}" class="mb-6">
+                        {% csrf_token %}
+                        <textarea name="comment" rows="3" 
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                                  placeholder="Добавить комментарий..."></textarea>
+                        <div class="flex justify-end mt-3">
+                            <button type="submit" 
+                                    class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                                <i data-lucide="send" class="w-4 h-4 inline mr-1"></i>
+                                Отправить
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Список комментариев -->
+                    <div class="space-y-4 max-h-96 overflow-y-auto" id="comments-list">
+                        {% include 'crm/partials/comments_block.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Правая колонка - Действия -->
+        <div class="space-y-6">
+            
+            <!-- Назначенный менеджер -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50/50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i data-lucide="user-check" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900">Ответственный</h3>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    {% if req.responsible_manager %}
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                            {{ req.responsible_manager.user.first_name|first|upper }}{{ req.responsible_manager.user.last_name|first|upper }}
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">
+                                {{ req.responsible_manager.user.get_full_name|default:req.responsible_manager.user.username }}
+                            </p>
+                            <p class="text-sm text-gray-500">{{ req.responsible_manager.get_role_display }}</p>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-gray-500 mb-4">Менеджер не назначен</p>
+                    {% endif %}
+                    
+                    {% if is_owner %}
+                    <form method="POST" action="{% url 'crm_request_detail' req.id %}" class="mt-4">
+                        {% csrf_token %}
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Назначить менеджера</label>
+                        <select name="manager" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Выберите менеджера</option>
+                            {% for manager in managers %}
+                            <option value="{{ manager.id }}" {% if req.responsible_manager == manager %}selected{% endif %}>
+                                {{ manager.user.get_full_name|default:manager.user.username }} ({{ manager.get_role_display }})
                             </option>
-                        {% endfor %}
-                    </select>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" 
+                                class="mt-3 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                            Назначить
+                        </button>
+                    </form>
+                    {% endif %}
                 </div>
+            </div>
+            
+            <!-- Изменение статуса -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50/50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                            <i data-lucide="tag" class="w-5 h-5 text-amber-600"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900">Изменить статус</h3>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <form method="POST" action="{% url 'crm_request_detail' req.id %}">
+                        {% csrf_token %}
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="radio" name="status" value="new" {% if req.status == 'new' %}checked{% endif %} class="w-4 h-4 text-blue-600">
+                                <span class="flex-1">
+                                    <span class="font-medium">Новая</span>
+                                    <span class="text-sm text-gray-500 block">Заявка только поступила</span>
+                                </span>
+                            </label>
+                            
+                            <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="radio" name="status" value="in_progress" {% if req.status == 'in_progress' %}checked{% endif %} class="w-4 h-4 text-blue-600">
+                                <span class="flex-1">
+                                    <span class="font-medium">В работе</span>
+                                    <span class="text-sm text-gray-500 block">Заявка в обработке</span>
+                                </span>
+                            </label>
+                            
+                            <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="radio" name="status" value="kp_ready" {% if req.status == 'kp_ready' %}checked{% endif %} class="w-4 h-4 text-blue-600">
+                                <span class="flex-1">
+                                    <span class="font-medium">КП готово</span>
+                                    <span class="text-sm text-gray-500 block">Коммерческое предложение подготовлено</span>
+                                </span>
+                            </label>
+                            
+                            <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="radio" name="status" value="completed" {% if req.status == 'completed' %}checked{% endif %} class="w-4 h-4 text-blue-600">
+                                <span class="flex-1">
+                                    <span class="font-medium">Завершена</span>
+                                    <span class="text-sm text-gray-500 block">Работа по заявке завершена</span>
+                                </span>
+                            </label>
+                            
+                            <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="radio" name="status" value="rejected" {% if req.status == 'rejected' %}checked{% endif %} class="w-4 h-4 text-blue-600">
+                                <span class="flex-1">
+                                    <span class="font-medium">Отклонена</span>
+                                    <span class="text-sm text-gray-500 block">Заявка отклонена</span>
+                                </span>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" 
+                                class="mt-4 w-full px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium">
+                            Обновить статус
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Информация -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50/50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                            <i data-lucide="info" class="w-5 h-5 text-gray-600"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900">Информация</h3>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Создана:</span>
+                            <span class="font-medium">{{ req.created_at|date:"d.m.Y H:i" }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Обновлена:</span>
+                            <span class="font-medium">{{ req.updated_at|date:"d.m.Y H:i" }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">ID заявки:</span>
+                            <span class="font-medium font-mono">#{{ req.id }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-                <!-- Статус заявки -->
+<!-- Модальное окно удаления -->
+<div id="delete-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg w-full max-w-sm">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 text-red-600"></i>
+                </div>
                 <div>
-                    <label class="block text-gray-700 mb-1 font-medium">Статус заявки</label>
-                    <select name="status" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-gold">
-                        {% for key, value in req.STATUS_CHOICES %}
-                            <option value="{{ key }}" {% if key == req.status %}selected{% endif %}>
-                                {{ value }}
-                            </option>
-                        {% endfor %}
-                    </select>
+                    <h3 class="font-semibold text-gray-900">Удалить заявку?</h3>
+                    <p class="text-sm text-gray-500">Это действие нельзя отменить</p>
                 </div>
-
-                <!-- Комментарий -->
-                <div>
-                    <label class="block text-gray-700 mb-1 font-medium">Добавить комментарий</label>
-                    <textarea name="comment" rows="3" placeholder="Введите комментарий..." class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-gold"></textarea>
-                </div>
-
-                <button type="submit" class="btn-gold px-4 py-2 rounded-lg flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Сохранить изменения
+            </div>
+            
+            <p class="text-gray-600 text-sm mb-6">
+                Вы уверены, что хотите удалить заявку #{{ req.id }} от {{ req.client.company_name }}?
+            </p>
+            
+            <div class="flex gap-3">
+                <button id="cancel-delete" 
+                        class="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium">
+                    Отмена
                 </button>
-            </form>
+                <button id="confirm-delete" 
+                        class="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium">
+                    Удалить
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Комментарии -->
-<div class="mt-10" id="comments-block">
-    <div class="flex items-center justify-between mb-4">
-        <h3 class="text-xl font-semibold text-gray-800">Комментарии</h3>
-        <span id="comments-loading" class="hidden text-sm text-blue-500">
-            <svg class="animate-spin h-4 w-4 mr-1 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Обновление...
-        </span>
-    </div>
-    
-    {% if comments %}
-        <div class="space-y-4" id="comments-list">
-            {% for comment in comments %}
-                <div class="bg-white shadow-soft rounded-xl p-4 border-l-4 border-[#C9A96A] comment-item" data-comment-id="{{ comment.id }}">
-                    <p class="text-gray-700 mb-1">{{ comment.text }}</p>
-                    <p class="text-sm text-gray-500">
-                        {{ comment.author.user.get_full_name|default:comment.author.user.username }}
-                        — {{ comment.created_at|date:"d.m.Y H:i" }}
-                    </p>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p class="text-gray-500 italic">Комментариев пока нет.</p>
-    {% endif %}
-</div>
-{% endblock %}
-
-{% block scripts %}
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const form = document.querySelector("#update-form");
-    const commentsBlock = document.querySelector("#comments-block");
-    const updateAlert = document.querySelector("#update-alert");
-    const commentsLoading = document.querySelector("#comments-loading");
+const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+
+function showDeleteModal(requestId) {
+    const modal = document.getElementById('delete-modal');
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('delete-modal');
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+}
+
+async function confirmDelete() {
+    const confirmBtn = document.getElementById('confirm-delete');
+    const originalText = confirmBtn.innerHTML;
     
-    let lastCommentIds = getCurrentCommentIds();
-    let isUpdating = false;
-
-    function getCurrentCommentIds() {
-        const elements = document.querySelectorAll(".comment-item");
-        return Array.from(elements).map(el => parseInt(el.dataset.commentId));
-    }
-
-    function showNotification(message, type = 'success') {
-        const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
-            type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-        }`;
-        notification.textContent = message;
-        notification.style.animation = 'slideInRight 0.5s ease-out';
-        
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.style.animation = 'slideOutRight 0.5s ease-in';
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.remove();
-                }
-            }, 500);
-        }, 3000);
-    }
-
-    function showUpdateAlert() {
-        updateAlert.classList.remove('hidden');
-        updateAlert.style.animation = 'fadeIn 0.5s ease-out';
-        
-        setTimeout(() => {
-            updateAlert.style.opacity = '0';
-            updateAlert.style.transition = 'opacity 0.5s ease';
-            setTimeout(() => {
-                updateAlert.classList.add('hidden');
-                updateAlert.style.opacity = '1';
-                updateAlert.style.transition = '';
-            }, 500);
-        }, 3000);
-    }
-
-    // 🔁 AJAX сохранение - УПРОЩЕННАЯ ВЕРСИЯ
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        const formData = new FormData(this);
-        const submitButton = this.querySelector('button[type="submit"]');
-        const originalText = submitButton.innerHTML;
-        
-        // Показываем загрузку
-        submitButton.innerHTML = `
-            <svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Сохранение...
-        `;
-        submitButton.disabled = true;
-
-        fetch(window.location.href, {
-            method: "POST",
-            headers: { 
-                "X-Requested-With": "XMLHttpRequest",
-                "X-CSRFToken": "{{ csrf_token }}" 
-            },
-            body: formData,
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.text();
-        })
-        .then(html => {
-            // Просто обновляем всю страницу для надежности
-            window.location.reload();
-        })
-        .catch(err => {
-            console.error("Ошибка сохранения:", err);
-            showNotification('Ошибка при сохранении. Попробуйте обновить страницу.', 'error');
-            
-            // Восстанавливаем кнопку
-            submitButton.innerHTML = originalText;
-            submitButton.disabled = false;
-        });
-    });
-
-    // ⏱ Автообновление комментариев - УПРОЩЕННАЯ ВЕРСИЯ
-    function loadComments() {
-        if (isUpdating || document.hidden) return;
-        
-        isUpdating = true;
-        commentsLoading.classList.remove("hidden");
-        
-        fetch(window.location.href, { 
-            headers: { "X-Requested-With": "XMLHttpRequest" },
-            cache: 'no-cache'
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.text();
-        })
-        .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const newCommentsBlock = doc.querySelector('#comments-block');
-            
-            if (newCommentsBlock) {
-                const newCommentsList = newCommentsBlock.querySelector('#comments-list');
-                const newCommentItems = newCommentsList ? newCommentsList.querySelectorAll('.comment-item') : [];
-                const newCommentIds = Array.from(newCommentItems).map(el => parseInt(el.dataset.commentId));
-                
-                const newComments = newCommentIds.filter(id => !lastCommentIds.includes(id));
-                
-                if (newComments.length > 0) {
-                    commentsBlock.innerHTML = newCommentsBlock.innerHTML;
-                    lastCommentIds = newCommentIds;
-                    showUpdateAlert();
-                } else if (newCommentIds.length !== lastCommentIds.length) {
-                    commentsBlock.innerHTML = newCommentsBlock.innerHTML;
-                    lastCommentIds = newCommentIds;
-                }
+    confirmBtn.innerHTML = 'Удаление...';
+    confirmBtn.disabled = true;
+    
+    try {
+        const response = await fetch(`/crm/request/{{ req.id }}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/x-www-form-urlencoded',
             }
-        })
-        .catch(err => console.error("Ошибка автообновления комментариев:", err))
-        .finally(() => {
-            isUpdating = false;
-            commentsLoading.classList.add("hidden");
         });
-    }
-
-    // Запускаем автообновление каждые 10 секунд
-    setInterval(loadComments, 10000);
-
-    // Обновление при возвращении на вкладку
-    document.addEventListener('visibilitychange', function() {
-        if (!document.hidden) {
-            loadComments();
+        
+        if (response.ok) {
+            window.location.href = "{% url 'crm_my_requests' %}";
+        } else {
+            alert('Ошибка при удалении');
+            closeDeleteModal();
         }
-    });
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Ошибка при удалении');
+        closeDeleteModal();
+    } finally {
+        confirmBtn.innerHTML = originalText;
+        confirmBtn.disabled = false;
+    }
+}
 
-    // Первое обновление через 5 секунд
-    setTimeout(loadComments, 5000);
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('cancel-delete')?.addEventListener('click', closeDeleteModal);
+    document.getElementById('confirm-delete')?.addEventListener('click', confirmDelete);
+    
+    // Закрытие по клику вне модального окна
+    document.getElementById('delete-modal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteModal();
+    });
+    
+    // Инициализация иконок
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 });
 </script>
-
-<style>
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-@keyframes slideInRight {
-    from { opacity: 0; transform: translateX(100%); }
-    to { opacity: 1; transform: translateX(0); }
-}
-@keyframes slideOutRight {
-    from { opacity: 1; transform: translateX(0); }
-    to { opacity: 0; transform: translateX(100%); }
-}
-.hidden { display: none !important; }
-.btn-gold {
-    background: linear-gradient(135deg, #C9A96A 0%, #B89450 100%);
-    color: white; border: none; cursor: pointer;
-    transition: all 0.3s ease;
-}
-.btn-gold:hover {
-    background: linear-gradient(135deg, #B89450 0%, #A88340 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(201, 169, 106, 0.3);
-}
-.btn-gold:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-}
-</style>
 {% endblock %}

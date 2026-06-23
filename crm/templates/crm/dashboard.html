@@ -4,239 +4,72 @@
 {% block title %}Заявки | CRM Аргус{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-  <!-- Header -->
-  <div class="bg-white border-b border-gray-200 sticky top-0 z-10">
+<div class="bg-white border-b border-gray-200">
     <div class="px-4 py-3">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
-            <i data-lucide="inbox" class="w-4 h-4 text-white"></i>
-          </div>
-          <div>
-            <h1 class="text-base font-bold text-gray-900">Заявки</h1>
-            <p class="text-xs text-gray-500" id="requests-total">{{ requests|length }} заявок</p>
-          </div>
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-lg font-bold">Заявки</h1>
+                <p class="text-sm text-gray-500">{{ requests|length }} заявок</p>
+            </div>
+            <a href="{% url 'crm_create_request' %}" class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800">
+                + Создать заявку
+            </a>
         </div>
         
-        <div class="flex items-center gap-2">
-          <button id="refresh-btn" 
-                 class="p-2 rounded-lg hover:bg-gray-100 border border-gray-200">
-            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-          </button>
-          
-          <a href="{% url 'crm_create_request' %}" 
-             class="px-3 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 text-sm font-medium">
-            <i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>
-            Создать
-          </a>
+        <div class="mt-3 flex gap-2 flex-wrap">
+            <a href="{% url 'crm_dashboard' %}" class="px-3 py-1 text-sm rounded-lg {% if not status_filter %}bg-gray-900 text-white{% else %}bg-gray-100 hover:bg-gray-200{% endif %}">Все</a>
+            <a href="?status=new" class="px-3 py-1 text-sm rounded-lg {% if status_filter == 'new' %}bg-blue-500 text-white{% else %}bg-gray-100 hover:bg-gray-200{% endif %}">Новые</a>
+            <a href="?status=in_progress" class="px-3 py-1 text-sm rounded-lg {% if status_filter == 'in_progress' %}bg-yellow-500 text-white{% else %}bg-gray-100 hover:bg-gray-200{% endif %}">В работе</a>
+            <a href="?status=kp_ready" class="px-3 py-1 text-sm rounded-lg {% if status_filter == 'kp_ready' %}bg-purple-500 text-white{% else %}bg-gray-100 hover:bg-gray-200{% endif %}">КП готово</a>
+            <a href="?status=closed" class="px-3 py-1 text-sm rounded-lg {% if status_filter == 'closed' %}bg-green-500 text-white{% else %}bg-gray-100 hover:bg-gray-200{% endif %}">Завершены</a>
         </div>
-      </div>
-      
-      <!-- Фильтры -->
-      <div class="mt-3 overflow-x-auto">
-        <div class="flex gap-1 w-max">
-          <a href="{% url 'crm_dashboard' %}" 
-             class="px-3 py-1.5 text-sm rounded-lg transition-colors whitespace-nowrap
-                    {% if not status_filter %}bg-gray-900 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
-            Все
-          </a>
-          <a href="?status=new" 
-             class="px-3 py-1.5 text-sm rounded-lg transition-colors whitespace-nowrap
-                    {% if status_filter == 'new' %}bg-blue-100 text-blue-700 border border-blue-300{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
-            Новые
-          </a>
-          <a href="?status=in_progress" 
-             class="px-3 py-1.5 text-sm rounded-lg transition-colors whitespace-nowrap
-                    {% if status_filter == 'in_progress' %}bg-amber-100 text-amber-700 border border-amber-300{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
-            В работе
-          </a>
-          <a href="?status=kp_ready" 
-             class="px-3 py-1.5 text-sm rounded-lg transition-colors whitespace-nowrap
-                    {% if status_filter == 'kp_ready' %}bg-purple-100 text-purple-700 border border-purple-300{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
-            КП готово
-          </a>
-          <a href="?status=closed" 
-             class="px-3 py-1.5 text-sm rounded-lg transition-colors whitespace-nowrap
-                    {% if status_filter == 'closed' %}bg-green-100 text-green-700 border border-green-300{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
-            Завершены
-          </a>
-        </div>
-      </div>
     </div>
-  </div>
-
-  <!-- Список заявок -->
-  <div class="p-4">
-    <div class="space-y-3" id="requests-list">
-      {% include 'crm/partials/requests_list.html' %}
-    </div>
-  </div>
 </div>
 
-<!-- Модальное окно удаления -->
-<div id="delete-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
-  <div class="bg-white rounded-lg w-full max-w-sm">
-    <div class="p-6">
-      <div class="flex items-center gap-3 mb-4">
-        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-          <i data-lucide="alert-triangle" class="w-5 h-5 text-red-600"></i>
+<div class="p-4">
+    <div class="space-y-3">
+        {% for req in requests %}
+        <div data-request-id="{{ req.id }}" class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all p-4">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <h3 class="font-semibold">{{ req.client.company_name }}</h3>
+                        {% if req.status == 'new' %}
+                            {% if req.id not in viewed_ids %}
+                                <span class="px-2 py-0.5 bg-blue-500 text-white text-xs rounded-full animate-pulse">NEW</span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <p class="text-sm text-gray-600">{{ req.object_type }} • {{ req.object_address|default:"Адрес не указан" }}</p>
+                    <div class="flex items-center gap-3 mt-2 text-xs text-gray-500">
+                        <span>👤 {{ req.client.contact_person|default:"—" }}</span>
+                        <span>📅 {{ req.created_at|date:"d.m.Y H:i" }}</span>
+                        {% if req.responsible_manager %}
+                        <span>👔 {{ req.responsible_manager.user.get_full_name|default:req.responsible_manager.user.username }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="px-2 py-1 text-xs font-medium rounded-full 
+                        {% if req.status == 'new' %}bg-blue-100 text-blue-700
+                        {% elif req.status == 'in_progress' %}bg-yellow-100 text-yellow-700
+                        {% elif req.status == 'kp_ready' %}bg-purple-100 text-purple-700
+                        {% else %}bg-green-100 text-green-700{% endif %}">
+                        {{ req.get_status_display }}
+                    </span>
+                    <div class="mt-2">
+                        <a href="{% url 'crm_request_detail' req.id %}" class="text-blue-600 hover:text-blue-800 text-sm">Подробнее →</a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div>
-          <h3 class="font-semibold text-gray-900">Удалить заявку?</h3>
-          <p class="text-sm text-gray-500">Это действие нельзя отменить</p>
+        {% empty %}
+        <div class="text-center py-12">
+            <div class="text-6xl mb-4">📭</div>
+            <h3 class="text-lg font-medium text-gray-900">Нет заявок</h3>
+            <p class="text-gray-500 mt-1">Создайте первую заявку</p>
         </div>
-      </div>
-      
-      <p class="text-gray-600 text-sm mb-6" id="delete-message">
-        Вы уверены, что хотите удалить эту заявку?
-      </p>
-      
-      <div class="flex gap-3">
-        <button id="cancel-delete" 
-                class="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium">
-          Отмена
-        </button>
-        <button id="confirm-delete" 
-                class="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium">
-          Удалить
-        </button>
-      </div>
+        {% endfor %}
     </div>
-  </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-// Конфигурация
-const CONFIG = {
-    REFRESH_INTERVAL: 15000,
-    REQUEST_TIMEOUT: 5000
-};
-
-// Состояние
-let state = {
-    viewedRequests: new Set(),
-    pendingDelete: null,
-    isRefreshing: false,
-    csrfToken: document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
-};
-
-// Инициализация
-function initialize() {
-    console.log('Страница заявок инициализирована');
-    loadViewedRequests();
-    setupEventHandlers();
-    lucide.createIcons();
-}
-
-// Загрузка просмотренных заявок
-function loadViewedRequests() {
-    const saved = localStorage.getItem('viewedRequests');
-    if (saved) {
-        try {
-            const ids = JSON.parse(saved);
-            state.viewedRequests = new Set(ids);
-        } catch (e) {
-            console.error('Ошибка загрузки:', e);
-        }
-    }
-}
-
-// Сохранение просмотренных заявок
-function saveViewedRequests() {
-    localStorage.setItem('viewedRequests', JSON.stringify([...state.viewedRequests]));
-}
-
-// Отметка заявки как просмотренной
-function markRequestAsViewed(requestId) {
-    state.viewedRequests.add(requestId);
-    saveViewedRequests();
-}
-
-// Настройка обработчиков
-function setupEventHandlers() {
-    const refreshBtn = document.getElementById('refresh-btn');
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', () => {
-            location.reload();
-        });
-    }
-    
-    document.getElementById('cancel-delete')?.addEventListener('click', closeDeleteModal);
-    document.getElementById('confirm-delete')?.addEventListener('click', confirmDelete);
-}
-
-// Показать модальное окно удаления
-function showDeleteModal(requestId) {
-    const modal = document.getElementById('delete-modal');
-    const message = document.getElementById('delete-message');
-    
-    state.pendingDelete = requestId;
-    
-    const card = document.querySelector(`[data-request-id="${requestId}"]`);
-    let companyName = 'эту заявку';
-    if (card) {
-        const titleElement = card.querySelector('h3');
-        if (titleElement) {
-            companyName = `"${titleElement.textContent.trim()}"`;
-        }
-    }
-    
-    message.textContent = `Вы уверены, что хотите удалить заявку ${companyName}?`;
-    modal.classList.remove('hidden');
-    modal.style.display = 'flex';
-}
-
-// Закрыть модальное окно
-function closeDeleteModal() {
-    const modal = document.getElementById('delete-modal');
-    modal.classList.add('hidden');
-    modal.style.display = 'none';
-    state.pendingDelete = null;
-}
-
-// Подтверждение удаления
-async function confirmDelete() {
-    if (!state.pendingDelete) return;
-    
-    const requestId = state.pendingDelete;
-    const confirmBtn = document.getElementById('confirm-delete');
-    const originalText = confirmBtn.innerHTML;
-    
-    confirmBtn.innerHTML = 'Удаление...';
-    confirmBtn.disabled = true;
-    
-    try {
-        const response = await fetch(`/crm/request/${requestId}/delete/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': state.csrfToken,
-                'Content-Type': 'application/x-www-form-urlencoded',
-            }
-        });
-        
-        if (response.ok) {
-            const card = document.querySelector(`[data-request-id="${requestId}"]`);
-            if (card) {
-                card.remove();
-            }
-            closeDeleteModal();
-            location.reload();
-        } else {
-            alert('Ошибка при удалении');
-        }
-    } catch (error) {
-        console.error('Ошибка:', error);
-        alert('Ошибка при удалении');
-    } finally {
-        confirmBtn.innerHTML = originalText;
-        confirmBtn.disabled = false;
-    }
-}
-
-// Запуск
-document.addEventListener('DOMContentLoaded', initialize);
-</script>
 {% endblock %}

@@ -42,7 +42,7 @@
                 <!-- Один промо-блок - отображаем как отдельную карточку -->
                 <div class="max-w-2xl mx-auto">
                     {% with promo=promo_blocks.0 %}
-                    <div class="news-card rounded-xl shadow-lg overflow-hidden transform transition-all duration-400 hover:shadow-xl cursor-pointer" 
+                    <div class="news-card rounded-2xl shadow-xl overflow-hidden transform transition-all duration-500 hover:shadow-2xl cursor-pointer group"
                          data-news-index="0"
                          data-bg-color="{{ promo.background_color|default:'#1E3A8A' }}"
                          data-text-color="{{ promo.text_color|default:'#FFFFFF' }}"
@@ -53,73 +53,177 @@
                          data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}">
                         
                         {% if promo.image %}
-                        <div class="news-media relative h-40 sm:h-48 overflow-hidden group">
+                        <div class="news-media relative h-48 sm:h-56 overflow-hidden">
                             <img src="{{ promo.image.url }}" alt="{{ promo.title|default:'Новость' }}" 
-                                 class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent group-hover:from-black/20 transition-all duration-400"></div>
-                        </div>
-                        <div class="news-content p-4 sm:p-6">
-                            {% if promo.title %}
-                            <h3 class="text-lg sm:text-xl font-bold mb-2 sm:mb-3 leading-tight" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
-                                {{ promo.title }}
-                            </h3>
-                            {% endif %}
-                            
-                            {% if promo.text %}
-                            <div class="mb-3 sm:mb-4 leading-relaxed line-clamp-3" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
-                                {{ promo.text|striptags|truncatewords:30 }}
-                            </div>
-                            {% endif %}
-                            
-                            <div class="flex items-center justify-between pt-3 sm:pt-4 border-t" data-border-color="{{ promo.text_color|default:'#FFFFFF' }}30">
-                                <span class="text-xs sm:text-sm font-medium" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                 class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                            <div class="absolute bottom-4 left-6 right-6">
+                                {% if promo.title %}
+                                <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 leading-tight">
+                                    {{ promo.title }}
+                                </h3>
+                                {% endif %}
+                                <span class="text-sm text-white/90 font-medium">
                                     {{ promo.created_at|date:"d.m.Y"|default:"Сегодня" }}
                                 </span>
-                                <span class="text-xs font-medium" data-button-color="{{ promo.button_color|default:'#C9A96A' }}">
-                                    {% if promo.button_text %}{{ promo.button_text }}{% else %}Читать далее{% endif %}
-                                </span>
                             </div>
                         </div>
-                        {% else %}
-                        <!-- Если нет фото - весь контент по центру -->
-                        <div class="h-full flex flex-col min-h-[200px] sm:min-h-[250px]">
-                            <div class="flex-1 flex flex-col justify-center items-center text-center p-4 sm:p-6">
-                                {% if promo.title %}
-                                <h3 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4 leading-tight" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                        {% endif %}
+                        
+                        <!-- Текст под картинкой или вместо нее -->
+                        <div class="p-6 sm:p-8">
+                            <div class="flex-1 flex flex-col">
+                                {% if not promo.image and promo.title %}
+                                <h3 class="text-xl sm:text-2xl font-bold mb-4 leading-tight" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
                                     {{ promo.title }}
                                 </h3>
                                 {% endif %}
                                 
                                 {% if promo.text %}
-                                <div class="text-sm sm:text-base leading-relaxed" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                <div class="text-base sm:text-lg leading-relaxed mb-6" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
                                     {{ promo.text|striptags|truncatewords:50 }}
                                 </div>
                                 {% endif %}
                             </div>
                             
-                            <div class="flex items-center justify-between p-4 sm:p-6 pt-3 border-t" data-border-color="{{ promo.text_color|default:'#FFFFFF' }}30">
-                                <span class="text-xs sm:text-sm font-medium" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                            <div class="flex items-center justify-between pt-4 border-t" data-border-color="{{ promo.text_color|default:'#FFFFFF' }}30">
+                                <span class="text-sm font-medium" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
                                     {{ promo.created_at|date:"d.m.Y"|default:"Сегодня" }}
                                 </span>
-                                <span class="text-xs font-medium" data-button-color="{{ promo.button_color|default:'#C9A96A' }}">
+                                <button class="text-sm font-medium px-4 py-2 rounded-lg transition-all duration-300 group-hover:scale-105 custom-button-style read-more-btn" 
+                                      data-button-color="{{ promo.button_color|default:'#C9A96A' }}">
                                     {% if promo.button_text %}{{ promo.button_text }}{% else %}Читать далее{% endif %}
-                                </span>
+                                </button>
                             </div>
                         </div>
-                        {% endif %}
                     </div>
                     {% endwith %}
                 </div>
 
+            {% elif total_promo == 2 %}
+                <!-- Два промо-блока - отображаем в сетке -->
+                <div class="max-w-6xl mx-auto">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+                        {% for promo in promo_blocks %}
+                        <div class="news-card rounded-2xl shadow-xl overflow-hidden transform transition-all duration-500 hover:shadow-2xl cursor-pointer group"
+                             data-news-index="{{ forloop.counter0 }}"
+                             data-bg-color="{{ promo.background_color|default:'#1E3A8A' }}"
+                             data-text-color="{{ promo.text_color|default:'#FFFFFF' }}"
+                             data-button-color="{{ promo.button_color|default:'#C9A96A' }}"
+                             data-button-text="{{ promo.button_text|default:'' }}"
+                             data-button-url="{{ promo.button_url|default:'' }}"
+                             data-promo-text="{{ promo.text|default:'' }}"
+                             data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}">
+                            
+                            {% if promo.image %}
+                            <div class="news-media relative h-40 sm:h-48 overflow-hidden">
+                                <img src="{{ promo.image.url }}" alt="{{ promo.title|default:'Новость' }}" 
+                                     class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                                <div class="absolute bottom-4 left-4 right-4">
+                                    {% if promo.title %}
+                                    <h3 class="text-lg sm:text-xl font-bold text-white mb-1 leading-tight line-clamp-2">
+                                        {{ promo.title }}
+                                    </h3>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="p-4 sm:p-6">
+                                {% if not promo.image and promo.title %}
+                                <h3 class="text-lg sm:text-xl font-bold mb-3 leading-tight" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                    {{ promo.title }}
+                                </h3>
+                                {% endif %}
+                                
+                                {% if promo.text %}
+                                <div class="mb-4 leading-relaxed line-clamp-3 text-sm sm:text-base" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                    {{ promo.text|striptags|truncatewords:30 }}
+                                </div>
+                                {% endif %}
+                                
+                                <div class="flex items-center justify-between pt-3 border-t" data-border-color="{{ promo.text_color|default:'#FFFFFF' }}30">
+                                    <span class="text-xs sm:text-sm font-medium" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                        {{ promo.created_at|date:"d.m.Y"|default:"Сегодня" }}
+                                    </span>
+                                    <button class="text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-all duration-300 group-hover:scale-105 custom-button-style read-more-btn" 
+                                          data-button-color="{{ promo.button_color|default:'#C9A96A' }}">
+                                        {% if promo.button_text %}{{ promo.button_text }}{% else %}Читать далее{% endif %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            {% elif total_promo == 3 %}
+                <!-- Три промо-блока - отображаем в сетке 3 колонки -->
+                <div class="max-w-6xl mx-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+                        {% for promo in promo_blocks %}
+                        <div class="news-card rounded-2xl shadow-xl overflow-hidden transform transition-all duration-500 hover:shadow-2xl cursor-pointer group"
+                             data-news-index="{{ forloop.counter0 }}"
+                             data-bg-color="{{ promo.background_color|default:'#1E3A8A' }}"
+                             data-text-color="{{ promo.text_color|default:'#FFFFFF' }}"
+                             data-button-color="{{ promo.button_color|default:'#C9A96A' }}"
+                             data-button-text="{{ promo.button_text|default:'' }}"
+                             data-button-url="{{ promo.button_url|default:'' }}"
+                             data-promo-text="{{ promo.text|default:'' }}"
+                             data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}">
+                            
+                            {% if promo.image %}
+                            <div class="news-media relative h-40 sm:h-48 overflow-hidden">
+                                <img src="{{ promo.image.url }}" alt="{{ promo.title|default:'Новость' }}" 
+                                     class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                                <div class="absolute bottom-4 left-4 right-4">
+                                    {% if promo.title %}
+                                    <h3 class="text-lg sm:text-xl font-bold text-white mb-1 leading-tight line-clamp-2">
+                                        {{ promo.title }}
+                                    </h3>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="p-4 sm:p-6">
+                                {% if not promo.image and promo.title %}
+                                <h3 class="text-lg sm:text-xl font-bold mb-3 leading-tight" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                    {{ promo.title }}
+                                </h3>
+                                {% endif %}
+                                
+                                {% if promo.text %}
+                                <div class="mb-4 leading-relaxed line-clamp-3 text-sm sm:text-base" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                    {{ promo.text|striptags|truncatewords:30 }}
+                                </div>
+                                {% endif %}
+                                
+                                <div class="flex items-center justify-between pt-3 border-t" data-border-color="{{ promo.text_color|default:'#FFFFFF' }}30">
+                                    <span class="text-xs sm:text-sm font-medium" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
+                                        {{ promo.created_at|date:"d.m.Y"|default:"Сегодня" }}
+                                    </span>
+                                    <button class="text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-all duration-300 group-hover:scale-105 custom-button-style read-more-btn" 
+                                          data-button-color="{{ promo.button_color|default:'#C9A96A' }}">
+                                        {% if promo.button_text %}{{ promo.button_text }}{% else %}Читать далее{% endif %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
             {% else %}
-                <!-- Два и более промо-блока - отображаем в карусели на мобильных -->
+                <!-- Четыре и более промо-блока - отображаем в карусели -->
                 <div class="relative max-w-6xl mx-auto px-2 sm:px-0">
-                    <!-- Карусель контейнер -->
                     <div class="news-carousel-container overflow-hidden rounded-2xl">
                         <div id="newsCarousel" class="flex transition-transform duration-500 ease-in-out">
                             {% for promo in promo_blocks %}
-                            <div class="news-slide flex-shrink-0 px-2 sm:px-3 cursor-pointer" data-news-index="{{ forloop.counter0 }}">
-                                <div class="news-card h-full rounded-xl shadow-lg overflow-hidden transform transition-all duration-400 hover:shadow-xl hover:scale-[1.02]"
+                            <div class="news-slide flex-shrink-0 px-2 sm:px-3" data-news-index="{{ forloop.counter0 }}">
+                                <div class="news-card h-full rounded-xl shadow-lg overflow-hidden transform transition-all duration-400 hover:shadow-xl hover:scale-[1.02] group"
                                      data-bg-color="{{ promo.background_color|default:'#1E3A8A' }}"
                                      data-text-color="{{ promo.text_color|default:'#FFFFFF' }}"
                                      data-button-color="{{ promo.button_color|default:'#C9A96A' }}"
@@ -128,14 +232,14 @@
                                      data-promo-text="{{ promo.text|default:'' }}"
                                      data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}">
                                     
-                                    <!-- Медиа контент -->
                                     {% if promo.image %}
-                                    <div class="news-media relative h-32 sm:h-40 overflow-hidden group">
+                                    <div class="news-media relative h-32 sm:h-40 overflow-hidden">
                                         <img src="{{ promo.image.url }}" alt="{{ promo.title|default:'Новость' }}" 
-                                             class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105">
-                                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent group-hover:from-black/20 transition-all duration-400"></div>
+                                             class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                                     </div>
-                                    <!-- Контент новости с фото -->
+                                    {% endif %}
+                                    
                                     <div class="news-content p-4 sm:p-5 flex flex-col justify-between h-full">
                                         <div class="flex-1">
                                             {% if promo.title %}
@@ -155,38 +259,12 @@
                                             <span class="text-xs font-medium" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
                                                 {{ promo.created_at|date:"d.m.Y"|default:"Сегодня" }}
                                             </span>
-                                            <span class="text-xs font-medium" data-button-color="{{ promo.button_color|default:'#C9A96A' }}">
+                                            <button class="text-xs font-medium px-2 py-1 rounded transition-all duration-300 group-hover:scale-105 custom-button-style read-more-btn" 
+                                                  data-button-color="{{ promo.button_color|default:'#C9A96A' }}">
                                                 {% if promo.button_text %}{{ promo.button_text }}{% else %}Читать далее{% endif %}
-                                            </span>
+                                            </button>
                                         </div>
                                     </div>
-                                    {% else %}
-                                    <!-- Если нет фото - весь контент по центру -->
-                                    <div class="h-full flex flex-col min-h-[160px] sm:min-h-[180px]">
-                                        <div class="flex-1 flex flex-col justify-center items-center text-center p-4 sm:p-5">
-                                            {% if promo.title %}
-                                            <h3 class="text-base sm:text-lg font-bold mb-2 sm:mb-3 leading-tight line-clamp-2" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
-                                                {{ promo.title }}
-                                            </h3>
-                                            {% endif %}
-                                            
-                                            {% if promo.text %}
-                                            <div class="text-xs sm:text-sm leading-relaxed line-clamp-3" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
-                                                {{ promo.text|striptags|truncatewords:20 }}
-                                            </div>
-                                            {% endif %}
-                                        </div>
-                                        
-                                        <div class="flex items-center justify-between p-4 sm:p-5 pt-2 border-t" data-border-color="{{ promo.text_color|default:'#FFFFFF' }}30">
-                                            <span class="text-xs font-medium" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
-                                                {{ promo.created_at|date:"d.m.Y"|default:"Сегодня" }}
-                                            </span>
-                                            <span class="text-xs font-medium" data-button-color="{{ promo.button_color|default:'#C9A96A' }}">
-                                                {% if promo.button_text %}{{ promo.button_text }}{% else %}Читать далее{% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    {% endif %}
                                 </div>
                             </div>
                             {% endfor %}
@@ -194,29 +272,25 @@
                     </div>
 
                     <!-- Навигационные кнопки -->
-                    {% if total_promo > 1 %}
-                    <button id="prevNews" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-dark-blue p-2 sm:p-3 rounded-full shadow-lg transition-all duration-300 z-10 ml-1 sm:ml-2 hover:scale-110 border border-gray-200">
+                    <button id="prevNews" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-dark-blue p-2 sm:p-3 rounded-full shadow-lg transition-all duration-300 z-10 ml-1 sm:ml-2 hover:scale-110 border border-gray-200 mobile-touch-fix">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                         </svg>
                     </button>
-                    <button id="nextNews" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-dark-blue p-2 sm:p-3 rounded-full shadow-lg transition-all duration-300 z-10 mr-1 sm:mr-2 hover:scale-110 border border-gray-200">
+                    <button id="nextNews" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-dark-blue p-2 sm:p-3 rounded-full shadow-lg transition-all duration-300 z-10 mr-1 sm:mr-2 hover:scale-110 border border-gray-200 mobile-touch-fix">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </button>
-                    {% endif %}
                 </div>
 
                 <!-- Индикаторы для карусели -->
-                {% if total_promo > 1 %}
                 <div class="flex justify-center mt-6 sm:mt-8 space-x-2">
                     {% for promo in promo_blocks %}
                     <button class="news-indicator w-2 h-2 rounded-full bg-gray-300 transition-all duration-300 {% if forloop.first %}bg-dark-blue active{% endif %}"
                             data-index="{{ forloop.counter0 }}"></button>
                     {% endfor %}
                 </div>
-                {% endif %}
             {% endif %}
         {% endwith %}
     </div>
@@ -226,7 +300,7 @@
 <div id="newsModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden p-3 sm:p-4">
     <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0">
         <div class="relative">
-            <button id="closeNewsModal" class="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 bg-white/90 hover:bg-white text-dark-blue p-1.5 sm:p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110 border border-gray-300">
+            <button id="closeNewsModal" class="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 bg-white/90 hover:bg-white text-dark-blue p-1.5 sm:p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110 border border-gray-300 mobile-touch-fix">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -239,7 +313,7 @@
 </div>
 
 <style>
-.news-section {
+.promo-section {
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
@@ -278,6 +352,20 @@
 .news-content {
     position: relative;
     z-index: 2;
+}
+
+/* Стили для кнопок */
+.read-more-btn {
+    background-color: rgba(201, 169, 106, 0.2);
+    color: #C9A96A;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.read-more-btn:hover {
+    background-color: rgba(201, 169, 106, 0.3);
+    transform: scale(1.05);
 }
 
 /* Ограничение текста */
@@ -365,7 +453,7 @@
     }
 }
 
-.news-section {
+.promo-section {
     animation: fadeIn 0.6s ease-out;
 }
 
@@ -419,6 +507,11 @@
     .news-slide {
         width: calc(100% / 1.2);
     }
+    
+    /* Для сетки из 3 колонок на мобильных */
+    .grid-cols-1.md\:grid-cols-3 {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (min-width: 1024px) {
@@ -430,6 +523,18 @@
 @media (min-width: 768px) and (max-width: 1023px) {
     .news-slide {
         width: calc(100% / 2);
+    }
+    
+    /* Для сетки из 3 колонок на планшетах */
+    .grid-cols-1.md\:grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    /* Для сетки из 3 колонок на десктопе */
+    .grid-cols-1.md\:grid-cols-3 {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
@@ -466,33 +571,24 @@
     }
 }
 
-/* Фикс для модального окна на мобильных */
-.modal-fixed {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-}
-
-.modal-content-fixed {
-    position: relative;
-    max-height: 90vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
 /* Улучшение кликабельности на мобильных */
-@media (max-width: 768px) {
-    .mobile-touch-fix {
-        min-height: 44px;
-        min-width: 44px;
-    }
-    
-    .btn-mobile-fix {
-        padding: 12px 16px;
-        font-size: 16px; /* Предотвращает zoom в iOS */
-    }
+.mobile-touch-fix {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.btn-mobile-fix {
+    padding: 12px 16px;
+    font-size: 16px;
+}
+
+/* Градиенты и тени для лучшей читаемости */
+.text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.text-shadow-md {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 </style>
 
@@ -507,6 +603,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeModal = document.getElementById('closeNewsModal');
     const modalContent = document.getElementById('newsModalContent');
     const newsCards = document.querySelectorAll('.news-card');
+    const readMoreButtons = document.querySelectorAll('.read-more-btn');
     
     let currentIndex = 0;
     let autoSlideInterval;
@@ -517,7 +614,7 @@ document.addEventListener('DOMContentLoaded', function() {
         newsCards.forEach(card => {
             const bgColor = card.getAttribute('data-bg-color');
             const textColor = card.getAttribute('data-text-color');
-            const buttonColor = card.getAttribute('data-button-color');
+            const buttonColor = card.getAttribute('data-button-color') || '#C9A96A';
             
             if (bgColor) {
                 card.style.backgroundColor = bgColor;
@@ -530,12 +627,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
             
-            if (buttonColor) {
-                const buttonElements = card.querySelectorAll('[data-button-color]');
-                buttonElements.forEach(el => {
-                    el.style.color = buttonColor;
-                });
-            }
+            const buttonElements = card.querySelectorAll('.read-more-btn');
+            buttonElements.forEach(el => {
+                const btnColor = el.getAttribute('data-button-color') || buttonColor;
+                const rgbaColor = hexToRgba(btnColor, 0.2);
+                el.style.backgroundColor = rgbaColor;
+                el.style.color = btnColor;
+            });
             
             const borderElements = card.querySelectorAll('[data-border-color]');
             borderElements.forEach(el => {
@@ -545,6 +643,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
+    }
+
+    function hexToRgba(hex, alpha) {
+        hex = hex.replace('#', '');
+        if (hex.length === 3) {
+            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+        }
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
 
     function calculateSlidesPerView() {
@@ -559,7 +668,6 @@ document.addEventListener('DOMContentLoaded', function() {
         slidesPerView = calculateSlidesPerView();
         if (newsCarousel) {
             newsCarousel.style.setProperty('--slides-per-view', slidesPerView);
-            
             newsSlides.forEach(slide => {
                 slide.style.width = `calc(100% / ${slidesPerView})`;
             });
@@ -568,11 +676,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateCarousel() {
         if (!newsCarousel) return;
-        
         const slideWidth = 100 / slidesPerView;
         const translateX = -currentIndex * slideWidth;
         newsCarousel.style.transform = `translateX(${translateX}%)`;
-        
         indicators.forEach((indicator, index) => {
             const isActive = index === currentIndex;
             indicator.classList.toggle('active', isActive);
@@ -583,7 +689,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function nextSlide() {
         if (!newsCarousel || newsSlides.length === 0) return;
-        
         const maxIndex = Math.max(0, newsSlides.length - Math.floor(slidesPerView));
         currentIndex = currentIndex >= maxIndex ? 0 : currentIndex + 1;
         updateCarousel();
@@ -591,7 +696,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function prevSlide() {
         if (!newsCarousel || newsSlides.length === 0) return;
-        
         const maxIndex = Math.max(0, newsSlides.length - Math.floor(slidesPerView));
         currentIndex = currentIndex <= 0 ? maxIndex : currentIndex - 1;
         updateCarousel();
@@ -609,7 +713,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function resetAutoSlide() {
         clearInterval(autoSlideInterval);
-        if (newsSlides.length > 1) {
+        if (newsSlides.length > 2) {
             autoSlideInterval = setInterval(nextSlide, 4000);
         }
     }
@@ -631,20 +735,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function openNewsModal(newsIndex) {
-        // Ищем карточку по data-news-index атрибуту
         let newsElement = document.querySelector(`.news-card[data-news-index="${newsIndex}"]`);
-        
-        // Если не нашли, ищем в слайдах карусели
         if (!newsElement) {
             const slide = document.querySelector(`.news-slide[data-news-index="${newsIndex}"]`);
             if (slide) {
                 newsElement = slide.querySelector('.news-card');
             }
         }
-        
         if (!newsElement) return;
         
-        // Получаем данные из data-атрибутов
         const newsData = {
             title: newsElement.querySelector('h3')?.textContent || 'Новость',
             text: newsElement.getAttribute('data-promo-text') || '',
@@ -657,18 +756,13 @@ document.addEventListener('DOMContentLoaded', function() {
             button_color: newsElement.getAttribute('data-button-color') || '#C9A96A'
         };
         
-        // Создаем контент модального окна
         modalContent.innerHTML = `
             <div class="space-y-4 sm:space-6">
                 ${newsData.image ? `
                 <div class="rounded-lg overflow-hidden">
                     <img src="${newsData.image}" alt="${newsData.title}" class="w-full h-32 sm:h-48 object-cover">
                 </div>
-                ` : `
-                <div class="rounded-lg overflow-hidden h-32 sm:h-48 flex items-center justify-center" style="background-color: ${newsData.background_color}">
-                    <!-- Без иконки и текста "Новость компании" -->
-                </div>
-                `}
+                ` : ''}
                 
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <h3 class="text-xl sm:text-2xl font-bold text-dark-blue">${newsData.title}</h3>
@@ -700,18 +794,14 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         
-        // Устанавливаем белый фон для модального окна
         const modalContainer = newsModal.querySelector('.rounded-xl');
         modalContainer.style.backgroundColor = '#ffffff';
         
-        // Добавляем обработчик для кнопки закрытия в модальном окне
         setTimeout(() => {
             const closeBtn = modalContent.querySelector('.close-modal-btn');
             if (closeBtn) {
                 closeBtn.addEventListener('click', closeNewsModal);
             }
-            
-            // Добавляем обработчик для внешней ссылки
             const externalLink = modalContent.querySelector('a[target="_blank"]');
             if (externalLink) {
                 externalLink.addEventListener('click', (e) => {
@@ -727,9 +817,7 @@ document.addEventListener('DOMContentLoaded', function() {
             modalContainer.style.transform = 'scale(1)';
         }, 10);
         
-        // Предотвращаем скролл body при открытой модалке
         document.body.style.overflow = 'hidden';
-        
         clearInterval(autoSlideInterval);
     }
     
@@ -741,9 +829,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             newsModal.classList.add('hidden');
             newsModal.classList.remove('show');
-            // Сбрасываем фон модального окна
             modalContainer.style.backgroundColor = '';
-            // Восстанавливаем скролл body
             document.body.style.overflow = '';
             resetAutoSlide();
         }, 300);
@@ -752,8 +838,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обработчики для всех новостных карточек
     document.querySelectorAll('.news-card').forEach((card) => {
         card.addEventListener('click', (e) => {
-            // Проверяем, что клик не по дочерним элементам с особым поведением
-            if (!e.target.closest('a') && !e.target.closest('button')) {
+            if (!e.target.closest('.read-more-btn') && !e.target.closest('a')) {
+                const newsIndex = card.getAttribute('data-news-index');
+                if (newsIndex !== null) {
+                    openNewsModal(newsIndex);
+                }
+            }
+        });
+    });
+    
+    // Обработчики для кнопок "Читать далее"
+    readMoreButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const card = button.closest('.news-card');
+            if (card) {
                 const newsIndex = card.getAttribute('data-news-index');
                 if (newsIndex !== null) {
                     openNewsModal(newsIndex);
@@ -763,17 +862,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Обработчики для слайдов в карусели
-    document.querySelectorAll('.news-slide').forEach((slide) => {
-        slide.addEventListener('click', (e) => {
-            // Проверяем, что клик не по навигационным кнопкам и не по ссылкам/кнопкам
-            if (!e.target.closest('button') && !e.target.closest('a')) {
-                const newsIndex = slide.getAttribute('data-news-index');
-                if (newsIndex !== null) {
-                    openNewsModal(newsIndex);
+    if (newsCarousel) {
+        document.querySelectorAll('.news-slide').forEach((slide) => {
+            slide.addEventListener('click', (e) => {
+                if (!e.target.closest('.read-more-btn') && !e.target.closest('button')) {
+                    const newsIndex = slide.getAttribute('data-news-index');
+                    if (newsIndex !== null) {
+                        openNewsModal(newsIndex);
+                    }
                 }
-            }
+            });
         });
-    });
+    }
     
     // Улучшенные обработчики для модального окна
     if (closeModal) {
@@ -795,8 +895,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Автопрокрутка для карусели (2+ элементов)
-    if (newsSlides.length > 1) {
+    // Автопрокрутка для карусели (только если есть карусель)
+    if (newsCarousel && newsSlides && newsSlides.length > 2) {
         autoSlideInterval = setInterval(nextSlide, 4000);
         
         const carouselContainer = document.querySelector('.news-carousel-container');
@@ -809,28 +909,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 autoSlideInterval = setInterval(nextSlide, 4000);
             });
             
-            // Останавливаем автопрокрутку при касании на мобильных
             carouselContainer.addEventListener('touchstart', () => {
                 clearInterval(autoSlideInterval);
             });
         }
     }
     
-    // Адаптация при изменении размера окна
-    window.addEventListener('resize', function() {
-        if (newsCarousel) {
-            const oldSlidesPerView = slidesPerView;
-            updateSlidesWidth();
-            
-            if (oldSlidesPerView !== slidesPerView) {
-                currentIndex = 0;
-                updateCarousel();
-            }
-        }
-    });
-    
-    // Инициализация
+    // Адаптация при изменении размера окна (только если есть карусель)
     if (newsCarousel) {
+        window.addEventListener('resize', function() {
+            if (newsCarousel) {
+                const oldSlidesPerView = slidesPerView;
+                updateSlidesWidth();
+                if (oldSlidesPerView !== slidesPerView) {
+                    currentIndex = 0;
+                    updateCarousel();
+                }
+            }
+        });
+        
         updateSlidesWidth();
         updateCarousel();
     }
@@ -848,7 +945,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 {% endif %}
 
-<!-- Остальная часть кода без изменений -->
 <!-- About Section -->
 <section class="py-12 sm:py-16 bg-light-gray">
     <div class="container mx-auto px-4 sm:px-6">
@@ -932,35 +1028,11 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- Projects Preview -->
 <section class="py-12 sm:py-16 bg-light-gray">
     <div class="container mx-auto px-4 sm:px-6">
-        <h2 class="text-2xl sm:text-3xl md:text-4xl text-dark-blue text-center mb-8 sm:mb-10 font-bold scroll-animate">Реализованные проекты</h2>
+        <h2 class="text-2xl sm:text-3xl md:text-4xl text-dark-blue text-center mb-8 sm:mb-12 font-bold scroll-animate">Реализованные проекты</h2>
         
-        <!-- Projects Carousel -->
-        <div class="relative overflow-hidden">
-            <div id="projectsCarousel" class="flex transition-transform duration-500 ease-in-out">
-                {% for project in projects %}
-                <div class="flex-shrink-0 w-full sm:w-1/2 lg:w-1/3 px-2 sm:px-3">
-                    <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-400 overflow-hidden cursor-pointer project-card">
-                        <div class="h-40 sm:h-56 overflow-hidden">
-                            {% if project.image %}
-                            <img src="{{ project.image.url }}" alt="{{ project.title }}" class="w-full h-full object-cover transition-transform duration-800 hover:scale-110">
-                            {% else %}
-                            <div class="w-full h-full bg-gray-100 flex items-center justify-center">
-                                <svg class="w-8 h-8 sm:w-12 sm:h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                            </div>
-                            {% endif %}
-                        </div>
-                        <div class="p-4 sm:p-6">
-                            <h3 class="text-base sm:text-lg text-dark-blue mb-2 font-semibold">{{ project.title }}</h3>
-                            {% if project.address %}
-                            <p class="text-gray-600 mb-2 text-xs sm:text-sm">{{ project.address }}</p>
-                            {% endif %}
-                            <p class="text-gold font-medium text-xs sm:text-sm">{{ project.get_object_type_display }}</p>
-                        </div>
-                    </div>
-                </div>
-                {% empty %}
+        {% with total_projects=projects|length %}
+            {% if total_projects == 0 %}
+                <!-- Нет проектов -->
                 <div class="w-full text-center py-8 sm:py-12">
                     <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                         <svg class="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -970,19 +1042,68 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h3 class="text-lg sm:text-xl font-bold text-dark-blue mb-2">Проекты не найдены</h3>
                     <p class="text-gray-600 text-sm sm:text-base">Пока нет добавленных проектов.</p>
                 </div>
-                {% endfor %}
-            </div>
-            
-            <!-- Navigation Buttons -->
-            {% if projects %}
-            <button id="prevProject" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-dark-blue p-2 sm:p-3 rounded-full shadow-lg transition-all duration-300 z-10 ml-2 sm:ml-4 hover:scale-110 border border-gray-200">
-                <i data-lucide="chevron-left" class="w-4 h-4 sm:w-6 sm:h-6"></i>
-            </button>
-            <button id="nextProject" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-dark-blue p-2 sm:p-3 rounded-full shadow-lg transition-all duration-300 z-10 mr-2 sm:mr-4 hover:scale-110 border border-gray-200">
-                <i data-lucide="chevron-right" class="w-4 h-4 sm:w-6 sm:h-6"></i>
-            </button>
+
+            {% else %}
+                <!-- Всегда отображаем 3 проекта в сетке -->
+                <div class="max-w-6xl mx-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+                        {% for project in projects|slice:":3" %}
+                        <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-500 hover:shadow-2xl cursor-pointer group project-card"
+                             data-project-id="{{ project.id }}">
+                            
+                            {% if project.image %}
+                            <div class="relative h-40 sm:h-48 overflow-hidden">
+                                <img src="{{ project.image.url }}" alt="{{ project.title }}" 
+                                     class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                                <div class="absolute bottom-4 left-4 right-4">
+                                    <h3 class="text-lg sm:text-xl font-bold text-white mb-1 leading-tight line-clamp-2">
+                                        {{ project.title }}
+                                    </h3>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="p-4 sm:p-6">
+                                {% if not project.image %}
+                                <h3 class="text-lg sm:text-xl font-bold text-dark-blue mb-3 leading-tight">
+                                    {{ project.title }}
+                                </h3>
+                                {% endif %}
+                                
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    <span class="px-2 py-1 bg-gold/10 text-gold rounded-full text-xs font-medium">
+                                        {{ project.get_object_type_display }}
+                                    </span>
+                                    {% if project.completion_year %}
+                                    <span class="px-2 py-1 bg-dark-blue/10 text-dark-blue rounded-full text-xs font-medium">
+                                        {{ project.completion_year }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if project.description %}
+                                <div class="mb-4 leading-relaxed line-clamp-3 text-sm sm:text-base text-gray-600">
+                                    {{ project.description|striptags|truncatewords:30 }}
+                                </div>
+                                {% endif %}
+                                
+                                {% if project.address %}
+                                <div class="flex items-center pt-3 border-t border-gray-200">
+                                    <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    <span class="text-xs sm:text-sm text-gray-600 truncate">{{ project.address }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
             {% endif %}
-        </div>
+        {% endwith %}
         
         <div class="text-center mt-8 sm:mt-10 scroll-animate" data-animation-delay="0.15s">
             <a href="{% url 'projects' %}" class="bg-dark-blue hover:bg-blue-900 text-white px-5 py-3 sm:px-6 sm:py-4 md:px-8 md:py-4 rounded-xl transition-all duration-400 font-medium shadow-lg text-sm sm:text-base md:text-lg whitespace-nowrap">
@@ -1048,116 +1169,82 @@ document.addEventListener('DOMContentLoaded', function() {
             transform: translateY(0);
         }
     }
+
+    /* Адаптивность для сетки проектов */
+    @media (max-width: 640px) {
+        .grid-cols-1.md\:grid-cols-3 {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    @media (min-width: 641px) and (max-width: 1023px) {
+        .grid-cols-1.md\:grid-cols-3 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        .grid-cols-1.md\:grid-cols-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
 </style>
 
 <script>
-    // Инициализация иконок
-    lucide.createIcons();
+// Инициализация иконок
+lucide.createIcons();
+
+// Клик по карточке проекта для открытия детальной страницы
+document.addEventListener('DOMContentLoaded', function() {
+    const projectCards = document.querySelectorAll('.project-card');
     
-    // Карусель проектов
-    document.addEventListener('DOMContentLoaded', function() {
-        const carousel = document.getElementById('projectsCarousel');
-        const prevButton = document.getElementById('prevProject');
-        const nextButton = document.getElementById('nextProject');
-        const projects = document.querySelectorAll('#projectsCarousel > div');
-        
-        if (projects.length > 0) {
-            let currentIndex = 0;
-            const projectsPerView = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
-            const totalSlides = projects.length;
-            
-            function updateCarousel() {
-                const slideWidth = 100 / projectsPerView;
-                const translateX = -currentIndex * slideWidth;
-                carousel.style.transform = `translateX(${translateX}%)`;
+    projectCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const projectId = this.getAttribute('data-project-id');
+            if (projectId) {
+                window.location.href = `/projects/${projectId}/`;
             }
-            
-            function nextSlide() {
-                currentIndex = (currentIndex + 1) % totalSlides;
-                updateCarousel();
-            }
-            
-            function prevSlide() {
-                currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
-                updateCarousel();
-            }
-            
-            // Автопрокрутка каждые 5 секунд
-            let autoSlide = setInterval(nextSlide, 5000);
-            
-            // Остановка автопрокрутки при наведении
-            carousel.addEventListener('mouseenter', () => {
-                clearInterval(autoSlide);
-            });
-            
-            // Возобновление автопрокрутки при уходе курсора
-            carousel.addEventListener('mouseleave', () => {
-                autoSlide = setInterval(nextSlide, 5000);
-            });
-            
-            // Навигация кнопками
-            if (prevButton) prevButton.addEventListener('click', () => {
-                clearInterval(autoSlide);
-                prevSlide();
-                autoSlide = setInterval(nextSlide, 5000);
-            });
-            
-            if (nextButton) nextButton.addEventListener('click', () => {
-                clearInterval(autoSlide);
-                nextSlide();
-                autoSlide = setInterval(nextSlide, 5000);
-            });
-            
-            // Адаптация при изменении размера окна
-            window.addEventListener('resize', function() {
-                const newProjectsPerView = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
-                if (newProjectsPerView !== projectsPerView) {
-                    updateCarousel();
-                }
-            });
-            
-            // Инициализация
-            updateCarousel();
-        }
-        
-        // Плавная прокрутка для якорей
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Анимация появления элементов при скролле
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animated');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.scroll-animate').forEach(el => {
-            observer.observe(el);
-        });
-        
-        // Обработка анимаций с задержкой
-        const animatedElements = document.querySelectorAll('[data-animation-delay]');
-        animatedElements.forEach(el => {
-            const delay = el.getAttribute('data-animation-delay');
-            el.style.animationDelay = delay;
         });
     });
+
+    // Плавная прокрутка для якорей
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Анимация появления элементов при скролле
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animated');
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.scroll-animate').forEach(el => {
+        observer.observe(el);
+    });
+    
+    // Обработка анимаций с задержкой
+    const animatedElements = document.querySelectorAll('[data-animation-delay]');
+    animatedElements.forEach(el => {
+        const delay = el.getAttribute('data-animation-delay');
+        el.style.animationDelay = delay;
+    });
+});
 </script>
 {% endblock %}

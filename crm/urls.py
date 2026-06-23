@@ -13,13 +13,19 @@ urlpatterns = [
     path('api/mark-request-viewed/<int:pk>/', views.mark_request_as_viewed, name='crm_api_mark_request_viewed'),
     path('api/mark-all-viewed/', views.mark_all_viewed, name='crm_api_mark_all_viewed'),
     
+    # 📬 ВНУТРЕННИЕ УВЕДОМЛЕНИЯ (НОВЫЕ МАРШРУТЫ)
+    path('api/notifications/', views.get_notifications, name='crm_api_notifications'),
+    path('api/notifications/check/', views.check_new_notifications, name='crm_api_check_notifications'),
+    path('api/notifications/mark/<int:notification_id>/', views.mark_notification_read, name='crm_api_mark_notification_read'),
+    path('api/notifications/mark-all/', views.mark_all_notifications_read, name='crm_api_mark_all_notifications_read'),
+    
     # 🔹 Проверка новых заявок
     path('check-new-requests/', views.check_new_requests, name='crm_check_new_requests'),
     path('request/<int:pk>/mark-viewed/', views.mark_request_as_viewed, name='crm_mark_request_viewed'),
     
     # 📋 Заявки
-    path('request/<int:pk>/download/', views.download_request_file, name='crm_download_file'),  # ✅ ДОБАВЛЕНО
-    path('request/<int:pk>/download/', views.download_request_file, name='crm_download_request_file'),  # ✅ Алиас для обратной совместимости
+    path('request/<int:pk>/download/', views.download_request_file, name='crm_download_file'),
+    path('request/<int:pk>/download/', views.download_request_file, name='crm_download_request_file'),
     path('requests/', views.my_requests, name='crm_requests'),
     path('my-requests/', views.my_requests, name='crm_my_requests'),
     path('request/<int:pk>/', views.request_detail, name='crm_request_detail'),
@@ -98,6 +104,8 @@ urlpatterns = [
     path('promo-blocks/<int:pk>/toggle-active/', views.promo_block_toggle_active, name='crm_promo_block_toggle_active'),
     path('promo-blocks/<int:pk>/duplicate/', views.duplicate_promo_block, name='crm_promo_block_duplicate'),
     path('promo-blocks/<int:pk>/preview/', views.promo_block_preview, name='crm_promo_block_preview'),
+    
+    # 🛠 Услуги
     path('services/', views.services_list, name='crm_services'),
     path('services/create/', views.service_create, name='crm_service_create'),
     path('services/<int:pk>/edit/', views.service_edit, name='crm_service_edit'),

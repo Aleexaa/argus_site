@@ -3,21 +3,32 @@ from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 from dotenv import load_dotenv
 
-# Загрузка переменных окружения
+# Загружаем переменные окружения
 load_dotenv()
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# =========================
-# SECURITY
-# =========================
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-zamenite-eto-na-sluchayny-secret-key-12345')
-DEBUG = True  # Для разработки
-ALLOWED_HOSTS = ['*']  # Для разработки
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-argus-crm-secret-key-2024')
 
-# =========================
-# APPS
-# =========================
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
+
+# Разрешенные хосты (для продакшена замените на свои)
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = [
+        'localhost',
+        '127.0.0.1',
+        # Добавьте ваш IP и домен при деплое
+        # 'ваш_ip_сервера',
+        # 'ваш-домен.ru',
+        # 'www.ваш-домен.ru',
+    ]
+
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -25,16 +36,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
     'widget_tweaks',
-    
     'main',
     'crm',
 ]
 
-# =========================
-# MIDDLEWARE
-# =========================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -48,9 +54,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'argus_site.urls'
 
-# =========================
-# TEMPLATES
-# =========================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -69,23 +72,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'argus_site.wsgi.application'
 
-# =========================
-# DATABASE (PostgreSQL)
-# =========================
+# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'argus_db',
-        'USER': 'postgres',
-        'PASSWORD': '123',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('DB_NAME', 'argus_db'),
+        'USER': os.getenv('DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('DB_PASSWORD', '123'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
+        'CONN_MAX_AGE': 60,  # Переиспользовать соединения для производительности
     }
 }
 
-# =========================
-# PASSWORD VALIDATION
-# =========================
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -102,64 +102,79 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# =========================
-# LOCALIZATION
-# =========================
+# Internationalization
 LANGUAGE_CODE = 'ru-ru'
 TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 USE_TZ = True
 
-# =========================
-# STATIC / MEDIA
-# =========================
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# Media files (user uploaded files)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Создаем подпапки для медиа
-MEDIA_SUBDIRS = ['projects', 'requests']
-for subdir in MEDIA_SUBDIRS:
-    dir_path = MEDIA_ROOT / subdir
-    dir_path.mkdir(parents=True, exist_ok=True)
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
-# =========================
-# ADMIN
-# =========================
-ADMIN_SITE_HEADER = _("CRM Аргус")
-ADMIN_SITE_TITLE = _("CRM Аргус — панель управления")
-ADMIN_INDEX_TITLE = _("Добро пожаловать в систему управления проектами")
+# Site URL (для ссылок в письмах)
+SITE_URL = os.getenv('SITE_URL', 'http://127.0.0.1:8000')
 
-# =========================
-# EMAIL
-# =========================
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# CSRF и Security
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://127.0.0.1:8000,http://localhost:8000').split(',')
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') if not DEBUG else None
 
-# =========================
-# DEFAULT AUTO FIELD
-# =========================
+# Login/Logout URLs
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/crm/'
+LOGOUT_REDIRECT_URL = '/'
+
+# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# =========================
-# CSRF И БЕЗОПАСНОСТЬ ДЛЯ РАЗРАБОТКИ
-# =========================
-CSRF_TRUSTED_ORIGINS = [
-    'http://72.56.249.96:8000',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-    'http://argus.ru:8000',
-]
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'crm.log',
+        },
+    },
+    'loggers': {
+        'crm.views': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        },
+        'django.core.mail': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+        },
+    },
+}
 
-# Отключаем строгую защиту для разработки
-CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_HTTPONLY = False
-SESSION_COOKIE_SECURE = False
-
-# Убедимся, что медиафайлы работают
-if DEBUG:
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
+# Создаем директорию для логов
+LOGS_DIR = BASE_DIR / 'logs'
+if not os.path.exists(LOGS_DIR):
+    try:
+        os.makedirs(LOGS_DIR)
+    except:
+        pass
