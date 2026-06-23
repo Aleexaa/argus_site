@@ -1,3 +1,6 @@
+## 📄 Полностью готовый `home.html` (с data-атрибутами и JavaScript)
+
+```html
 {% extends 'base.html' %}
 {% load static %}
 
@@ -36,19 +39,17 @@
             <p class="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">Актуальные события и важные обновления</p>
         </div>
 
-        <!-- Разные варианты отображения в зависимости от количества промо-блоков -->
         {% with total_promo=promo_blocks|length %}
             {% if total_promo == 1 %}
-                <!-- Один промо-блок - отображаем как отдельную карточку -->
+                <!-- Один промо-блок -->
                 <div class="max-w-2xl mx-auto">
                     {% with promo=promo_blocks.0 %}
                     <div class="news-card rounded-2xl shadow-xl overflow-hidden transform transition-all duration-500 hover:shadow-2xl cursor-pointer group"
-                         data-news-index="0"
                          data-bg-color="{{ promo.background_color|default:'#1E3A8A' }}"
                          data-text-color="{{ promo.text_color|default:'#FFFFFF' }}"
                          data-button-color="{{ promo.button_color|default:'#C9A96A' }}"
-                         data-button-text="{{ promo.button_text|default:'' }}"
-                         data-button-url="{{ promo.button_url|default:'' }}"
+                         data-button-text-color="{{ promo.button_text_color|default:'#FFFFFF' }}"
+                         data-news-index="0"
                          data-promo-text="{{ promo.text|default:'' }}"
                          data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}">
                         
@@ -70,7 +71,6 @@
                         </div>
                         {% endif %}
                         
-                        <!-- Текст под картинкой или вместо нее -->
                         <div class="p-6 sm:p-8">
                             <div class="flex-1 flex flex-col">
                                 {% if not promo.image and promo.title %}
@@ -90,8 +90,9 @@
                                 <span class="text-sm font-medium" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
                                     {{ promo.created_at|date:"d.m.Y"|default:"Сегодня" }}
                                 </span>
-                                <button class="text-sm font-medium px-4 py-2 rounded-lg transition-all duration-300 group-hover:scale-105 custom-button-style read-more-btn" 
-                                      data-button-color="{{ promo.button_color|default:'#C9A96A' }}">
+                                <button class="text-sm font-medium px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 read-more-btn"
+                                        data-btn-color="{{ promo.button_color|default:'#C9A96A' }}"
+                                        data-btn-text-color="{{ promo.button_text_color|default:'#FFFFFF' }}">
                                     {% if promo.button_text %}{{ promo.button_text }}{% else %}Читать далее{% endif %}
                                 </button>
                             </div>
@@ -101,17 +102,16 @@
                 </div>
 
             {% elif total_promo == 2 %}
-                <!-- Два промо-блока - отображаем в сетке -->
+                <!-- Два промо-блока -->
                 <div class="max-w-6xl mx-auto">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                         {% for promo in promo_blocks %}
                         <div class="news-card rounded-2xl shadow-xl overflow-hidden transform transition-all duration-500 hover:shadow-2xl cursor-pointer group"
-                             data-news-index="{{ forloop.counter0 }}"
                              data-bg-color="{{ promo.background_color|default:'#1E3A8A' }}"
                              data-text-color="{{ promo.text_color|default:'#FFFFFF' }}"
                              data-button-color="{{ promo.button_color|default:'#C9A96A' }}"
-                             data-button-text="{{ promo.button_text|default:'' }}"
-                             data-button-url="{{ promo.button_url|default:'' }}"
+                             data-button-text-color="{{ promo.button_text_color|default:'#FFFFFF' }}"
+                             data-news-index="{{ forloop.counter0 }}"
                              data-promo-text="{{ promo.text|default:'' }}"
                              data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}">
                             
@@ -147,8 +147,9 @@
                                     <span class="text-xs sm:text-sm font-medium" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
                                         {{ promo.created_at|date:"d.m.Y"|default:"Сегодня" }}
                                     </span>
-                                    <button class="text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-all duration-300 group-hover:scale-105 custom-button-style read-more-btn" 
-                                          data-button-color="{{ promo.button_color|default:'#C9A96A' }}">
+                                    <button class="text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-all duration-300 hover:scale-105 read-more-btn"
+                                            data-btn-color="{{ promo.button_color|default:'#C9A96A' }}"
+                                            data-btn-text-color="{{ promo.button_text_color|default:'#FFFFFF' }}">
                                         {% if promo.button_text %}{{ promo.button_text }}{% else %}Читать далее{% endif %}
                                     </button>
                                 </div>
@@ -159,17 +160,16 @@
                 </div>
 
             {% elif total_promo == 3 %}
-                <!-- Три промо-блока - отображаем в сетке 3 колонки -->
+                <!-- Три промо-блока -->
                 <div class="max-w-6xl mx-auto">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
                         {% for promo in promo_blocks %}
                         <div class="news-card rounded-2xl shadow-xl overflow-hidden transform transition-all duration-500 hover:shadow-2xl cursor-pointer group"
-                             data-news-index="{{ forloop.counter0 }}"
                              data-bg-color="{{ promo.background_color|default:'#1E3A8A' }}"
                              data-text-color="{{ promo.text_color|default:'#FFFFFF' }}"
                              data-button-color="{{ promo.button_color|default:'#C9A96A' }}"
-                             data-button-text="{{ promo.button_text|default:'' }}"
-                             data-button-url="{{ promo.button_url|default:'' }}"
+                             data-button-text-color="{{ promo.button_text_color|default:'#FFFFFF' }}"
+                             data-news-index="{{ forloop.counter0 }}"
                              data-promo-text="{{ promo.text|default:'' }}"
                              data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}">
                             
@@ -205,8 +205,9 @@
                                     <span class="text-xs sm:text-sm font-medium" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
                                         {{ promo.created_at|date:"d.m.Y"|default:"Сегодня" }}
                                     </span>
-                                    <button class="text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-all duration-300 group-hover:scale-105 custom-button-style read-more-btn" 
-                                          data-button-color="{{ promo.button_color|default:'#C9A96A' }}">
+                                    <button class="text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-all duration-300 hover:scale-105 read-more-btn"
+                                            data-btn-color="{{ promo.button_color|default:'#C9A96A' }}"
+                                            data-btn-text-color="{{ promo.button_text_color|default:'#FFFFFF' }}">
                                         {% if promo.button_text %}{{ promo.button_text }}{% else %}Читать далее{% endif %}
                                     </button>
                                 </div>
@@ -217,7 +218,7 @@
                 </div>
 
             {% else %}
-                <!-- Четыре и более промо-блока - отображаем в карусели -->
+                <!-- Четыре и более промо-блока - карусель -->
                 <div class="relative max-w-6xl mx-auto px-2 sm:px-0">
                     <div class="news-carousel-container overflow-hidden rounded-2xl">
                         <div id="newsCarousel" class="flex transition-transform duration-500 ease-in-out">
@@ -227,8 +228,8 @@
                                      data-bg-color="{{ promo.background_color|default:'#1E3A8A' }}"
                                      data-text-color="{{ promo.text_color|default:'#FFFFFF' }}"
                                      data-button-color="{{ promo.button_color|default:'#C9A96A' }}"
-                                     data-button-text="{{ promo.button_text|default:'' }}"
-                                     data-button-url="{{ promo.button_url|default:'' }}"
+                                     data-button-text-color="{{ promo.button_text_color|default:'#FFFFFF' }}"
+                                     data-news-index="{{ forloop.counter0 }}"
                                      data-promo-text="{{ promo.text|default:'' }}"
                                      data-promo-date="{{ promo.created_at|date:'d.m.Y'|default:'Сегодня' }}">
                                     
@@ -259,8 +260,9 @@
                                             <span class="text-xs font-medium" data-text-color="{{ promo.text_color|default:'#FFFFFF' }}">
                                                 {{ promo.created_at|date:"d.m.Y"|default:"Сегодня" }}
                                             </span>
-                                            <button class="text-xs font-medium px-2 py-1 rounded transition-all duration-300 group-hover:scale-105 custom-button-style read-more-btn" 
-                                                  data-button-color="{{ promo.button_color|default:'#C9A96A' }}">
+                                            <button class="text-xs font-medium px-2 py-1 rounded transition-all duration-300 hover:scale-105 read-more-btn"
+                                                    data-btn-color="{{ promo.button_color|default:'#C9A96A' }}"
+                                                    data-btn-text-color="{{ promo.button_text_color|default:'#FFFFFF' }}">
                                                 {% if promo.button_text %}{{ promo.button_text }}{% else %}Читать далее{% endif %}
                                             </button>
                                         </div>
@@ -336,7 +338,6 @@
     <div class="container mx-auto px-4 sm:px-6">
         <h2 class="text-2xl sm:text-3xl md:text-4xl text-dark-blue text-center mb-8 sm:mb-12 font-bold">Ключевые услуги</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <!-- Service 1 -->
             <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-400 cursor-pointer p-4 sm:p-6 border border-gray-100 group">
                 <div class="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-dark-blue text-gold mb-3 sm:mb-4 rounded-lg transition-all duration-400 group-hover:scale-110 group-hover:bg-gold group-hover:text-white">
                     <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -347,7 +348,6 @@
                 <p class="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover:text-dark-blue transition-colors duration-400">Проектирование и монтаж автоматических систем</p>
             </div>
             
-            <!-- Service 2 -->
             <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-400 cursor-pointer p-4 sm:p-6 border border-gray-100 group" data-animation-delay="0.05s">
                 <div class="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-dark-blue text-gold mb-3 sm:mb-4 rounded-lg transition-all duration-400 group-hover:scale-110 group-hover:bg-gold group-hover:text-white">
                     <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -358,7 +358,6 @@
                 <p class="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover:text-dark-blue transition-colors duration-400">Установка и обслуживание систем оповещения</p>
             </div>
             
-            <!-- Service 3 -->
             <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-400 cursor-pointer p-4 sm:p-6 border border-gray-100 group" data-animation-delay="0.1s">
                 <div class="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-dark-blue text-gold mb-3 sm:mb-4 rounded-lg transition-all duration-400 group-hover:scale-110 group-hover:bg-gold group-hover:text-white">
                     <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -369,7 +368,6 @@
                 <p class="text-xs sm:text-sm text-gray-600 leading-relaxed group-hover:text-dark-blue transition-colors duration-400">Полный комплекс электромонтажных услуг</p>
             </div>
             
-            <!-- Service 4 -->
             <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-400 cursor-pointer p-4 sm:p-6 border border-gray-100 group" data-animation-delay="0.15s">
                 <div class="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-dark-blue text-gold mb-3 sm:mb-4 rounded-lg transition-all duration-400 group-hover:scale-110 group-hover:bg-gold group-hover:text-white">
                     <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -548,15 +546,12 @@
     }
 
     .read-more-btn {
-        background-color: rgba(201, 169, 106, 0.2);
-        color: #C9A96A;
         border: none;
         cursor: pointer;
         transition: all 0.3s ease;
     }
 
     .read-more-btn:hover {
-        background-color: rgba(201, 169, 106, 0.3);
         transform: scale(1.05);
     }
 
@@ -622,7 +617,49 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Карусель
+    // ===== ПРИМЕНЯЕМ СТИЛИ К ПРОМО-КАРТОЧКАМ =====
+    function applyPromoStyles() {
+        document.querySelectorAll('.news-card').forEach(function(card) {
+            var bgColor = card.getAttribute('data-bg-color');
+            var textColor = card.getAttribute('data-text-color');
+            
+            if (bgColor) {
+                card.style.backgroundColor = bgColor;
+            }
+            
+            if (textColor) {
+                card.style.color = textColor;
+            }
+            
+            // Применяем цвет к тексту внутри карточки
+            card.querySelectorAll('[data-text-color]').forEach(function(el) {
+                if (textColor) el.style.color = textColor;
+            });
+            
+            // Применяем цвет к кнопкам
+            card.querySelectorAll('.read-more-btn').forEach(function(btn) {
+                var btnColor = btn.getAttribute('data-btn-color');
+                var btnTextColor = btn.getAttribute('data-btn-text-color');
+                if (btnColor) {
+                    btn.style.backgroundColor = btnColor;
+                }
+                if (btnTextColor) {
+                    btn.style.color = btnTextColor;
+                }
+            });
+            
+            // Применяем цвет к границам
+            card.querySelectorAll('[data-border-color]').forEach(function(el) {
+                if (textColor) {
+                    el.style.borderColor = textColor + '30';
+                }
+            });
+        });
+    }
+
+    applyPromoStyles();
+
+    // ===== КАРУСЕЛЬ =====
     var carousel = document.getElementById('newsCarousel');
     var slides = document.querySelectorAll('.news-slide');
     var indicators = document.querySelectorAll('.news-indicator');
@@ -736,7 +773,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Модальное окно
+    // ===== МОДАЛЬНОЕ ОКНО =====
     var modal = document.getElementById('newsModal');
     var modalContent = document.getElementById('newsModalContent');
     var closeModalBtn = document.getElementById('closeNewsModal');
@@ -807,7 +844,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Клик по карточке проекта
+    // ===== КЛИК ПО КАРТОЧКЕ ПРОЕКТА =====
     document.querySelectorAll('.project-card').forEach(function(card) {
         card.addEventListener('click', function() {
             var projectId = this.getAttribute('data-project-id');
@@ -817,7 +854,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Плавная прокрутка для якорей
+    // ===== ПЛАВНАЯ ПРОКРУТКА =====
     document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
@@ -833,3 +870,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endblock %}
+```
