@@ -52,12 +52,11 @@
             <!-- Project Title -->
             <div class="md:col-span-2">
               <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
-                Название проекта *
+                Название проекта <span class="text-red-500">*</span>
               </label>
               <input type="text" 
                      id="title" 
                      name="title" 
-                     required
                      maxlength="255"
                      class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                      placeholder="Введите название проекта"
@@ -67,11 +66,10 @@
             <!-- Object Type -->
             <div>
               <label for="object_type" class="block text-sm font-medium text-gray-700 mb-2">
-                Тип объекта *
+                Тип объекта <span class="text-red-500">*</span>
               </label>
               <select id="object_type" 
                       name="object_type" 
-                      required
                       class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
                 <option value="">Выберите тип объекта</option>
                 <option value="residential" {% if project.object_type == 'residential' or request.POST.object_type == 'residential' %}selected{% endif %}>Жилые комплексы</option>
@@ -107,7 +105,7 @@
             <div id="current-image" class="mb-4">
               <p class="text-sm text-gray-600 mb-2">Текущее изображение:</p>
               <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <img src="{{ project.image.url }}" class="w-20 h-20 object-cover rounded-lg">
+                <img src="{{ project.image.url }}" class="w-20 h-20 object-cover rounded-lg" alt="Текущее изображение проекта">
                 <div class="flex-1">
                   <p class="text-sm font-medium text-gray-900">Текущее изображение</p>
                   <p class="text-xs text-gray-500">Загружено ранее</p>
@@ -128,20 +126,20 @@
               <input type="file" 
                      id="image" 
                      name="image" 
-                     accept="image/jpeg,image/jpg,image/png,image/gif"
+                     accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                      class="hidden">
               <button type="button" onclick="document.getElementById('image').click()" 
                       class="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200">
                 <i data-lucide="image" class="w-4 h-4"></i>
                 <span>Выбрать файл</span>
               </button>
-              <p class="text-xs text-gray-500 mt-2">PNG, JPG, JPEG, GIF до 10MB</p>
+              <p class="text-xs text-gray-500 mt-2">PNG, JPG, JPEG, GIF, WEBP до 10MB</p>
             </div>
             
             <!-- Превью нового изображения -->
             <div id="image-preview" class="mt-3 hidden">
               <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <img id="preview" class="w-20 h-20 object-cover rounded-lg">
+                <img id="preview" class="w-20 h-20 object-cover rounded-lg" alt="Превью изображения">
                 <div class="flex-1">
                   <p id="file-name" class="text-sm font-medium text-gray-900"></p>
                   <p id="file-size" class="text-xs text-gray-500"></p>
@@ -176,7 +174,14 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    lucide.createIcons();
+    // Проверяем, что lucide доступен
+    if (typeof lucide !== 'undefined') {
+        try {
+            lucide.createIcons();
+        } catch(e) {
+            console.log('lucide error:', e);
+        }
+    }
     
     const imageInput = document.getElementById('image');
     const uploadArea = document.getElementById('upload-area');
@@ -186,6 +191,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileSize = document.getElementById('file-size');
     const submitBtn = document.getElementById('submit-btn');
     const form = document.getElementById('project-form');
+    const titleInput = document.getElementById('title');
+    const objectTypeSelect = document.getElementById('object_type');
 
     // Drag and drop для изображения
     uploadArea.addEventListener('dragover', function(e) {
@@ -218,9 +225,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Функция обработки файла изображения
     function handleImageFile(file) {
         // Проверка типа файла
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
         if (!allowedTypes.includes(file.type)) {
-            showMessage('Допустимые форматы: JPG, JPEG, PNG, GIF', 'error');
+            showMessage('Допустимые форматы: JPG, JPEG, PNG, GIF, WEBP', 'error');
             return;
         }
 
@@ -238,6 +245,10 @@ document.addEventListener('DOMContentLoaded', function() {
             fileSize.textContent = formatFileSize(file.size);
             imagePreview.classList.remove('hidden');
             uploadArea.style.display = 'none';
+            // Обновляем иконки
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
         };
         reader.readAsDataURL(file);
     }
@@ -272,20 +283,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Валидация формы
     form.addEventListener('submit', function(e) {
-        const title = document.getElementById('title').value.trim();
-        const objectType = document.getElementById('object_type').value;
+        const title = titleInput.value.trim();
+        const objectType = objectTypeSelect.value;
 
         if (!title) {
             e.preventDefault();
             showMessage('Введите название проекта', 'error');
-            document.getElementById('title').focus();
+            titleInput.focus();
             return;
         }
 
         if (!objectType) {
             e.preventDefault();
             showMessage('Выберите тип объекта', 'error');
-            document.getElementById('object_type').focus();
+            objectTypeSelect.focus();
             return;
         }
 
@@ -314,7 +325,9 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         document.body.appendChild(messageDiv);
         
-        lucide.createIcons();
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
         
         setTimeout(() => {
             if (messageDiv.parentElement) {
