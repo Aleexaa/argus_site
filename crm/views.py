@@ -1686,7 +1686,6 @@ def project_delete(request, pk):
         return JsonResponse({'status': 'success', 'message': f'Проект "{title}" удален'})
     return JsonResponse({'status': 'error', 'error': 'Неверный запрос'})
 
-
 @login_required
 def project_edit(request, pk):
     project = get_object_or_404(Project, pk=pk)
@@ -1694,19 +1693,24 @@ def project_edit(request, pk):
     if not profile or profile.role != 'owner':
         messages.error(request, "Недостаточно прав для редактирования проекта")
         return redirect('crm_projects')
+    
     if request.method == 'POST':
         try:
             project.title = request.POST.get('title', '').strip()
             project.description = request.POST.get('description', '').strip()
             project.object_type = request.POST.get('object_type', '').strip()
             project.address = request.POST.get('address', '').strip()
-            if not all([project.title, project.description, project.object_type]):
+            
+            # ✅ ИСПРАВЛЕНО: проверяем только title и object_type
+            if not all([project.title, project.object_type]):
                 messages.error(request, "Заполните все обязательные поля")
                 return render(request, 'crm/project_form.html', {'project': project})
+            
             if request.POST.get('remove_current_image') == 'true':
                 if project.image:
                     project.image.delete(save=False)
                     project.image = None
+            
             if 'image' in request.FILES:
                 image_file = request.FILES['image']
                 if image_file.size > 10 * 1024 * 1024:
@@ -1715,11 +1719,14 @@ def project_edit(request, pk):
                 ext = os.path.splitext(image_file.name)[1]
                 filename = f"{uuid.uuid4().hex}{ext}"
                 project.image.save(filename, image_file)
+            
             project.save()
             messages.success(request, f'Проект "{project.title}" успешно обновлен')
             return redirect('crm_project_detail', pk=project.id)
+            
         except Exception as e:
             messages.error(request, f'Ошибка при обновлении проекта: {str(e)}')
+    
     context = {
         'user': request.user,
         'profile': profile,
@@ -1727,7 +1734,6 @@ def project_edit(request, pk):
         'is_owner': profile.role == 'owner',
     }
     return render(request, 'crm/project_form.html', context)
-
 
 @login_required
 def feedback_list(request):
