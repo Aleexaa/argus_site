@@ -15,17 +15,16 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-argus-crm-secret-key-2024'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-# Разрешенные хосты (для продакшена замените на свои)
+# Разрешенные хосты
 if DEBUG:
     ALLOWED_HOSTS = ['*']
 else:
     ALLOWED_HOSTS = [
         'localhost',
         '127.0.0.1',
-        # Добавьте ваш IP и домен при деплое
-        # 'ваш_ip_сервера',
-        # 'ваш-домен.ru',
-        # 'www.ваш-домен.ru',
+        '77.222.36.45',
+        'argus-tmn.ru',
+        'www.argus-tmn.ru',
     ]
 
 # Application definition
@@ -81,7 +80,7 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD', '123'),
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5432'),
-        'CONN_MAX_AGE': 60,  # Переиспользовать соединения для производительности
+        'CONN_MAX_AGE': 60,
     }
 }
 
@@ -118,21 +117,28 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Email settings
+# ============================================================
+# EMAIL SETTINGS (для Mail.ru)
+# ============================================================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
+# Если порт 465 не работает, попробуйте:
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = False
+
 # Site URL (для ссылок в письмах)
-SITE_URL = os.getenv('SITE_URL', 'http://127.0.0.1:8000')
+SITE_URL = os.getenv('SITE_URL', 'https://argus-tmn.ru')
 
 # CSRF и Security
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://127.0.0.1:8000,http://localhost:8000').split(',')
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://argus-tmn.ru,https://www.argus-tmn.ru,http://77.222.36.45').split(',')
 CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
 SECURE_SSL_REDIRECT = not DEBUG
