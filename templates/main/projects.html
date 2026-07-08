@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Компания Аргус - Проекты{% endblock %}
+{% block title %}Реализованные проекты компании Аргус — Пожарная безопасность в Тюмени{% endblock %}
+
+{% block description %}Портфолио компании Аргус: реализованные проекты по пожарной безопасности в Тюмени и области. Жилые комплексы, торговые центры, социальные объекты. Фото и описания.{% endblock %}
 
 {% block content %}
 <!-- Hero Section - Упрощенный -->
@@ -10,6 +12,9 @@
         <h1 class="text-3xl font-bold mb-4">
             Наши проекты
         </h1>
+        <p class="text-white/80 max-w-2xl mx-auto">
+            Примеры выполненных работ по пожарной безопасности и строительству в Тюмени и Тюменской области
+        </p>
     </div>
 </section>
 
@@ -43,12 +48,12 @@
         <!-- Сетка проектов - Упрощенная -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {% for project in projects %}
-            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                 <!-- Image Container -->
                 <div class="relative h-60 overflow-hidden">
                     {% if project.image %}
-                    <img src="{{ project.image.url }}" alt="{{ project.title }}" 
-                         class="w-full h-full object-cover">
+                    <img src="{{ project.image.url }}" alt="{{ project.title }} — проект компании Аргус в Тюмени" 
+                         class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
                     {% else %}
                     <div class="w-full h-full bg-gray-100 flex items-center justify-center">
                         <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,7 +99,7 @@
                 <h3 class="text-xl font-bold text-dark-blue mb-2">Проекты не найдены</h3>
                 <p class="text-gray-600">
                     {% if active_filter != 'all' %}
-                        В категории пока нет проектов.
+                        В этой категории пока нет проектов.
                     {% else %}
                         Пока нет добавленных проектов.
                     {% endif %}

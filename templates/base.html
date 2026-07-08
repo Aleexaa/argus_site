@@ -4,11 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>{% block title %}Компания Аргус - Противопожарные системы{% endblock %}</title>
+    <title>{% block title %}Компания Аргус — Противопожарные системы в Тюмени{% endblock %}</title>
     
     <!-- SEO мета-теги -->
-    <meta name="description" content="{% block description %}Профессиональные услуги в области пожарной безопасности. Проектирование, монтаж, обслуживание. Более 20 лет на рынке.{% endblock %}">
-    <meta name="keywords" content="пожарная безопасность, противопожарные системы, проектирование, монтаж, СОУЭ, сигнализация">
+    <meta name="description" content="{% block description %}Компания Аргус — профессиональные услуги в области пожарной безопасности в Тюмени. Проектирование, монтаж, обслуживание систем пожаротушения, сигнализации и СОУЭ. Более 20 лет на рынке. Лицензия МЧС.{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}пожарная безопасность, противопожарные системы, проектирование, монтаж, СОУЭ, сигнализация, пожаротушение, Тюмень, компания Аргус{% endblock %}">
+    
+    <!-- Open Graph для соцсетей -->
+    <meta property="og:title" content="{% block og_title %}Компания Аргус — Противопожарные системы в Тюмени{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Профессиональные услуги в области пожарной безопасности. Проектирование, монтаж, обслуживание. Более 20 лет на рынке.{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:image" content="{% static 'images/logo.jpeg' %}">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -197,8 +204,8 @@
         <div class="container mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16">
                 <!-- Logo -->
-                <a href="{% url 'home' %}" class="flex items-center gap-2 sm:gap-3 group premium-hover" aria-label="На главную страницу">
-                    <img src="{% static 'images/logo.jpeg' %}" alt="Компания Аргус" 
+                <a href="{% url 'home' %}" class="flex items-center gap-2 sm:gap-3 group premium-hover" aria-label="Компания Аргус — противопожарные системы в Тюмени">
+                    <img src="{% static 'images/logo.jpeg' %}" alt="Компания Аргус — пожарная безопасность в Тюмени" 
                          class="h-8 sm:h-10 w-auto transition-transform duration-800 group-hover:scale-105">
                     <div class="flex flex-col">
                         <span class="text-black font-bold text-lg sm:text-xl leading-tight tracking-tight">
@@ -283,7 +290,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <div class="lg:col-span-2">
                     <div class="flex items-center gap-3 mb-4">
-                        <img src="{% static 'images/logo.jpeg' %}" alt="Компания Аргус" class="h-8 w-auto">
+                        <img src="{% static 'images/logo.jpeg' %}" alt="Компания Аргус — пожарная безопасность в Тюмени" class="h-8 w-auto">
                         <div>
                             <span class="text-white font-bold text-lg">АРГУС</span>
                             <span class="text-gold text-xs block">Компания</span>
